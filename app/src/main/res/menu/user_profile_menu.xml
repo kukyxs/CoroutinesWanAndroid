@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Group1">
+        <menu>
+            <item android:title="children1" />
+            <item android:title="children2" />
+        </menu>
+    </item>
+
+    <item android:title="Group2">
+        <menu>
+            <item android:title="children1" />
+            <item android:title="children2" />
+        </menu>
+    </item>
+
+    <item android:title="Group3">
+        <menu>
+            <item android:title="children1" />
+            <item android:title="children2" />
+        </menu>
+    </item>
+
+</menu>
