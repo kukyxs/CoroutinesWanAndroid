@@ -38,7 +38,7 @@ interface ApiService {
     // ==============================>
     // 体系
     @GET("/tree/json")
-    suspend fun androidSystem(): AndroidSystemEntity
+    suspend fun knowledgeSystem(): AndroidSystemEntity
 
     /**
      * 体系下的文章，cid 查看 [SystemCategory] #id

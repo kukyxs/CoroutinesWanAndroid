@@ -8,7 +8,7 @@ import com.kuky.demo.wan.android.databinding.FragmentSplashBinding
 
 /**
  * @author kuky.
- * @description
+ * @description 欢迎页
  */
 class SplashFragment : BaseFragment<FragmentSplashBinding>() {
 
