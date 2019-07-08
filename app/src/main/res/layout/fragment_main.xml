@@ -12,6 +12,10 @@
         <variable
             name="viewModel"
             type="com.kuky.demo.wan.android.ui.main.MainViewModel" />
+
+        <variable
+            name="adapter"
+            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -40,6 +44,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginBottom="12dp"
+                android:adapter="@{adapter}"
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 app:layout_constraintBottom_toBottomOf="parent"

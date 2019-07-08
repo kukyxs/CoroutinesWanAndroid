@@ -46,8 +46,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@MainFragment
         mBinding.viewModel = viewModel
+        mBinding.adapter = mAdapter
 
-        main_page.adapter = mAdapter
         main_page.offscreenPageLimit = mAdapter.count
         main_page.setPageTransformer(true, GalleryTransformer())
 

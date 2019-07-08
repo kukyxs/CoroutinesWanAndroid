@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.network
 
 import android.util.Log
+import com.kuky.demo.wan.android.utils.LogUtils
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,7 +29,13 @@ object RetrofitManager {
         val httpLoggingInterceptor = HttpLoggingInterceptor(
             object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
-                    Log.v(TAG, message)
+
+                    if ((message.startsWith("{") && message.endsWith("}")) ||
+                        (message.startsWith("[") && message.endsWith("]"))
+                    )
+                        LogUtils.json(message)
+                    else
+                        LogUtils.verbose(message)
                 }
             })
 
