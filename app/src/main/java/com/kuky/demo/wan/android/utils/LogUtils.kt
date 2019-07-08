@@ -1,6 +1,14 @@
 package com.kuky.demo.wan.android.utils
 
 import android.util.Log
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.StringReader
+import java.io.StringWriter
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.stream.StreamSource
 
 /**
  * @author kuky.
@@ -21,6 +29,57 @@ object LogUtils {
         className = throwable.stackTrace[1].fileName
         methodName = throwable.stackTrace[1].methodName
         lineNumber = throwable.stackTrace[1].lineNumber
+    }
+
+    /** format json data */
+    @JvmStatic
+    fun json(json: String) {
+        if (json.isBlank()) {
+            info("blank json data")
+            return
+        }
+
+        try {
+            val message = when {
+                json.startsWith("{") -> {
+                    val jo = JSONObject(json)
+                    jo.toString(4)
+                }
+                json.startsWith("[") -> {
+                    val ja = JSONArray(json)
+                    ja.toString(4)
+                }
+                else -> ""
+            }
+            getMethodName(Throwable())
+            Log.i(className, createLog(message))
+        } catch (e: Exception) {
+            error("${e.cause?.message}${System.getProperty("line.separator")}$json")
+        }
+    }
+
+    /** format xml data */
+    @JvmStatic
+    fun xml(xml: String) {
+        if (xml.isBlank()) {
+            info("blank xml data")
+            return
+        }
+
+        try {
+            val xmlInput = StreamSource(StringReader(xml))
+            val xmlOutput = StreamResult(StringWriter())
+            val transformer = TransformerFactory.newInstance().newTransformer()
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4")
+            transformer.transform(xmlInput, xmlOutput)
+            val message = xmlOutput.writer.toString().replaceFirst(">", ">${System.getProperty("line.separator")}")
+
+            getMethodName(Throwable())
+            Log.i(className, createLog(message))
+        } catch (e: Exception) {
+            error("${e.cause?.message}${System.getProperty("line.separator")}$xml")
+        }
     }
 
     @JvmStatic

@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="holder"
+            type="com.kuky.demo.wan.android.ui.main.MainFragment" />
+
+        <variable
+            name="viewModel"
+            type="com.kuky.demo.wan.android.ui.main.MainViewModel" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -16,12 +25,12 @@
             android:clipChildren="false"
             android:orientation="vertical">
 
-            <FrameLayout
+            <com.youth.banner.Banner
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:background="@color/colorPrimary"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="150dp"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:banners="@{viewModel.banners}" />
 
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/main_page"
@@ -37,11 +46,12 @@
                 app:layout_constraintTop_toBottomOf="@id/banner" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/settings"
+                android:id="@+id/user_profile_settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="30dp"
+                android:onClick="@{holder::openSettings}"
                 android:src="@drawable/ic_settings_white_24dp"
                 app:fabSize="mini"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -55,6 +65,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
+            android:overScrollMode="never"
             app:headerLayout="@layout/user_profile_header"
             app:menu="@menu/user_profile_menu" />
     </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Group1">
+    <item android:title="@string/collection">
         <menu>
-            <item android:title="children1" />
-            <item android:title="children2" />
+            <item
+                android:id="@+id/favourite_article"
+                android:icon="@drawable/ic_favorite_outline_24dp"
+                android:title="@string/collected_articles" />
+            <item
+                android:id="@+id/favourite_website"
+                android:icon="@drawable/ic_favorite_outline_24dp"
+                android:title="@string/collected_websites" />
         </menu>
     </item>
 
-    <item android:title="Group2">
+    <item android:title="@string/info_about">
         <menu>
-            <item android:title="children1" />
-            <item android:title="children2" />
+            <item
+                android:id="@+id/about"
+                android:icon="@drawable/ic_info_outline_24dp"
+                android:title="@string/about_us" />
+
+            <item
+                android:id="@+id/version"
+                android:icon="@drawable/ic_info_outline_24dp"
+                android:title="@string/version_info" />
         </menu>
     </item>
 
-    <item android:title="Group3">
-        <menu>
-            <item android:title="children1" />
-            <item android:title="children2" />
-        </menu>
-    </item>
+    <item
+        android:id="@+id/login_out"
+        android:icon="@drawable/ic_exit_to_app_24dp"
+        android:title="@string/login_out" />
 
 </menu>

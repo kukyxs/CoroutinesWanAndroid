@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">玩Android</string>
+
+    <string name="collection">收藏</string>
+    <string name="collected_articles">文章收藏</string>
+    <string name="collected_websites">网址收藏</string>
+    <string name="info_about">关于</string>
+    <string name="about_us">关于我们</string>
+    <string name="version_info">版本信息</string>
+    <string name="login_out">退出登录</string>
+
+
 </resources>

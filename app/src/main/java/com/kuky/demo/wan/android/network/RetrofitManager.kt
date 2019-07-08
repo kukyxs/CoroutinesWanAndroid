@@ -28,7 +28,7 @@ object RetrofitManager {
         val httpLoggingInterceptor = HttpLoggingInterceptor(
             object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
-                    Log.i(TAG, message)
+                    Log.v(TAG, message)
                 }
             })
 

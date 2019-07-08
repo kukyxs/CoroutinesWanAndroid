@@ -13,7 +13,7 @@ interface ApiService {
     // ===============================>
     // 首页文章
     @GET("/article/list/{page}/json")
-    suspend fun homeArticles(@Path("page") page: Int): HomeArticleEntity
+    suspend fun homeArticles(@Path("page") page: Int): ResponseBody
 
     // 首页 Banner
     @GET("/banner/json")
