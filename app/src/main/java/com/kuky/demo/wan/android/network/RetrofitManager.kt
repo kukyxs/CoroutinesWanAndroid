@@ -1,6 +1,5 @@
 package com.kuky.demo.wan.android.network
 
-import android.util.Log
 import com.kuky.demo.wan.android.utils.LogUtils
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

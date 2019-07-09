@@ -11,14 +11,13 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
  * @description
  */
 class HomeViewModel : ViewModel() {
-    var articles: LiveData<PagedList<ArticleDetail>>? = null
-
-    fun fetchHomeArticles() {
-        articles = LivePagedListBuilder(
+    val articles: LiveData<PagedList<ArticleDetail>> by lazy {
+        LivePagedListBuilder(
             HomeArticleDataSourceFactory(HomeArticleRepository()),
             PagedList.Config.Builder()
                 .setPageSize(20)
-                .setEnablePlaceholders(false)
+                .setPrefetchDistance(20)
+                .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
         ).build()

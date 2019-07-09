@@ -13,7 +13,7 @@ final lifecycle_version = "1.1.1"
 final lifecycle_viewmodel_version = "2.2.0-alpha02"
 final navigation_version = "1.0.0"
 final room_version = "1.1.1"
-final paging_version = "1.0.0"
+final paging_version = "1.0.1"
 final glide_version = "4.9.0"
 
 android {

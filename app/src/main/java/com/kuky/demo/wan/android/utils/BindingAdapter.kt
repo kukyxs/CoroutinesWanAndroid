@@ -1,9 +1,7 @@
 package com.kuky.demo.wan.android.utils
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -38,13 +36,7 @@ fun loadBannerImg(banner: Banner, banners: List<BannerData>?) {
         .setImageLoader(GlideLoader()).setDelayTime(5000).start()
 
     banner.setOnBannerListener { position ->
-        banner.context.startActivity(
-            Intent().apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(banners[position].url)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-        )
+        AppUtils.launchUrl(banner.context, banners[position].url)
     }
 }
 
@@ -53,4 +45,3 @@ class GlideLoader : ImageLoader() {
         Glide.with(context).load(path).apply(RequestOptions.centerCropTransform()).into(imageView)
     }
 }
-

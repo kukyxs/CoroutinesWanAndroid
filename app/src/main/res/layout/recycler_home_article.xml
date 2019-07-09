@@ -1,13 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:gravity="center">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_test"
-        android:layout_width="wrap_content"
+    <data>
+
+        <variable
+            name="detail"
+            type="com.kuky.demo.wan.android.entity.ArticleDetail" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:layout_margin="4dp"
+        app:cardCornerRadius="8dp">
 
-</LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/article_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:minLines="2"
+                android:text="@{detail.title}"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
+
+            <TextView
+                android:id="@+id/article_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/article_title"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="6dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text='@{detail.superChapterName + "/" + detail.chapterName}'
+                android:textSize="12sp"
+                tools:text="基础知识/多线程与并发" />
+
+            <TextView
+                android:id="@+id/author_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/article_category"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="2dp"
+                android:singleLine="true"
+                android:text='@{detail.author + "  " + detail.niceDate}'
+                android:textSize="12sp"
+                tools:text="xiaoyang  一天前" />
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

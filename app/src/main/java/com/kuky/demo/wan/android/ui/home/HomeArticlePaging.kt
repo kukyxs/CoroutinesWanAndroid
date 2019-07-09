@@ -2,15 +2,16 @@ package com.kuky.demo.wan.android.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.android.synthetic.main.recycler_home_article.view.*
 import kotlinx.coroutines.*
 
 /**
@@ -29,7 +30,9 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) {
         launch {
             val data = repository.loadPageData(0)
-            callback.onResult(data!!, null, 1)
+            data?.let {
+                callback.onResult(data, null, 1)
+            }
         }
     }
 
@@ -50,29 +53,26 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
             }
         }
     }
-
-    override fun invalidate() {
-        super.invalidate()
-        cancel()
-    }
 }
 
 class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository) :
     DataSource.Factory<Int, ArticleDetail>() {
 
-    override fun create(): DataSource<Int, ArticleDetail> =
-        HomeArticleDataSource(repository)
+    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository)
 }
 
-class HomeArticleAdapter : PagedListAdapter<ArticleDetail, BaseViewHolder>(DIFF_CALLBACK) {
+class HomeArticleAdapter : PagedListAdapter<ArticleDetail, BaseViewHolder<RecyclerHomeArticleBinding>>(DIFF_CALLBACK) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_home_article, parent, false)
-        return BaseViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<RecyclerHomeArticleBinding> {
+        return BaseViewHolder(
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.recycler_home_article, parent, false)
+        )
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        holder.itemView.tv_test.text = getItem(position)?.title ?: "Empty"
+    override fun onBindViewHolder(holder: BaseViewHolder<RecyclerHomeArticleBinding>, position: Int) {
+        val article = getItem(position) ?: return
+        holder.binding.detail = article
+        holder.binding.executePendingBindings()
     }
 
     companion object {

@@ -21,10 +21,12 @@
             android:padding="8dp">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/article_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adapter="@{adapter}"
                 android:orientation="vertical"
+                android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_home_article" />

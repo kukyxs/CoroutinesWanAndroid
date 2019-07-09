@@ -3,12 +3,12 @@ package com.kuky.demo.wan.android.ui.home
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
+import kotlinx.android.synthetic.main.fragment_home.*
 
 /**
  * @author kuky.
@@ -22,11 +22,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.adapter = mAdapter
+
+        article_list.setHasFixedSize(true)
+
         val viewModel = getViewModel(HomeViewModel::class.java)
 
-        viewModel.fetchHomeArticles()
-
-        viewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
+        viewModel.articles.observe(this, Observer<PagedList<ArticleDetail>> {
             mAdapter.submitList(it)
         })
     }
