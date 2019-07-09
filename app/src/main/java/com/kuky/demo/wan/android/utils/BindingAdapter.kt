@@ -26,7 +26,7 @@ import com.youth.banner.loader.ImageLoader
  * @param placeholder 占位图
  * @param errorHolder 出错占位图
  */
-@BindingAdapter(value = ["bind:loadImage", "bind:placeHolder", "bind:error"], requireAll = false)
+@BindingAdapter(value = ["bind:imgUrl", "bind:placeHolder", "bind:error"], requireAll = false)
 fun loadImage(view: ImageView, url: String, placeholder: Drawable, errorHolder: Drawable) {
     Glide.with(view.context)
         .load(url)

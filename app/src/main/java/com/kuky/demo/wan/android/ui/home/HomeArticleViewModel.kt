@@ -10,7 +10,7 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
  * @author kuky.
  * @description
  */
-class HomeViewModel : ViewModel() {
+class HomeArticleViewModel : ViewModel() {
     val articles: LiveData<PagedList<ArticleDetail>> by lazy {
         LivePagedListBuilder(
             HomeArticleDataSourceFactory(HomeArticleRepository()),

@@ -50,6 +50,11 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
             }
         }
     }
+
+    override fun invalidate() {
+        super.invalidate()
+        cancel()
+    }
 }
 
 class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository) :

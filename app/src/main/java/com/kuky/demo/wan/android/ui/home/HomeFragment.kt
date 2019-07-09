@@ -36,7 +36,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         article_list.setHasFixedSize(true)
 
-        val viewModel = getViewModel(HomeViewModel::class.java)
+        val viewModel = getViewModel(HomeArticleViewModel::class.java)
 
         viewModel.articles.observe(this, Observer<PagedList<ArticleDetail>> {
             mAdapter.submitList(it)

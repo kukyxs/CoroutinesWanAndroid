@@ -11,10 +11,6 @@
             type="androidx.paging.PagedListAdapter" />
 
         <variable
-            name="holder"
-            type="com.kuky.demo.wan.android.ui.home.HomeFragment" />
-
-        <variable
             name="itemClick"
             type="com.kuky.demo.wan.android.base.PagingItemClickListener" />
     </data>

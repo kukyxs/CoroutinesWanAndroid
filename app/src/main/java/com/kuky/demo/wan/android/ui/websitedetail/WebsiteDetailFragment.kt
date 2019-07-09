@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.websitedetail
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -30,6 +31,8 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             javaScriptEnabled = true
             useWideViewPort = true
             loadWithOverviewMode = true
+            builtInZoomControls = true
+            displayZoomControls = false
         }
 
         content.apply {
@@ -42,6 +45,13 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                     view?.let { loadUrl(request?.url.toString()) }
                     return true
+                }
+            }
+
+            webChromeClient = object : WebChromeClient(){
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    mBinding.progress = newProgress
                 }
             }
         }

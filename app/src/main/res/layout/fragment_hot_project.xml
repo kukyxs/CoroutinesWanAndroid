@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="itemClick"
+            type="com.kuky.demo.wan.android.base.PagingItemClickListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -11,16 +20,18 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="8dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/project_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="项目...." />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:adapter="@{adapter}"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            bind:pageItemClick="@{itemClick}"
+            tools:itemCount="20"
+            tools:listitem="@layout/recycler_home_project" />
     </androidx.cardview.widget.CardView>
 </layout>

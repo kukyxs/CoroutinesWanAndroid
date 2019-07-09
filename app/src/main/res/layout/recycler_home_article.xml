@@ -34,6 +34,7 @@
                 android:text="@{detail.title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
 
             <TextView
@@ -57,7 +58,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="2dp"
                 android:singleLine="true"
-                android:text='@{detail.author + "  " + detail.niceDate}'
+                android:text='@{detail.author + "\t\t" + detail.niceDate}'
                 android:textSize="12sp"
                 tools:text="xiaoyang  一天前" />
         </RelativeLayout>
