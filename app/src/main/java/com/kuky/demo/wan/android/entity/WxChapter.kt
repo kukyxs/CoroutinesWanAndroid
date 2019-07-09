@@ -6,7 +6,7 @@ package com.kuky.demo.wan.android.entity
  */
 
 data class WxChapterEntity(
-    val `data`: List<WxChapterData>,
+    val `data`: MutableList<WxChapterData>,
     val errorCode: Int,
     val errorMsg: String
 )
