@@ -58,9 +58,12 @@ class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository
     override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository)
 }
 
+/**
+ * 方便绑定 recyclerView 的点击事件，可继承 [BasePagedListAdapter] 实现
+ */
 class HomeArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerHomeArticleBinding>(DIFF_CALLBACK) {
 
-    override fun getLayoutId(): Int = R.layout.recycler_home_article
+    override fun getLayoutId(viewType: Int): Int = R.layout.recycler_home_article
 
     override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
         holder.binding.detail = data

@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
  * @author kuky.
  * @description
  */
-class MainRepository  {
+class MainRepository {
 
     suspend fun getHomeBanners() = withContext(Dispatchers.IO) {
         val banners = RetrofitManager.apiService.homeBanner().data

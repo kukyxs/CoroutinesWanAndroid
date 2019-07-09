@@ -1,12 +1,9 @@
 package com.kuky.demo.wan.android.ui
 
 import android.os.Bundle
-import android.view.KeyEvent
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
-import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
-import com.kuky.demo.wan.android.utils.LogUtils
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 

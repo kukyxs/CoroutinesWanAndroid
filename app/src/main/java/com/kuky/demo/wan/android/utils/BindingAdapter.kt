@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.webkit.WebView
 import android.widget.ImageView
-import androidx.databinding.Bindable
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,6 +19,13 @@ import com.youth.banner.loader.ImageLoader
  * @author kuky.
  * @description
  */
+
+/**
+ * 绑定图片加载
+ * @param url 图片地址
+ * @param placeholder 占位图
+ * @param errorHolder 出错占位图
+ */
 @BindingAdapter(value = ["bind:loadImage", "bind:placeHolder", "bind:error"], requireAll = false)
 fun loadImage(view: ImageView, url: String, placeholder: Drawable, errorHolder: Drawable) {
     Glide.with(view.context)
@@ -30,6 +36,11 @@ fun loadImage(view: ImageView, url: String, placeholder: Drawable, errorHolder: 
         ).into(view)
 }
 
+/**
+ * 绑定 Banner 图片列表和点击事件
+ * @param banners Banner 信息列表
+ * @param listener 点击事件
+ */
 @BindingAdapter(value = ["bind:banners", "bind:bannerClick"], requireAll = false)
 fun loadBannerImg(banner: Banner, banners: List<BannerData>?, listener: OnBannerListener) {
     if (banners.isNullOrEmpty()) return
@@ -49,6 +60,10 @@ class GlideLoader : ImageLoader() {
     }
 }
 
+/**
+ * 绑定 paging adapter 点击事件
+ * @param listener 点击事件，[PagingItemClickListener]
+ */
 @BindingAdapter("bind:pageItemClick")
 fun bindPagingItemClick(recyclerView: RecyclerView, listener: PagingItemClickListener?) {
     val adapter = recyclerView.adapter
@@ -58,6 +73,10 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: PagingItemClickLis
     adapter.setOnItemListener(listener)
 }
 
+/**
+ * 绑定 webview 的 url
+ * @param url
+ */
 @BindingAdapter("bind:url")
 fun bindWebUrl(webView: WebView, url: String?) {
     if (url.isNullOrBlank()) return

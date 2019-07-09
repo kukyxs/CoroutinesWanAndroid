@@ -16,13 +16,17 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
 
     var itemListener: PagingItemClickListener? = null
 
+    /**
+     * 点击监听
+     * @param listener
+     */
     fun setOnItemListener(listener: PagingItemClickListener?) {
         this.itemListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
         return BaseViewHolder(
-            DataBindingUtil.inflate(LayoutInflater.from(parent.context), getLayoutId(), parent, false)
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context), getLayoutId(viewType), parent, false)
         )
     }
 
@@ -33,9 +37,23 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
         holder.binding.root.setOnClickListener { v -> itemListener?.onPagingItemClick(position, v) }
     }
 
+    /**
+     * 获取对应 position 下的数据
+     * @param position
+     */
     fun getItemData(position: Int): T? = getItem(position)
 
-    abstract fun getLayoutId(): Int
+    /**
+     * 根据 viewType 返回不同布局
+     * @param viewType, 通过重写 getItemViewType 支持多布局
+     */
+    abstract fun getLayoutId(viewType: Int): Int
 
+    /**
+     * 与 dataBinding 互相绑定的数据操作
+     * @param data 列表中当前 position 的数据
+     * @param position 数据的位置
+     * @param holder
+     */
     abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)
 }

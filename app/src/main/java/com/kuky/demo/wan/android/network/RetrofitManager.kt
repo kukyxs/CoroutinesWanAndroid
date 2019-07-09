@@ -29,6 +29,7 @@ object RetrofitManager {
             object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
 
+                    // 如果是 json 格式内容则打印 json
                     if ((message.startsWith("{") && message.endsWith("}")) ||
                         (message.startsWith("[") && message.endsWith("]"))
                     )
