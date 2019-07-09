@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -8,6 +9,14 @@
         <variable
             name="adapter"
             type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="holder"
+            type="com.kuky.demo.wan.android.ui.home.HomeFragment" />
+
+        <variable
+            name="itemClick"
+            type="com.kuky.demo.wan.android.base.PagingItemClickListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -15,22 +24,19 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="8dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/article_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp">
+            android:adapter="@{adapter}"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            bind:pageItemClick="@{itemClick}"
+            tools:itemCount="20"
+            tools:listitem="@layout/recycler_home_article" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/article_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adapter="@{adapter}"
-                android:orientation="vertical"
-                android:scrollbars="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="20"
-                tools:listitem="@layout/recycler_home_article" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

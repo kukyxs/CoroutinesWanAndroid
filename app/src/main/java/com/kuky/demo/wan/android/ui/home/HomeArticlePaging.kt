@@ -1,13 +1,10 @@
 package com.kuky.demo.wan.android.ui.home
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
+import com.kuky.demo.wan.android.base.BasePagedListAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
@@ -61,18 +58,12 @@ class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository
     override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository)
 }
 
-class HomeArticleAdapter : PagedListAdapter<ArticleDetail, BaseViewHolder<RecyclerHomeArticleBinding>>(DIFF_CALLBACK) {
+class HomeArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerHomeArticleBinding>(DIFF_CALLBACK) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<RecyclerHomeArticleBinding> {
-        return BaseViewHolder(
-            DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.recycler_home_article, parent, false)
-        )
-    }
+    override fun getLayoutId(): Int = R.layout.recycler_home_article
 
-    override fun onBindViewHolder(holder: BaseViewHolder<RecyclerHomeArticleBinding>, position: Int) {
-        val article = getItem(position) ?: return
-        holder.binding.detail = article
-        holder.binding.executePendingBindings()
+    override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
+        holder.binding.detail = data
     }
 
     companion object {

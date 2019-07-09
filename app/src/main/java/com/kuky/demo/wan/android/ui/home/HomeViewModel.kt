@@ -16,7 +16,6 @@ class HomeViewModel : ViewModel() {
             HomeArticleDataSourceFactory(HomeArticleRepository()),
             PagedList.Config.Builder()
                 .setPageSize(20)
-                .setPrefetchDistance(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()

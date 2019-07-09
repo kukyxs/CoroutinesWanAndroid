@@ -16,6 +16,10 @@
         <variable
             name="adapter"
             type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
+
+        <variable
+            name="listener"
+            type="com.youth.banner.listener.OnBannerListener" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -34,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 app:layout_constraintTop_toTopOf="parent"
+                bind:bannerClick="@{listener}"
                 bind:banners="@{viewModel.banners}" />
 
             <androidx.viewpager.widget.ViewPager

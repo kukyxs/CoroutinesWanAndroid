@@ -19,5 +19,15 @@
         android:id="@+id/mainFragment"
         android:name="com.kuky.demo.wan.android.ui.main.MainFragment"
         android:label="MainFragment"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_websiteDetailFragment"
+            app:destination="@id/websiteDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/websiteDetailFragment"
+        android:name="com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment"
+        android:label="WebsiteDetailFragment" />
+
 </navigation>

@@ -13,8 +13,10 @@ import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.projectcategory.ProjectCategoryFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
+import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.GalleryTransformer
+import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.*
 
 /**
@@ -47,6 +49,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         mBinding.holder = this@MainFragment
         mBinding.viewModel = viewModel
         mBinding.adapter = mAdapter
+        mBinding.listener = OnBannerListener { position ->
+            viewModel.banners.value?.let {
+                WebsiteDetailFragment.viewDetail(
+                    mNavController,
+                    R.id.action_mainFragment_to_websiteDetailFragment,
+                    it[position].url
+                )
+            }
+        }
 
         main_page.offscreenPageLimit = mAdapter.count
         main_page.setPageTransformer(true, GalleryTransformer())
