@@ -1,7 +1,10 @@
 package com.kuky.demo.wan.android.ui.search
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -9,10 +12,13 @@ import androidx.paging.PagedList
 import com.google.android.flexbox.FlexboxLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
+import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.android.synthetic.main.fragment_search.*
 
@@ -22,7 +28,11 @@ import kotlinx.android.synthetic.main.fragment_search.*
  */
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
-    private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
+    private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
+
+//    private val mHistoryAdapter: HistoryAdapter by lazy {
+//        HistoryAdapter(SearchHistoryUtils.getHistoryKeywords(requireActivity()))
+//    }
 
     private val mViewModel: SearchViewModel by lazy {
         ViewModelProviders
@@ -34,24 +44,53 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
 
-        mBinding.adapter = mAdapter
+        // TODO(" 搜索记录待完成，navigation 每次返回会重新创建实例，导致混乱")
+//        mBinding.adapter = mHistoryAdapter
+//        mBinding.listener = OnItemClickListener { position, _ ->
+//            mHistoryAdapter.getItemData(position)?.let {
+//                searchArticles(it)
+//            }
+//        }
+
+        mBinding.adapter = mResultAdapter
+        mBinding.listener = OnItemClickListener { position, _ ->
+            mResultAdapter.getItemData(position)?.let {
+                WebsiteDetailFragment.viewDetail(
+                    mNavController,
+                    R.id.action_searchFragment_to_websiteDetailFragment,
+                    it.link
+                )
+            }
+        }
 
         mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> { keys ->
-            keys.forEach { addLabel(it.name) }
+            addLabel(keys)
         })
 
         mViewModel.fetchKeys()
+
+        search_content.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                searchArticles(v.text.toString())
+            }
+            true
+        }
     }
 
     /**
      * 搜索
      */
     private fun searchArticles(keyword: String) {
+        (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager).hideSoftInputFromWindow(search_content.windowToken, 0)
+
+        SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
+
         mViewModel.fetchResult(keyword)
 
         mViewModel.result?.let {
             it.observe(this, Observer<PagedList<ArticleDetail>> { details ->
-                mAdapter.submitList(details)
+                mResultAdapter.submitList(details)
             })
         }
     }
@@ -59,32 +98,36 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     /**
      * 添加热词
      */
-    private fun addLabel(str: String) {
+    private fun addLabel(hotKeys: List<HotKeyData>) {
         val marginValue = ScreenUtils.dip2px(requireActivity(), 4f)
         val paddingValue = ScreenUtils.dip2px(requireActivity(), 6f)
+        keys_box.removeAllViews()
 
-        val lp = FlexboxLayout.LayoutParams(
-            FlexboxLayout.LayoutParams.WRAP_CONTENT,
-            FlexboxLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            leftMargin = marginValue
-            rightMargin = marginValue
-            topMargin = marginValue
-            bottomMargin = marginValue
-        }
-
-        val label = TextView(requireActivity()).apply {
-            text = str
-            textSize = 14f
-            setBackgroundResource(R.drawable.label_outline)
-            layoutParams = lp
-            setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
-            setOnClickListener {
-                search_content.setText(str)
-                searchArticles(str)
+        hotKeys.forEach {
+            val name = it.name
+            val lp = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                leftMargin = marginValue
+                rightMargin = marginValue
+                topMargin = marginValue
+                bottomMargin = marginValue
             }
-        }
 
-        keys_box.addView(label)
+            val label = TextView(requireActivity()).apply {
+                text = name
+                textSize = 14f
+                setBackgroundResource(R.drawable.label_outline)
+                layoutParams = lp
+                setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
+                setOnClickListener {
+                    search_content.setText(name)
+                    searchArticles(name)
+                }
+            }
+
+            keys_box.addView(label)
+        }
     }
 }

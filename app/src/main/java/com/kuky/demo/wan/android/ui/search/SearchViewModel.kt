@@ -17,12 +17,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
     val hotKeys = MutableLiveData<List<HotKeyData>>()
-    val needScroll = MutableLiveData<Boolean>()
     var result: LiveData<PagedList<ArticleDetail>>? = null
-
-    init {
-        needScroll.value = false
-    }
 
     fun fetchKeys() {
         viewModelScope.launch {

@@ -12,8 +12,8 @@ import com.kuky.demo.wan.android.entity.WxChapterData
  */
 
 class WxChapterAdapter(
-    private val mData: MutableList<WxChapterData>
-) : BaseRecyclerAdapter<RecyclerWxChapterBinding, WxChapterData>(mData) {
+    private val chapterList: MutableList<WxChapterData>
+) : BaseRecyclerAdapter<RecyclerWxChapterBinding, WxChapterData>(chapterList) {
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_wx_chapter
 
     override fun setVariable(
@@ -21,6 +21,6 @@ class WxChapterAdapter(
         position: Int,
         holder: BaseViewHolder<RecyclerWxChapterBinding>
     ) {
-        holder.binding.data = mData[position]
+        holder.binding.data = chapterList[position]
     }
 }

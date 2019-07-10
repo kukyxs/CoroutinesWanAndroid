@@ -13,6 +13,7 @@ import com.kuky.demo.wan.android.entity.BannerData
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
+    val hasLogin = MutableLiveData<Boolean>()
     val banners = MutableLiveData<List<BannerData>>()
 
     fun getBanners() {

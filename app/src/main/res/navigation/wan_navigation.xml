@@ -47,6 +47,10 @@
         android:id="@+id/searchFragment"
         android:name="com.kuky.demo.wan.android.ui.search.SearchFragment"
         tools:layout="@layout/fragment_search"
-        android:label="SearchFragment" />
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_websiteDetailFragment"
+            app:destination="@id/websiteDetailFragment" />
+    </fragment>
 
 </navigation>

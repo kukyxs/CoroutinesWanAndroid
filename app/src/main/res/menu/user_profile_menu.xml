@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/collection">
+    <item
+        android:id="@+id/user_collections"
+        android:title="@string/collection">
         <menu>
             <item
                 android:id="@+id/favourite_article"
@@ -14,7 +16,9 @@
         </menu>
     </item>
 
-    <item android:title="@string/info_about">
+    <item
+        android:id="@+id/app_about"
+        android:title="@string/info_about">
         <menu>
             <item
                 android:id="@+id/about"
