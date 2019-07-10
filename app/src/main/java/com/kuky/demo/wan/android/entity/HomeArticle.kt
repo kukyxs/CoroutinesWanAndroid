@@ -39,10 +39,15 @@ data class ArticleDetail(
     val publishTime: Long,
     val superChapterId: Int,
     val superChapterName: String,
-    val tags: List<Any>,
+    val tags: List<ArticleTag>,
     val title: String,
     val type: Int,
     val userId: Int,
     val visible: Int,
     val zan: Int
+)
+
+data class ArticleTag(
+    val name: String,
+    val url: String
 )

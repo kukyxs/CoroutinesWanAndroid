@@ -9,11 +9,7 @@
         android:id="@+id/splashFragment"
         android:name="com.kuky.demo.wan.android.ui.splash.SplashFragment"
         android:label="SplashFragment"
-        tools:layout="@layout/fragment_splash">
-        <action
-            android:id="@+id/action_splashFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_splash" />
 
     <fragment
         android:id="@+id/mainFragment"
@@ -23,11 +19,21 @@
         <action
             android:id="@+id/action_mainFragment_to_websiteDetailFragment"
             app:destination="@id/websiteDetailFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/websiteDetailFragment"
         android:name="com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment"
-        android:label="WebsiteDetailFragment" />
+        android:label="WebsiteDetailFragment"
+        tools:layout="@layout/fragment_wesite_detail" />
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.kuky.demo.wan.android.ui.search.SearchFragment"
+        tools:layout="@layout/fragment_search"
+        android:label="SearchFragment" />
 
 </navigation>

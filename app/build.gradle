@@ -14,6 +14,7 @@ final lifecycle_viewmodel_version = "2.2.0-alpha02"
 final navigation_version = "1.0.0"
 final room_version = "1.1.1"
 final paging_version = "1.0.1"
+final flexbox_version = "1.1.0"
 final glide_version = "4.9.0"
 final banner_version = "1.4.10"
 final fab_version = "1.6.4"
@@ -66,6 +67,7 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:$room_version"
 
     implementation "android.arch.paging:runtime:$paging_version"
+    implementation "com.google.android:flexbox:$flexbox_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"

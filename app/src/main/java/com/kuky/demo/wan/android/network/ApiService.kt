@@ -112,7 +112,7 @@ interface ApiService {
     // 搜索文章
     @POST("/article/query/{page}/json")
     @FormUrlEncoded
-    suspend fun queryArticle(@Path("page") page: Int, @Field("k") keyword: String): ResponseBody
+    suspend fun searchArticle(@Path("page") page: Int, @Field("k") keyword: String): HomeArticleEntity
 
     // 公众号列表
     @GET("/wxarticle/chapters/json")

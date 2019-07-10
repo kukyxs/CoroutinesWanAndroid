@@ -1,16 +1,13 @@
 package com.kuky.demo.wan.android.ui.wxchapter
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.data.wxchapter.WxChapterRepository
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
-import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.

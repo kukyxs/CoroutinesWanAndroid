@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
@@ -26,7 +27,7 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
     PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ProjectDetailData>) {
-        launch {
+        safeLaunch {
             val data = repository.loadProjects(0)
             data?.let {
                 callback.onResult(it, null, 1)
@@ -35,7 +36,7 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
-        launch {
+        safeLaunch {
             val data = repository.loadProjects(params.key)
             data?.let {
                 callback.onResult(it, params.key + 1)
@@ -44,7 +45,7 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
-        launch {
+        safeLaunch {
             val data = repository.loadProjects(params.key)
             data?.let {
                 callback.onResult(it, params.key - 1)

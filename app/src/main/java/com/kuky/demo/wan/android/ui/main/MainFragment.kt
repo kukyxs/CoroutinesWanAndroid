@@ -37,7 +37,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         )
     }
 
-    private val viewModel: MainViewModel by lazy {
+    private val mViewModel: MainViewModel by lazy {
         ViewModelProviders
             .of(this, MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
@@ -47,10 +47,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@MainFragment
-        mBinding.viewModel = viewModel
+        mBinding.viewModel = mViewModel
         mBinding.adapter = mAdapter
         mBinding.listener = OnBannerListener { position ->
-            viewModel.banners.value?.let {
+            mViewModel.banners.value?.let {
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
                     R.id.action_mainFragment_to_websiteDetailFragment,
@@ -62,7 +62,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         main_page.offscreenPageLimit = mAdapter.count
         main_page.setPageTransformer(true, GalleryTransformer())
 
-        viewModel.getBanners()
+        mViewModel.getBanners()
 
         user_profile_drawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
@@ -73,4 +73,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun openSettings(view: View) = drawer.openDrawer(GravityCompat.START)
+
+    fun searchArticles(view: View) = mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
 }

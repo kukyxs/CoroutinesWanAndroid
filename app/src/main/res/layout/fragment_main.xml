@@ -66,23 +66,13 @@
                 app:menu_openDirection="up">
 
                 <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="@{holder::openSettings}"
+                    android:onClick="@{holder::searchArticles}"
                     android:src="@drawable/ic_search_white_24dp"
                     app:fab_size="mini" />
 
                 <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/hot_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{holder::openSettings}"
-                    android:src="@drawable/ic_whatshot_white_24dp"
-                    app:fab_size="mini" />
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/user_profile_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="@{holder::openSettings}"

@@ -8,6 +8,7 @@
     <string name="about_us">关于我们</string>
     <string name="version_info">版本信息</string>
     <string name="login_out">退出登录</string>
+    <string name="search_hint">输入搜索关键词</string>
 
 
 </resources>
