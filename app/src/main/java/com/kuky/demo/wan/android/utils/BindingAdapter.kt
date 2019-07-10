@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
+import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.entity.BannerData
 import com.youth.banner.Banner
@@ -81,4 +82,17 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListene
 fun bindWebUrl(webView: WebView, url: String?) {
     if (url.isNullOrBlank()) return
     webView.loadUrl(url)
+}
+
+/**
+ * 绑定 RecyclerView 的点击事件
+ * @param listener 点击事件，[OnItemClickListener]
+ */
+@BindingAdapter("bind:listItemClick")
+fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
+    val adapter = recyclerView.adapter
+
+    if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
+
+    adapter.setOnItemListener(listener)
 }

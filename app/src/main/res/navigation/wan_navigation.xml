@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_wxChapterListFragment"
+            app:destination="@id/wxChapterListFragment" />
     </fragment>
 
     <fragment
@@ -29,6 +32,16 @@
         android:name="com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment"
         android:label="WebsiteDetailFragment"
         tools:layout="@layout/fragment_wesite_detail" />
+
+    <fragment
+        android:id="@+id/wxChapterListFragment"
+        android:name="com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment"
+        android:label="WxChapterListFragment"
+        tools:layout="@layout/fragment_wx_chapter_list">
+        <action
+            android:id="@+id/action_wxChapterListFragment_to_websiteDetailFragment"
+            app:destination="@id/websiteDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"

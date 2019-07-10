@@ -118,6 +118,13 @@ interface ApiService {
     @GET("/wxarticle/chapters/json")
     suspend fun wxCahpters(): WxChapterEntity
 
+    // 查看某个公众号历史数据
+    @GET("/wxarticle/list/{wxid}/{page}/json")
+    suspend fun wxChapterList(
+        @Path("wxid") wxid: Int,
+        @Path("page") page: Int
+    ): WxChapterList
+
     // 公众号历史数据，k 传空字符则全部记录
     @GET("/wxarticle/list/{wxid}/{page}/json")
     suspend fun chapterHistoryList(
