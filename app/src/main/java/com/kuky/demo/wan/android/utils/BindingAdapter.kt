@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.PagingItemClickListener
+import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.entity.BannerData
 import com.youth.banner.Banner
 import com.youth.banner.listener.OnBannerListener
@@ -62,10 +62,10 @@ class GlideLoader : ImageLoader() {
 
 /**
  * 绑定 paging adapter 点击事件
- * @param listener 点击事件，[PagingItemClickListener]
+ * @param listener 点击事件，[OnItemClickListener]
  */
 @BindingAdapter("bind:pageItemClick")
-fun bindPagingItemClick(recyclerView: RecyclerView, listener: PagingItemClickListener?) {
+fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
     val adapter = recyclerView.adapter
 
     if (adapter == null || adapter !is BasePagedListAdapter<*, *>) return

@@ -14,13 +14,13 @@ import androidx.recyclerview.widget.DiffUtil
 abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.ItemCallback<T>) :
     PagedListAdapter<T, BaseViewHolder<VB>>(callback) {
 
-    var itemListener: PagingItemClickListener? = null
+    var itemListener: OnItemClickListener? = null
 
     /**
      * 点击监听
      * @param listener
      */
-    fun setOnItemListener(listener: PagingItemClickListener?) {
+    fun setOnItemListener(listener: OnItemClickListener?) {
         this.itemListener = listener
     }
 
@@ -34,7 +34,7 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
         val data = getItem(position) ?: return
         setVariable(data, position, holder)
         holder.binding.executePendingBindings()
-        holder.binding.root.setOnClickListener { v -> itemListener?.onPagingItemClick(position, v) }
+        holder.binding.root.setOnClickListener { v -> itemListener?.onItemClick(position, v) }
     }
 
     /**

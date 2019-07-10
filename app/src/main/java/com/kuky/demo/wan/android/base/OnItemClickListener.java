@@ -6,6 +6,6 @@ import android.view.View;
  * @author kuky.
  * @description Paging 下的点击事件
  */
-public interface PagingItemClickListener {
-    void onPagingItemClick(int position, View view);
+public interface OnItemClickListener {
+    void onItemClick(int position, View view);
 }

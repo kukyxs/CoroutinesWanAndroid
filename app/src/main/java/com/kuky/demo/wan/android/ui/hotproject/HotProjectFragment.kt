@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.PagingItemClickListener
+import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
@@ -23,7 +23,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.adapter = mAdapter
-        mBinding.itemClick = PagingItemClickListener { position, _ ->
+        mBinding.itemClick = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let {
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
