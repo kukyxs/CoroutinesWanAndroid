@@ -63,6 +63,7 @@
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             bind:pageItemClick="@{listener}"
+            bind:listItemClick="@{listener}"
             tools:listitem="@layout/recycler_home_article" />
     </LinearLayout>
 </layout>

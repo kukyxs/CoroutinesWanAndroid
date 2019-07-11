@@ -19,6 +19,7 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.android.synthetic.main.fragment_search.*
 
@@ -30,9 +31,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
-//    private val mHistoryAdapter: HistoryAdapter by lazy {
-//        HistoryAdapter(SearchHistoryUtils.getHistoryKeywords(requireActivity()))
-//    }
+    private val mHistoryAdapter: HistoryAdapter by lazy {
+        HistoryAdapter(SearchHistoryUtils.fetchHistoryKeys(requireActivity()))
+    }
+
+    private var mResultMode = false
 
     private val mViewModel: SearchViewModel by lazy {
         ViewModelProviders
@@ -44,22 +47,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
 
-        // TODO(" 搜索记录待完成，navigation 每次返回会重新创建实例，导致混乱")
-//        mBinding.adapter = mHistoryAdapter
-//        mBinding.listener = OnItemClickListener { position, _ ->
-//            mHistoryAdapter.getItemData(position)?.let {
-//                searchArticles(it)
-//            }
-//        }
-
-        mBinding.adapter = mResultAdapter
+        mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
-            mResultAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_searchFragment_to_websiteDetailFragment,
-                    it.link
-                )
+            mHistoryAdapter.getItemData(position)?.let {
+                search_content.setText(it)
+                searchArticles(it)
             }
         }
 
@@ -81,6 +73,21 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
      * 搜索
      */
     private fun searchArticles(keyword: String) {
+        if (!mResultMode) {
+            mResultMode = true
+
+            mBinding.adapter = mResultAdapter
+            mBinding.listener = OnItemClickListener { position, _ ->
+                mResultAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_searchFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+        }
+
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
                 as InputMethodManager).hideSoftInputFromWindow(search_content.windowToken, 0)
 

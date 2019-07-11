@@ -14,7 +14,7 @@
 
         <fragment
             android:id="@+id/nav_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:name="com.kuky.demo.wan.android.base.CustomNavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="true"
