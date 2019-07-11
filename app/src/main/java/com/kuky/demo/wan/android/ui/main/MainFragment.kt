@@ -16,6 +16,7 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
+import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.projectcategory.ProjectCategoryFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
@@ -46,7 +47,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private val mViewModel: MainViewModel by lazy {
         ViewModelProviders
-            .of(this, MainModelFactory(MainRepository()))
+            .of(requireActivity(), MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
     }
 
@@ -83,9 +84,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 if (it) PreferencesHelper.fetchUserName(requireContext())
                 else requireContext().getString(R.string.click_to_login)
 
-            if (!it) header.user_name.setOnClickListener {
-
-            }
+            header.user_name.setOnClickListener(
+                if (it) null
+                else View.OnClickListener {
+                    LoginDialogFragment().show(childFragmentManager, "login")
+                }
+            )
         })
 
         Glide.with(requireContext())
@@ -100,10 +104,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 R.id.favourite_website -> {
                 }
                 R.id.about -> {
+
                 }
                 R.id.version -> {
+
                 }
                 R.id.login_out -> {
+                    mViewModel.loginout()
                 }
             }
             true

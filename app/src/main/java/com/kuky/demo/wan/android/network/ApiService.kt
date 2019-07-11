@@ -72,7 +72,7 @@ interface ApiService {
     ): WanUserEntity
 
     // 退出
-    @GET("/logout/json")
+    @GET("/user/logout/json")
     suspend fun loginout(): ResponseBody
 
     // ===============================>

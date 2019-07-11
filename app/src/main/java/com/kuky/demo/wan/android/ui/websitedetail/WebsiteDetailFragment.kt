@@ -3,16 +3,15 @@ package com.kuky.demo.wan.android.ui.websitedetail
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.annotation.IdRes
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentWesiteDetailBinding
 import kotlinx.android.synthetic.main.fragment_wesite_detail.*
+import kotlinx.android.synthetic.main.fragment_wesite_detail.view.*
 
 /**
  * @author kuky.
@@ -29,29 +28,38 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
         content.settings.apply {
             javaScriptEnabled = true
+            javaScriptCanOpenWindowsAutomatically = true
+            allowFileAccess = true
+            layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
             useWideViewPort = true
             loadWithOverviewMode = true
+            setSupportMultipleWindows(true)
+            setGeolocationEnabled(true)
+            setSupportZoom(true)
             builtInZoomControls = true
             displayZoomControls = false
+            setAppCacheEnabled(true)
+            domStorageEnabled = true
+            cacheMode = WebSettings.LOAD_NO_CACHE
         }
 
         content.apply {
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                    view?.let { loadUrl(url) }
+                    view?.loadUrl(url)
                     return true
                 }
 
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                    view?.let { loadUrl(request?.url.toString()) }
+                    view?.loadUrl(request?.url.toString())
                     return true
                 }
             }
 
-            webChromeClient = object : WebChromeClient(){
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    super.onProgressChanged(view, newProgress)
-                    mBinding.progress = newProgress
+            webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(web: WebView?, newProgress: Int) {
+                    super.onProgressChanged(web, newProgress)
+                    if (newProgress > 70) view.loading.isVisible = false
                 }
             }
         }

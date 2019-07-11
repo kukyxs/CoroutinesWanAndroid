@@ -4,10 +4,13 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.webkit.WebView
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.OnItemClickListener
@@ -15,6 +18,8 @@ import com.kuky.demo.wan.android.entity.BannerData
 import com.youth.banner.Banner
 import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.loader.ImageLoader
+import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.user_profile_header.view.*
 
 /**
  * @author kuky.
@@ -35,6 +40,17 @@ fun loadImage(view: ImageView, url: String, placeholder: Drawable, errorHolder: 
             RequestOptions.centerCropTransform()
                 .placeholder(placeholder).error(errorHolder)
         ).into(view)
+}
+
+/**
+ * 绑定本地圆形头像
+ */
+@BindingAdapter("bind:circleImg")
+fun bindCircleImage(imageView: ImageView, imgRes: Drawable) {
+    Glide.with(imageView.context)
+        .load(imgRes)
+        .apply(RequestOptions.bitmapTransform(RoundedCorners(360)))
+        .into(imageView)
 }
 
 /**

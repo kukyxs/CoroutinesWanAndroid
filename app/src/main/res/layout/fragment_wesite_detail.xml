@@ -8,11 +8,6 @@
             name="url"
             type="String" />
 
-        <variable
-            name="progress"
-            type="Integer" />
-
-        <import type="android.view.View" />
     </data>
 
     <FrameLayout
@@ -30,7 +25,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:alpha="0.4"
-            android:visibility="@{progress > 70 ? View.GONE : View.VISIBLE}" />
+            android:alpha="0.4" />
     </FrameLayout>
 </layout>

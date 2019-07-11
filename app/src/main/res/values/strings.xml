@@ -10,5 +10,10 @@
     <string name="login_out">退出登录</string>
     <string name="search_hint">输入搜索关键词</string>
     <string name="click_to_login">点此登录</string>
+    <string name="username_hint">输入用户名</string>
+    <string name="password_hint">输入密码</string>
+    <string name="repass_hint">再次输入密码</string>
+    <string name="login_text">登录</string>
+    <string name="register_text">注册</string>
 
 </resources>
