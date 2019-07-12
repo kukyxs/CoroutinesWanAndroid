@@ -29,7 +29,12 @@ object SearchHistoryUtils {
                 results.add(0, store)
                 results
             }
-            content.isNotBlank() -> arrayListOf(store, content)
+            content.isNotBlank() -> {
+                if (TextUtils.equals(store, content))
+                    arrayListOf(store)
+                else
+                    arrayListOf(store, content)
+            }
 
             else -> arrayListOf(store)
         }

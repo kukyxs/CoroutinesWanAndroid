@@ -95,11 +95,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         mViewModel.fetchResult(keyword)
 
-        mViewModel.result?.let {
-            it.observe(this, Observer<PagedList<ArticleDetail>> { details ->
-                mResultAdapter.submitList(details)
-            })
-        }
+        mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
+            mResultAdapter.submitList(it)
+        })
     }
 
     /**

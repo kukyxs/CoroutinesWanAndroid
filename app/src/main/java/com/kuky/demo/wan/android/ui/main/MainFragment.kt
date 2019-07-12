@@ -14,18 +14,20 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.MainRepository
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
+import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
-import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
-import com.kuky.demo.wan.android.ui.projectcategory.ProjectCategoryFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
+import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.user_profile_header.view.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -39,8 +41,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 HomeFragment(),
                 HotProjectFragment(),
                 KnowledgeSystemFragment(),
-                WxChapterFragment(),
-                ProjectCategoryFragment()
+                WxChapterFragment()
             )
         )
     }
@@ -93,7 +94,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         })
 
         Glide.with(requireContext())
-            .load(R.drawable.ic_avatar)
+            .load(R.drawable.ava_kuky)
             .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 80f))))
             .into(user_profile_drawer.getHeaderView(0).avatar)
 
@@ -107,7 +108,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 }
                 R.id.version -> {
-
+                    requireContext().alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
+                        yesButton { dialog -> dialog.dismiss() }
+                    }.show()
                 }
                 R.id.login_out -> {
                     mViewModel.loginout()

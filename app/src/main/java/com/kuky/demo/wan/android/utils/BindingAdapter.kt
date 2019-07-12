@@ -112,3 +112,11 @@ fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListe
 
     adapter.setOnItemListener(listener)
 }
+
+/**
+ * 绑定分割线
+ */
+@BindingAdapter("bind:divider")
+fun bindRecyclerDivider(recyclerView: RecyclerView, decor: RecyclerView.ItemDecoration) {
+    recyclerView.addItemDecoration(decor)
+}

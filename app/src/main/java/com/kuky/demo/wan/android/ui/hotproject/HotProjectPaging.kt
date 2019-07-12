@@ -5,9 +5,12 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
+import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
+import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
+import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
@@ -18,17 +21,21 @@ import kotlinx.coroutines.*
  */
 
 class HotProjectRepository {
-    suspend fun loadProjects(page: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.homeProject(page).data.datas
+    suspend fun loadProjectCategories() = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.projectCategory().data
+    }
+
+    suspend fun loadProjects(page: Int, pid: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.projectList(page, pid).data.datas
     }
 }
 
-class HotProjectDataSource(private val repository: HotProjectRepository) :
+class HotProjectDataSource(private val repository: HotProjectRepository, private val pid: Int) :
     PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ProjectDetailData>) {
         safeLaunch {
-            val data = repository.loadProjects(0)
+            val data = repository.loadProjects(0, pid)
             data?.let {
                 callback.onResult(it, null, 1)
             }
@@ -37,7 +44,7 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
         safeLaunch {
-            val data = repository.loadProjects(params.key)
+            val data = repository.loadProjects(params.key, pid)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
@@ -46,7 +53,7 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
         safeLaunch {
-            val data = repository.loadProjects(params.key)
+            val data = repository.loadProjects(params.key, pid)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
@@ -59,10 +66,10 @@ class HotProjectDataSource(private val repository: HotProjectRepository) :
     }
 }
 
-class HotProjectDataSourceFactory(private val repository: HotProjectRepository) :
+class HotProjectDataSourceFactory(private val repository: HotProjectRepository, private val pid: Int) :
     DataSource.Factory<Int, ProjectDetailData>() {
 
-    override fun create(): DataSource<Int, ProjectDetailData> = HotProjectDataSource(repository)
+    override fun create(): DataSource<Int, ProjectDetailData> = HotProjectDataSource(repository, pid)
 }
 
 
@@ -86,4 +93,51 @@ class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeP
                 oldItem == newItem
         }
     }
+}
+
+class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = null) :
+    BaseRecyclerAdapter<RecyclerProjectCategoryBinding, ProjectCategoryData>(categories) {
+
+    fun setCategories(categories: MutableList<ProjectCategoryData>?) {
+        val result = DiffUtil.calculateDiff(CategoryDiffCall(getAdapterData(), categories), true)
+        result.dispatchUpdatesTo(this)
+        if (mData == null) {
+            mData = arrayListOf()
+        }
+
+        mData?.clear()
+        mData?.addAll(categories ?: arrayListOf())
+    }
+
+    override fun getLayoutId(viewType: Int): Int = R.layout.recycler_project_category
+
+    override fun setVariable(
+        data: ProjectCategoryData,
+        position: Int,
+        holder: BaseViewHolder<RecyclerProjectCategoryBinding>
+    ) {
+        holder.binding.category = data
+    }
+}
+
+class CategoryDiffCall(
+    private val oldList: MutableList<ProjectCategoryData>?,
+    private val newList: MutableList<ProjectCategoryData>?
+) : DiffUtil.Callback() {
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        if (oldList.isNullOrEmpty() || newList.isNullOrEmpty()) false
+        else oldList[oldItemPosition].id == newList[newItemPosition].id
+
+    override fun getOldListSize(): Int = oldList?.size ?: 0
+
+    override fun getNewListSize(): Int = newList?.size ?: 0
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        if (oldList.isNullOrEmpty() || newList.isNullOrEmpty()) false
+        else {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            old.name == new.name
+        }
 }

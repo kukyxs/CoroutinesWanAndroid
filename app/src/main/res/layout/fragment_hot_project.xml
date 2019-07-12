@@ -13,6 +13,10 @@
         <variable
             name="itemClick"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="holder"
+            type="com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -20,18 +24,44 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="8dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/project_list"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:adapter="@{adapter}"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            bind:pageItemClick="@{itemClick}"
-            tools:itemCount="20"
-            tools:listitem="@layout/recycler_home_project" />
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/home_title_bg">
+
+                <TextView
+                    android:id="@+id/project_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_accent_24dp"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:onClick="@{holder::selectCategory}"
+                    android:padding="12dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorAccent"
+                    tools:text="完整项目" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/project_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adapter="@{adapter}"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:pageItemClick="@{itemClick}"
+                tools:itemCount="20"
+                tools:listitem="@layout/recycler_home_project" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

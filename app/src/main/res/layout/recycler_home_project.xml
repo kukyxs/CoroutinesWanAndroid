@@ -27,14 +27,6 @@
             android:padding="8dp">
 
             <ImageView
-                android:id="@+id/collected_state"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null"
-                android:src="@{project.collect ? @drawable/ic_favorite_red_24dp : @drawable/ic_favorite_grey_24dp}"
-                tools:src="@drawable/ic_favorite_red_24dp" />
-
-            <ImageView
                 android:id="@+id/env_image"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
@@ -52,7 +44,6 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
                 android:layout_toStartOf="@id/env_image"
-                android:layout_toEndOf="@id/collected_state"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="@{project.title}"

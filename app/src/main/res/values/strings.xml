@@ -15,5 +15,5 @@
     <string name="repass_hint">再次输入密码</string>
     <string name="login_text">登录</string>
     <string name="register_text">注册</string>
-
+    <string name="blog_articles">最新博文</string>
 </resources>

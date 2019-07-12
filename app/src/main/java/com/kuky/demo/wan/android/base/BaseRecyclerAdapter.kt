@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @author Taonce.
  * @description recycler adapter 基类
  */
-abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(val mData: MutableList<T>?) :
+abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableList<T>?) :
     RecyclerView.Adapter<BaseViewHolder<VB>>() {
 
     var itemListener: OnItemClickListener? = null
@@ -34,6 +34,8 @@ abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(val mData: MutableLi
     }
 
     override fun getItemCount(): Int = mData?.size ?: 0
+
+    fun getAdapterData(): MutableList<T>? = mData
 
     /**
      * 获取对应 position 下的数据
