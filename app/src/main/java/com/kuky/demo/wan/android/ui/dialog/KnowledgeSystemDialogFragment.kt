@@ -66,11 +66,12 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
         })
     }
 
-    fun setSelect(block: (dialog: KnowledgeSystemDialogFragment, first: String?, sec: String?, cid: Int) -> Unit): KnowledgeSystemDialogFragment {
+    fun setSelect(block: SystemClick): KnowledgeSystemDialogFragment {
         this.onClick = block
         return this
     }
 
-    private var onClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
+    private var onClick: SystemClick? = null
 }
+typealias SystemClick = (KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit
 
