@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="firstAdapter"
+            type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
+
+        <variable
+            name="secAdapter"
+            type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
+
+        <variable
+            name="firstItemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="secItemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/dialog_bg">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/system_first_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adapter="@{firstAdapter}"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:listItemClick="@{firstItemClick}"
+            tools:itemCount="20"
+            tools:listitem="@layout/recycler_knowledge_system" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/system_sec_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adapter="@{secAdapter}"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:listItemClick="@{secItemClick}"
+            tools:itemCount="20"
+            tools:listitem="@layout/recycler_knowledge_system" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

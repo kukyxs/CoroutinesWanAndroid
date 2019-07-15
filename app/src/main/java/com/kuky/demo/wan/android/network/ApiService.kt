@@ -45,7 +45,7 @@ interface ApiService {
      * 返回数据同首页文章列表
      */
     @GET("/article/list/{page}/json")
-    suspend fun articleInCategory(@Path("page") page: Int, @Query("cid") cid: Int): HomeArticleEntity
+    suspend fun articleInCategory(@Path("page") page: Int, @Query("cid") cid: Int): WxChapterList
 
     // 项目分类
     @GET("/project/tree/json")

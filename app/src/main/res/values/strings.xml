@@ -16,4 +16,5 @@
     <string name="login_text">登录</string>
     <string name="register_text">注册</string>
     <string name="blog_articles">最新博文</string>
+    <string name="wx_chapter">公众号</string>
 </resources>
