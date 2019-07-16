@@ -1,0 +1,70 @@
+package com.kuky.demo.wan.android.ui.main
+
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.CODE_FAILED
+import com.kuky.demo.wan.android.base.CODE_SUCCEED
+import com.kuky.demo.wan.android.base.ResultBack
+import com.kuky.demo.wan.android.data.PreferencesHelper
+import com.kuky.demo.wan.android.entity.WanUserEntity
+import com.kuky.demo.wan.android.network.RetrofitManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import retrofit2.Response
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
+/**
+ * @author kuky.
+ * @description
+ */
+class MainRepository {
+
+    suspend fun getHomeBanners() = withContext(Dispatchers.IO) {
+        val banners = RetrofitManager.apiService.homeBanner().data
+        // need cache
+        banners
+    }
+
+    suspend fun login(username: String, password: String) = withContext(Dispatchers.IO) {
+        val response = RetrofitManager.apiService.login(username, password)
+        handleUserResponse(response)
+    }
+
+    suspend fun register(username: String, password: String, repass: String) = withContext(Dispatchers.IO) {
+        val response = RetrofitManager.apiService.register(username, password, repass)
+        handleUserResponse(response)
+    }
+
+    private suspend fun handleUserResponse(response: Response<WanUserEntity>): ResultBack {
+        val result = response.body()
+
+        return suspendCoroutine { continuation ->
+            if (result == null) continuation.resumeWithException(RuntimeException("null response"))
+
+            if (result!!.errorCode == 0) {
+                PreferencesHelper.saveCookie(
+                    WanApplication.instance, response.headers()["Set-Cookie"] ?: ""
+                )
+                PreferencesHelper.saveUserId(WanApplication.instance, result.data.id)
+                PreferencesHelper.saveUserName(
+                    WanApplication.instance, result.data.nickname
+                )
+                continuation.resume(ResultBack(CODE_SUCCEED, ""))
+            } else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+        }
+    }
+
+    suspend fun loginout() = withContext(Dispatchers.IO) {
+        val response = RetrofitManager.apiService.loginout().string()
+        val errorCode = JSONObject(response).optInt("errorCode")
+
+        if (errorCode == 0) {
+            PreferencesHelper.saveUserId(WanApplication.instance, 0)
+            PreferencesHelper.saveUserName(WanApplication.instance, "")
+            PreferencesHelper.saveCookie(WanApplication.instance, "")
+            true
+        } else false
+    }
+}

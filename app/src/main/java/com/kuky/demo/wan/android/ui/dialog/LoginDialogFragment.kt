@@ -5,7 +5,7 @@ import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.data.MainRepository
+import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.databinding.DialogLoginBinding
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainViewModel
@@ -37,13 +37,13 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
         if (username.isBlank() || password.isBlank()) {
             requireContext().toast("请输入完整")
         } else {
-            mViewModel.login(username, password)
-
-            // TODO("登录提示待完成")
-//            mViewModel.hasLogin.observe(this, Observer<Boolean> {
-//                requireContext().toast(if (it) "登录成功" else "登录出错")
-//            })
-            dialog?.dismiss()
+            mViewModel.login(username, password, {
+                requireContext().toast("登录成功")
+                dialog?.dismiss()
+            }, { message ->
+                requireContext().toast(message)
+                dialog?.dismiss()
+            })
         }
     }
 

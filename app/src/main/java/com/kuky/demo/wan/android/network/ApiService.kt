@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.network
 
 import com.kuky.demo.wan.android.entity.*
 import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.*
 
 /**
@@ -61,7 +62,7 @@ interface ApiService {
     // 登录
     @POST("/user/login")
     @FormUrlEncoded
-    suspend fun login(@Field("username") username: String, @Field("password") password: String): WanUserEntity
+    suspend fun login(@Field("username") username: String, @Field("password") password: String): Response<WanUserEntity>
 
     // 注册
     @POST("/user/register")
@@ -69,7 +70,7 @@ interface ApiService {
     suspend fun register(
         @Field("username") username: String, @Field("password") password: String,
         @Field("repassword") repassword: String
-    ): WanUserEntity
+    ): Response<WanUserEntity>
 
     // 退出
     @GET("/user/logout/json")

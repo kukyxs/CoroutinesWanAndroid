@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.kuky.demo.wan.android.data.MainRepository
 
 /**
  * @author kuky.

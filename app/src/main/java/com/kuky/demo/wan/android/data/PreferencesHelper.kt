@@ -10,6 +10,7 @@ import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 object PreferencesHelper {
     private const val USER_KEY_ID = "wan.user.id"
     private const val USER_KEY_NAME = "wan.user.name"
+    private const val USER_KEY_COOKIE = "wan.user.cookie"
 
     fun saveUserId(context: Context, id: Int) =
         SharePreferencesUtils.saveInteger(context, USER_KEY_ID, id)
@@ -22,4 +23,10 @@ object PreferencesHelper {
 
     fun fetchUserName(context: Context) =
         SharePreferencesUtils.getString(context, USER_KEY_NAME)
+
+    fun saveCookie(context: Context, cookie: String) =
+        SharePreferencesUtils.saveString(context, USER_KEY_COOKIE, cookie)
+
+    fun fetchCookie(context: Context) =
+        SharePreferencesUtils.getString(context, USER_KEY_COOKIE)
 }

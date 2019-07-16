@@ -3,8 +3,8 @@ package com.kuky.demo.wan.android.ui.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
-import com.kuky.demo.wan.android.data.MainRepository
 import com.kuky.demo.wan.android.entity.BannerData
 
 /**
@@ -21,15 +21,33 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         }
     }
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String, success: () -> Unit, fail: (message: String) -> Unit) {
         viewModelScope.safeLaunch {
-            hasLogin.value = repository.login(username, password)
+            val result = repository.login(username, password)
+
+            if (result.code == CODE_SUCCEED) {
+                success()
+                hasLogin.value = true
+            } else {
+                fail(result.message)
+                hasLogin.value = false
+            }
         }
     }
 
-    fun register(username: String, password: String, repass: String) {
+    fun register(
+        username: String, password: String, repass: String,
+        success: () -> Unit, fail: (message: String) -> Unit
+    ) {
         viewModelScope.safeLaunch {
-            hasLogin.value = repository.register(username, password, repass)
+            val result = repository.register(username, password, repass)
+            if (result.code == CODE_SUCCEED) {
+                success()
+                hasLogin.value = true
+            } else {
+                fail(result.message)
+                hasLogin.value = false
+            }
         }
     }
 

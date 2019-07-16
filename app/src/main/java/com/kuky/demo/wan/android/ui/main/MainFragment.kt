@@ -11,7 +11,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
-import com.kuky.demo.wan.android.data.MainRepository
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
