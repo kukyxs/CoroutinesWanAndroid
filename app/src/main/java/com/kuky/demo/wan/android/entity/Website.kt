@@ -18,3 +18,9 @@ data class WebsiteData(
     val order: Int,
     val visible: Int
 )
+
+data class AddWebsiteData(
+    val `data`: WebsiteData,
+    val errorCode: Int,
+    val errorMsg: String
+)

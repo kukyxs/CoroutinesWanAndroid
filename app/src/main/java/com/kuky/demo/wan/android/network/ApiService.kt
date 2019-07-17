@@ -104,7 +104,7 @@ interface ApiService {
     suspend fun addWebsite(
         @Field("name") name: String, @Field("link") link: String,
         @Header("Cookie") cookie: String
-    ): ResponseBody
+    ): Response<AddWebsiteData>
 
     // 编辑收藏网址
     @POST("/lg/collect/updatetool/json")

@@ -17,4 +17,8 @@
     <string name="register_text">注册</string>
     <string name="blog_articles">最新博文</string>
     <string name="wx_chapter">公众号</string>
+    <string name="collected_website_name">请输入网址名称</string>
+    <string name="collected_website_link">请输入网址链接</string>
+    <string name="cancel">取消</string>
+    <string name="ensure">确定</string>
 </resources>
