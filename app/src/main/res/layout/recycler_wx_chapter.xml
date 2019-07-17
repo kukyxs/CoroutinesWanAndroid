@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="10dp"
         android:text="@{data.name}"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
         tools:text="码个蛋" />
 </layout>
