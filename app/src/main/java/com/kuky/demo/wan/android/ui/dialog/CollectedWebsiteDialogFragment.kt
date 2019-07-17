@@ -53,12 +53,13 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
     fun ensure(view: View) {
         viewModel.addWebsites(collected_name.text.toString(), collected_link.text.toString(), {
             viewModel.fetchWebSitesData()
-            requireActivity().toast("添加成功")
-            dismiss()
-        }, {
-            requireActivity().toast(it)
-            dismiss()
-        })
+            toastAndDismiss("添加成功")
+        }, { toastAndDismiss(it) })
+    }
+
+    private fun toastAndDismiss(msg: String) {
+        requireActivity().toast(msg)
+        dismiss()
     }
 }
 

@@ -29,12 +29,12 @@ class CollectedWebsitesRepository {
 
     suspend fun addWebsite(name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
         val responseBody = RetrofitManager.apiService.addWebsite(name, link, getCookie()).body()
+        //TODO 泛型问题
         suspendCoroutine<ResultBack> { con ->
-            if (responseBody == null) con.resumeWithException(RuntimeException("null response"))
             responseBody?.let {
                 if (responseBody.errorCode == 0) con.resume(ResultBack(CODE_SUCCEED, ""))
                 else con.resume(ResultBack(CODE_FAILED, responseBody.errorMsg))
-            }
+            } ?: con.resumeWithException(RuntimeException("Add Website Response is Null"))
         }
     }
 }

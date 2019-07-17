@@ -38,7 +38,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }
         }
         viewModel.fetchWebSitesData()
-        viewModel.mWebSitesData.observe(this, Observer {
+        viewModel.mWebsitesData.observe(this, Observer {
             mAdapter.update(it as MutableList<WebsiteData>?)
         })
     }

@@ -15,11 +15,11 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) : ViewModel() {
-    val mWebSitesData = MutableLiveData<List<WebsiteData>>()
+    val mWebsitesData = MutableLiveData<List<WebsiteData>>()
 
     fun fetchWebSitesData() {
         viewModelScope.safeLaunch {
-            mWebSitesData.value = repo.getCollectedWebsites().data
+            mWebsitesData.value = repo.getCollectedWebsites().data
         }
     }
 
