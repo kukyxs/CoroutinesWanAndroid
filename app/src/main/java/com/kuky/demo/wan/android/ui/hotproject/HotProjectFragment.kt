@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.ui.hotproject
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders

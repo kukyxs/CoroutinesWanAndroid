@@ -19,7 +19,6 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.android.synthetic.main.fragment_search.*
 

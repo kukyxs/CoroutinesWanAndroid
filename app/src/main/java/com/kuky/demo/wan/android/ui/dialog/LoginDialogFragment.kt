@@ -5,9 +5,9 @@ import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.databinding.DialogLoginBinding
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
+import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import kotlinx.android.synthetic.main.dialog_login.*
 import org.jetbrains.anko.toast

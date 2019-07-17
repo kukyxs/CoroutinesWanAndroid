@@ -71,13 +71,13 @@ object SharePreferencesUtils {
     }
 
     @JvmStatic
-    fun saveStringSet(context: Context, key: String, value: Set<String>) {
+    fun saveStringSet(context: Context, key: String, value: MutableSet<String>?) {
         val sp = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         sp.edit { putStringSet(key, value) }
     }
 
     @JvmStatic
-    fun getStringSet(context: Context, key: String): Set<String>? {
+    fun getStringSet(context: Context, key: String): MutableSet<String>? {
         val sp = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         return sp.getStringSet(key, null)
     }

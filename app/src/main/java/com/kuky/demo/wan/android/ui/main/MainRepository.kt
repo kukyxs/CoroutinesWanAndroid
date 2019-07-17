@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.main
 
+import android.text.TextUtils
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.CODE_FAILED
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
@@ -44,9 +45,17 @@ class MainRepository {
             if (result == null) continuation.resumeWithException(RuntimeException("null response"))
 
             if (result!!.errorCode == 0) {
-                PreferencesHelper.saveCookie(
-                    WanApplication.instance, response.headers()["Set-Cookie"] ?: ""
-                )
+                val cookies = StringBuilder()
+
+                response.headers()
+                    .filter { TextUtils.equals(it.first, "Set-Cookie") }
+                    .forEach { cookies.append(it.second).append(";") }
+
+                val strCookie =
+                    if (cookies.endsWith(";")) cookies.substring(0, cookies.length - 1)
+                    else cookies.toString()
+
+                PreferencesHelper.saveCookie(WanApplication.instance, strCookie)
                 PreferencesHelper.saveUserId(WanApplication.instance, result.data.id)
                 PreferencesHelper.saveUserName(
                     WanApplication.instance, result.data.nickname

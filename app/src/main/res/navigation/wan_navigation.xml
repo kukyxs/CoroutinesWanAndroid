@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_mainFragment_to_wxChapterListFragment"
             app:destination="@id/wxChapterListFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_collectionFragment"
+            app:destination="@id/collectionFragment" />
     </fragment>
 
     <fragment
@@ -46,10 +49,20 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.kuky.demo.wan.android.ui.search.SearchFragment"
-        tools:layout="@layout/fragment_search"
-        android:label="SearchFragment" >
+        android:label="SearchFragment"
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_websiteDetailFragment"
+            app:destination="@id/websiteDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/collectionFragment"
+        android:name="com.kuky.demo.wan.android.ui.collection.CollectionFragment"
+        android:label="CollectionFragment"
+        tools:layout="@layout/fragment_collection">
+        <action
+            android:id="@+id/action_collectionFragment_to_websiteDetailFragment"
             app:destination="@id/websiteDetailFragment" />
     </fragment>
 

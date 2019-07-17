@@ -20,7 +20,8 @@ interface ApiService {
     @GET("/banner/json")
     suspend fun homeBanner(): HomeBannerEntity
 
-    // 首页第二个 Banner
+    // 首页第二个 Banner.同项目分类功能重复
+    @Deprecated("同项目分类功能重复，勿调用")
     @GET("/article/listproject/{page}/json")
     suspend fun homeProject(@Path("page") page: Int): ProjectDetailEntity
 
@@ -79,35 +80,44 @@ interface ApiService {
     // ===============================>
     // 收藏文章列表
     @GET("/lg/collect/list/{page}/json")
-    suspend fun userCollectedArticles(@Path("page") page: Int): UserCollectEntity
+    suspend fun userCollectedArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): UserCollectEntity
 
     // 取消收藏，文章列表
     @POST("/lg/uncollect_originId/{articleId}/json")
-    suspend fun uncollectArticle(@Path("articleId") articleId: Int): ResponseBody
+    suspend fun uncollectArticle(@Path("articleId") articleId: Int, @Header("Cookie") cookie: String): ResponseBody
 
     // 取消收藏，收藏列表
     @POST("/lg/uncollect/{articleId}/json")
     @FormUrlEncoded
-    suspend fun uncollectCollection(@Path("articleId") articleId: Int, @Field("originId") originId: Int): ResponseBody
+    suspend fun uncollectCollection(
+        @Path("articleId") articleId: Int, @Field("originId") originId: Int,
+        @Header("Cookie") cookie: String
+    ): ResponseBody
 
     // 收藏网站列表
     @GET("/lg/collect/usertools/json")
-    suspend fun collectWebsiteList(): WebsiteEntity
+    suspend fun collectWebsiteList(@Header("Cookie") cookie: String): WebsiteEntity
 
     // 收藏网站
     @POST("/lg/collect/addtool/json")
     @FormUrlEncoded
-    suspend fun addWebsite(@Field("name") name: String, @Field("link") link: String): ResponseBody
+    suspend fun addWebsite(
+        @Field("name") name: String, @Field("link") link: String,
+        @Header("Cookie") cookie: String
+    ): ResponseBody
 
     // 编辑收藏网址
     @POST("/lg/collect/updatetool/json")
     @FormUrlEncoded
-    suspend fun editWebsite(@Field("id") id: Int, @Field("name") name: String, @Field("link") link: String): ResponseBody
+    suspend fun editWebsite(
+        @Field("id") id: Int, @Field("name") name: String,
+        @Field("link") link: String, @Header("Cookie") cookie: String
+    ): ResponseBody
 
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
     @FormUrlEncoded
-    suspend fun deleteWebsite(@Field("id") id: Int): ResponseBody
+    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): ResponseBody
 
     // ===============================>
     // 搜索文章

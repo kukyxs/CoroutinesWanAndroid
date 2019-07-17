@@ -13,6 +13,7 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
+import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
@@ -26,6 +27,7 @@ import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.user_profile_header.view.*
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
 
 /**
@@ -100,19 +102,36 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         user_profile_drawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> {
+                    CollectionFragment.viewCollections(
+                        mNavController,
+                        R.id.action_mainFragment_to_collectionFragment,
+                        0
+                    )
                 }
+
                 R.id.favourite_website -> {
+                    CollectionFragment.viewCollections(
+                        mNavController,
+                        R.id.action_mainFragment_to_collectionFragment,
+                        1
+                    )
                 }
+
                 R.id.about -> {
 
                 }
+
                 R.id.version -> {
                     requireContext().alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
                         yesButton { dialog -> dialog.dismiss() }
                     }.show()
                 }
+
                 R.id.login_out -> {
-                    mViewModel.loginout()
+                    requireContext().alert("是否退出登录") {
+                        yesButton { mViewModel.loginout() }
+                        noButton { }
+                    }.show()
                 }
             }
             true
