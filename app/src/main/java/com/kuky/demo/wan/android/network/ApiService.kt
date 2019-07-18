@@ -117,7 +117,7 @@ interface ApiService {
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
     @FormUrlEncoded
-    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): ResponseBody
+    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): DeleteWebsiteData
 
     // ===============================>
     // 搜索文章

@@ -34,4 +34,14 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
             }
         }
     }
+
+    fun deleteWebsite(id: Int) {
+        viewModelScope.safeLaunch {
+            val result = repo.deleteWebsite(id)
+            if (result.errorCode == 0) {
+                WanApplication.instance.toast("删除成功")
+                fetchWebSitesData()
+            } else WanApplication.instance.toast(result.errorMsg)
+        }
+    }
 }

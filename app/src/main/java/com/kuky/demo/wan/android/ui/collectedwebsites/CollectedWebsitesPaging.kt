@@ -37,6 +37,10 @@ class CollectedWebsitesRepository {
             } ?: con.resumeWithException(RuntimeException("Add Website Response is Null"))
         }
     }
+
+    suspend fun deleteWebsite(id: Int) = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.deleteWebsite(id, getCookie())
+    }
 }
 
 class CollectedWebsitesAdapter :

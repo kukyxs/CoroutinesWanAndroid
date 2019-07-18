@@ -15,6 +15,10 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
+            name="longListener"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
             name="fragment"
             type="com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment" />
     </data>
@@ -30,6 +34,7 @@
             android:adapter="@{adapter}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             bind:listItemClick="@{listener}"
+            bind:listItemLongClick="@{longListener}"
             tools:itemCount="20"
             tools:listitem="@layout/recycler_collected_websites" />
 

@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.base.BasePagedListAdapter
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.entity.BannerData
 import com.youth.banner.Banner
 import com.youth.banner.listener.OnBannerListener
@@ -87,6 +88,19 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListene
 }
 
 /**
+ * 绑定 paging adapter 长按事件
+ * @param listener 点击事件，[OnItemLongClickListener]
+ */
+@BindingAdapter("bind:pageItemLongClick")
+fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
+    val adapter = recyclerView.adapter
+
+    if (adapter == null || adapter !is BasePagedListAdapter<*, *>) return
+
+    adapter.setOnItemLongListener(listener)
+}
+
+/**
  * 绑定 webview 的 url
  * @param url
  */
@@ -115,4 +129,17 @@ fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListe
 @BindingAdapter("bind:divider")
 fun bindRecyclerDivider(recyclerView: RecyclerView, decor: RecyclerView.ItemDecoration) {
     recyclerView.addItemDecoration(decor)
+}
+
+/**
+ * 绑定 RecyclerView 的长按事件
+ * @param listener 点击事件，[OnItemLongClickListener]
+ */
+@BindingAdapter("bind:listItemLongClick")
+fun bindRecyclerItemLOngClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
+    val adapter = recyclerView.adapter
+
+    if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
+
+    adapter.setOnItemLongListener(listener)
 }

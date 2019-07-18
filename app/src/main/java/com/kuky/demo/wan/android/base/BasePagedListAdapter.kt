@@ -15,6 +15,7 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
     PagedListAdapter<T, BaseViewHolder<VB>>(callback) {
 
     var itemListener: OnItemClickListener? = null
+    var itemLongListener: OnItemLongClickListener? = null
 
     /**
      * 点击监听
@@ -22,6 +23,10 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
      */
     fun setOnItemListener(listener: OnItemClickListener?) {
         this.itemListener = listener
+    }
+
+    fun setOnItemLongListener(listener: OnItemLongClickListener?) {
+        this.itemLongListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
@@ -35,6 +40,11 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
         setVariable(data, position, holder)
         holder.binding.executePendingBindings()
         holder.binding.root.setOnClickListener { v -> itemListener?.onItemClick(position, v) }
+        holder.binding.root.setOnLongClickListener { v ->
+            return@setOnLongClickListener itemLongListener?.onItemLongClick(
+                position, v
+            ) ?: false
+        }
     }
 
     /**

@@ -11,6 +11,9 @@ import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -36,6 +39,15 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                     it.link
                 )
             }
+        }
+        mBinding.setLongListener { position, _ ->
+            mAdapter.getItemData(position)?.let { data ->
+                requireActivity().alert("是否删除本条收藏？") {
+                    yesButton { viewModel.deleteWebsite(data.id) }
+                    noButton { it.dismiss() }
+                }.show()
+            }
+            true
         }
         viewModel.fetchWebSitesData()
         viewModel.mWebsitesData.observe(this, Observer {

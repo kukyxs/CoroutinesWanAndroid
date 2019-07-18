@@ -22,16 +22,31 @@
             android:paddingStart="30dp"
             android:paddingTop="10dp"
             android:paddingEnd="30dp"
+            android:singleLine="true"
+            android:text='@{data.name}'
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="WanAndroid" />
+
+        <TextView
+            android:id="@+id/website_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/website_name"
+            android:gravity="center_vertical"
+            android:paddingStart="30dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="30dp"
             android:paddingBottom="10dp"
             android:singleLine="true"
-            android:text="@{data.name}"
-            android:textSize="16sp"
+            android:text='@{data.link}'
+            android:textSize="14sp"
             tools:text="WanAndroid" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_below="@id/website_name"
+            android:layout_below="@id/website_link"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:background="@android:color/darker_gray" />
