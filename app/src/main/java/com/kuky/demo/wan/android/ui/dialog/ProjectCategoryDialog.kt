@@ -60,7 +60,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
         mBinding.adapter = mAdapter
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         mBinding.listener = OnItemClickListener { position, _ ->
-            onSelectedListener?.invoke(dialog, mAdapter.getItemData(position)!!)
+            onSelectedListener?.invoke(dialog!!, mAdapter.getItemData(position)!!)
         }
 
         mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> {

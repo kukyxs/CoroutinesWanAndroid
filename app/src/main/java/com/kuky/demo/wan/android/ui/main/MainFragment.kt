@@ -1,6 +1,8 @@
 package com.kuky.demo.wan.android.ui.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
@@ -55,6 +57,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_main
 
+    @SuppressLint("WrongConstant")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@MainFragment
         mBinding.viewModel = mViewModel
@@ -107,7 +110,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         0
                     )
-                    drawer.closeDrawers()
+                    drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.favourite_website -> {
@@ -116,7 +119,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         1
                     )
-                    drawer.closeDrawers()
+                    drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.about -> {
