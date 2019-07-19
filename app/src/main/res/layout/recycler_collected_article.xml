@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -32,7 +33,7 @@
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@null"
                 bind:error="@{@drawable/ic_broken_image}"
-                bind:imgUrl="@{project.envelopePic}"
+                bind:imgUrl="@{data.envelopePic}"
                 bind:placeHolder="@{@drawable/ic_place_holder}"
                 tools:src="@drawable/ic_place_holder" />
 

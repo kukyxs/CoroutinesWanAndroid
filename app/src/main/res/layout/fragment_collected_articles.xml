@@ -6,14 +6,28 @@
 
     <data>
 
+        <variable
+            name="listener"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="longListener"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/collected_article_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:adapter="@{adapter}"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        bind:pageItemClick="@{listener}"
+        bind:pageItemLongClick="@{longListener}"
         tools:itemCount="20"
         tools:listitem="@layout/recycler_collected_article" />
 
