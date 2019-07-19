@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.kuky.demo.wan.android.entity.UserCollectDetail" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:orientation="vertical"
+        app:cardCornerRadius="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/env_image"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@null"
+                bind:error="@{@drawable/ic_broken_image}"
+                bind:imgUrl="@{project.envelopePic}"
+                bind:placeHolder="@{@drawable/ic_place_holder}"
+                tools:src="@drawable/ic_place_holder" />
+
+            <TextView
+                android:id="@+id/project_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_toStartOf="@id/env_image"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@{data.title}"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="WanAndroid ---- Kotlin版" />
+
+            <TextView
+                android:id="@+id/project_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/project_title"
+                android:layout_alignStart="@id/project_title"
+                android:layout_alignEnd="@id/project_title"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:lineSpacingExtra="4dp"
+                android:maxLines="3"
+                android:minLines="2"
+                android:text="@{data.desc}"
+                android:textSize="13sp"
+                tools:text="使用Kotlin语言开发的WanAndroid客户端，使用了AndroidX和RxJava、Retrofit、OkHttp等开元技术。" />
+
+            <TextView
+                android:id="@+id/author_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/project_desc"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text='@{data.author + "\t\t" + data.niceDate}'
+                android:textSize="12sp"
+                tools:text="Taonce\t\t2019-07-10" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
