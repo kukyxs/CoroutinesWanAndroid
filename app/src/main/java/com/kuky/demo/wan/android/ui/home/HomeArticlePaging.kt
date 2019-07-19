@@ -23,6 +23,10 @@ class HomeArticleRepository {
     suspend fun loadPageData(page: Int): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.homeArticles(page).data.datas
     }
+
+    suspend fun loadTops(): List<ArticleDetail>? = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.topArticle().data
+    }
 }
 
 class HomeArticleDataSource(private val repository: HomeArticleRepository) :
@@ -30,10 +34,14 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) {
         safeLaunch {
+            val result = ArrayList<ArticleDetail>()
+            val tops = repository.loadTops()
             val data = repository.loadPageData(0)
-            data?.let {
-                callback.onResult(data, null, 1)
-            }
+
+            result.addAll(tops ?: arrayListOf())
+            result.addAll(data ?: arrayListOf())
+
+            callback.onResult(result, null, 1)
         }
     }
 
@@ -41,7 +49,7 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
         safeLaunch {
             val data = repository.loadPageData(params.key)
             data?.let {
-                callback.onResult(data, params.key + 1)
+                callback.onResult(it, params.key + 1)
             }
         }
     }
@@ -50,7 +58,7 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
         safeLaunch {
             val data = repository.loadPageData(params.key)
             data?.let {
-                callback.onResult(data, params.key - 1)
+                callback.onResult(it, params.key - 1)
             }
         }
     }

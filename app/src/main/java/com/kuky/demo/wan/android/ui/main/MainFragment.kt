@@ -26,7 +26,7 @@ import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.android.synthetic.main.user_profile_header.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -74,16 +74,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         mViewModel.hasLogin.value = PreferencesHelper.hasLogin(requireContext())
 
-        main_page.offscreenPageLimit = mAdapter.count
-        main_page.setPageTransformer(true, GalleryTransformer())
+        view.main_page.offscreenPageLimit = mAdapter.count
+        view.main_page.setPageTransformer(true, GalleryTransformer())
 
         mViewModel.getBanners()
 
         mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            val header = user_profile_drawer.getHeaderView(0)
+            val header = view.user_profile_drawer.getHeaderView(0)
 
-            user_profile_drawer.menu.findItem(R.id.user_collections).isVisible = it
-            user_profile_drawer.menu.findItem(R.id.login_out).isVisible = it
+            view.user_profile_drawer.menu.findItem(R.id.user_collections).isVisible = it
+            view.user_profile_drawer.menu.findItem(R.id.login_out).isVisible = it
 
             header.user_name.text =
                 if (it) PreferencesHelper.fetchUserName(requireContext())
@@ -100,9 +100,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         Glide.with(requireContext())
             .load(R.drawable.ava_kuky)
             .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 80f))))
-            .into(user_profile_drawer.getHeaderView(0).avatar)
+            .into(view.user_profile_drawer.getHeaderView(0).avatar)
 
-        user_profile_drawer.setNavigationItemSelectedListener { menu ->
+        view.user_profile_drawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> {
                     CollectionFragment.viewCollections(
@@ -110,7 +110,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         0
                     )
-                    drawer.closeDrawer(Gravity.START)
+                    view.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.favourite_website -> {
@@ -119,7 +119,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         1
                     )
-                    drawer.closeDrawer(Gravity.START)
+                    view.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.about -> {
@@ -146,12 +146,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun openSettings(view: View) {
-        float_menu.close(true)
-        drawer.openDrawer(GravityCompat.START)
+        mBinding.root.float_menu.close(true)
+        mBinding.root.drawer.openDrawer(GravityCompat.START)
     }
 
     fun searchArticles(view: View) {
-        float_menu.close(false)
+        mBinding.root.float_menu.close(false)
         mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
     }
 }

@@ -136,8 +136,6 @@ class CategoryDiffCall(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         if (oldList.isNullOrEmpty() || newList.isNullOrEmpty()) false
         else {
-            val old = oldList[oldItemPosition]
-            val new = newList[newItemPosition]
-            old.name == new.name
+            oldList[oldItemPosition].name == newList[newItemPosition].name
         }
 }

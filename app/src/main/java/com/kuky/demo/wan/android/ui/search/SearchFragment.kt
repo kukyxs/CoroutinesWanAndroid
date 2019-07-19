@@ -20,7 +20,8 @@ import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.utils.ScreenUtils
-import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_search.search_content
+import kotlinx.android.synthetic.main.fragment_search.view.*
 
 /**
  * @author kuky.
@@ -60,7 +61,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         mViewModel.fetchKeys()
 
-        search_content.setOnEditorActionListener { v, actionId, _ ->
+        view.search_content.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
                 searchArticles(v.text.toString())
             }
@@ -105,7 +106,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private fun addLabel(hotKeys: List<HotKeyData>) {
         val marginValue = ScreenUtils.dip2px(requireActivity(), 4f)
         val paddingValue = ScreenUtils.dip2px(requireActivity(), 6f)
-        keys_box.removeAllViews()
+        mBinding.root.keys_box.removeAllViews()
 
         hotKeys.forEach {
             val name = it.name
@@ -131,7 +132,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 }
             }
 
-            keys_box.addView(label)
+            mBinding.root.keys_box.addView(label)
         }
     }
 }

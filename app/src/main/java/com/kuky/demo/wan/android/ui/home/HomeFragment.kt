@@ -10,7 +10,7 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 
 /**
  * @author kuky.
@@ -34,7 +34,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
 
-        article_list.setHasFixedSize(true)
+        view.article_list.setHasFixedSize(true)
 
         val viewModel = getViewModel(HomeArticleViewModel::class.java)
 

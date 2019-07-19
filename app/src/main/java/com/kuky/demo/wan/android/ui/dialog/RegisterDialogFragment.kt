@@ -9,7 +9,7 @@ import com.kuky.demo.wan.android.databinding.DialogRegisterBinding
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
-import kotlinx.android.synthetic.main.dialog_register.*
+import kotlinx.android.synthetic.main.dialog_register.view.*
 import org.jetbrains.anko.toast
 
 /**
@@ -31,9 +31,9 @@ class RegisterDialogFragment : BaseDialogFragment<DialogRegisterBinding>() {
     }
 
     fun register(view: View) {
-        val username = user_name.text.toString()
-        val password = password.text.toString()
-        val repass = repass.text.toString()
+        val username = mBinding.root.user_name.text.toString()
+        val password = mBinding.root.password.text.toString()
+        val repass = mBinding.root.repass.text.toString()
 
         if (username.isBlank() || password.isBlank() || repass.isBlank()) {
             requireContext().toast("请输入完整")

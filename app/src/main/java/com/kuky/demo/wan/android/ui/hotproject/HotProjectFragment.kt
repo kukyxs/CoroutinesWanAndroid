@@ -13,7 +13,7 @@ import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import kotlinx.android.synthetic.main.fragment_hot_project.*
+import kotlinx.android.synthetic.main.fragment_hot_project.view.*
 
 /**
  * @author kuky.
@@ -51,7 +51,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private fun updateProjects(category: ProjectCategoryData) {
-        project_type.text = category.name
+        mBinding.root.project_type.text = category.name
         mViewModel.fetchDiffCategoryProjects(category.id)
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
             mAdapter.submitList(it)

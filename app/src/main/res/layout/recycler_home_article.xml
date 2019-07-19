@@ -8,6 +8,8 @@
         <variable
             name="detail"
             type="com.kuky.demo.wan.android.entity.ArticleDetail" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -35,6 +37,14 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/author_time"
+                android:text="@string/as_top"
+                android:textColor="@android:color/holo_red_dark"
+                android:visibility="@{detail.type == 1 ? View.VISIBLE : View.GONE}" />
 
             <TextView
                 android:id="@+id/article_category"
