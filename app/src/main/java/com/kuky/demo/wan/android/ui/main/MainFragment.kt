@@ -107,6 +107,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         0
                     )
+                    drawer.closeDrawers()
                 }
 
                 R.id.favourite_website -> {
@@ -115,6 +116,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         1
                     )
+                    drawer.closeDrawers()
                 }
 
                 R.id.about -> {
@@ -122,23 +124,31 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 }
 
                 R.id.version -> {
-                    requireContext().alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
-                        yesButton { dialog -> dialog.dismiss() }
-                    }.show()
+                    requireContext()
+                        .alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
+                            yesButton { dialog -> dialog.dismiss() }
+                        }.show()
                 }
 
                 R.id.login_out -> {
-                    requireContext().alert("是否退出登录") {
-                        yesButton { mViewModel.loginout() }
-                        noButton { }
-                    }.show()
+                    requireContext()
+                        .alert("是否退出登录") {
+                            yesButton { mViewModel.loginout() }
+                            noButton { }
+                        }.show()
                 }
             }
             true
         }
     }
 
-    fun openSettings(view: View) = drawer.openDrawer(GravityCompat.START)
+    fun openSettings(view: View) {
+        float_menu.close(true)
+        drawer.openDrawer(GravityCompat.START)
+    }
 
-    fun searchArticles(view: View) = mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
+    fun searchArticles(view: View) {
+        float_menu.close(false)
+        mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
+    }
 }
