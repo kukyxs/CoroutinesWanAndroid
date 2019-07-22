@@ -6,14 +6,16 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.android.synthetic.main.recycler_home_article.view.*
 import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
@@ -26,6 +28,16 @@ class HomeArticleRepository {
 
     suspend fun loadTops(): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.topArticle().data
+    }
+
+    suspend fun collectArticle(id: Int): ResultBack = withContext(Dispatchers.IO) {
+        val result = RetrofitManager.apiService
+            .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
+
+        suspendCoroutine<ResultBack> { continuation ->
+            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
+            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+        }
     }
 }
 

@@ -66,10 +66,9 @@ class MainRepository {
     }
 
     suspend fun loginout() = withContext(Dispatchers.IO) {
-        val response = RetrofitManager.apiService.loginout().string()
-        val errorCode = JSONObject(response).optInt("errorCode")
+        val result = RetrofitManager.apiService.loginout()
 
-        if (errorCode == 0) {
+        if (result.errorCode == 0) {
             PreferencesHelper.saveUserId(WanApplication.instance, 0)
             PreferencesHelper.saveUserName(WanApplication.instance, "")
             PreferencesHelper.saveCookie(WanApplication.instance, "")

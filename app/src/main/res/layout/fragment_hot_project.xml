@@ -15,6 +15,10 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
+            name="itemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment" />
     </data>
@@ -60,6 +64,7 @@
                 android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:pageItemClick="@{itemClick}"
+                bind:pageItemLongClick="@{itemLongClick}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_home_project" />
         </LinearLayout>

@@ -75,12 +75,16 @@ interface ApiService {
 
     // 退出
     @GET("/user/logout/json")
-    suspend fun loginout(): ResponseBody
+    suspend fun loginout(): BasicResultData
 
     // ===============================>
     // 收藏文章列表
     @GET("/lg/collect/list/{page}/json")
     suspend fun userCollectedArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): UserCollectEntity
+
+    // 收藏文章，项目
+    @POST("/lg/collect/{id}/json")
+    suspend fun collectArticleOrProject(@Path("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
 
     // 取消收藏，文章列表
     @POST("/lg/uncollect_originId/{articleId}/json")
@@ -92,7 +96,7 @@ interface ApiService {
     suspend fun unCollectCollection(
         @Path("articleId") articleId: Int, @Field("originId") originId: Int,
         @Header("Cookie") cookie: String
-    ): DeleteWebsiteData
+    ): BasicResultData
 
     // 收藏网站列表
     @GET("/lg/collect/usertools/json")
@@ -104,7 +108,7 @@ interface ApiService {
     suspend fun addWebsite(
         @Field("name") name: String, @Field("link") link: String,
         @Header("Cookie") cookie: String
-    ): Response<AddWebsiteData>
+    ): BasicResultData
 
     // 编辑收藏网址
     @POST("/lg/collect/updatetool/json")
@@ -117,7 +121,7 @@ interface ApiService {
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
     @FormUrlEncoded
-    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): DeleteWebsiteData
+    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
 
     // ===============================>
     // 搜索文章

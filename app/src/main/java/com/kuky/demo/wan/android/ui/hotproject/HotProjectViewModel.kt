@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
@@ -17,7 +18,7 @@ import com.kuky.demo.wan.android.entity.ProjectDetailData
 class HotProjectViewModel(private val repository: HotProjectRepository) : ViewModel() {
 
     val categories: MutableLiveData<List<ProjectCategoryData>> = MutableLiveData()
-    var projects: LiveData<PagedList<ProjectDetailData>>?= null
+    var projects: LiveData<PagedList<ProjectDetailData>>? = null
 
     fun fetchCategories() {
         viewModelScope.safeLaunch {
@@ -34,5 +35,15 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
                 .setInitialLoadSizeHint(20)
                 .build()
         ).build()
+    }
+
+    fun collectProject(id: Int, success: () -> Unit, fail: (String) -> Unit) {
+        viewModelScope.safeLaunch {
+            val result = repository.collectProject(id)
+            if (result.code == CODE_SUCCEED)
+                success()
+            else
+                fail(result.message)
+        }
     }
 }

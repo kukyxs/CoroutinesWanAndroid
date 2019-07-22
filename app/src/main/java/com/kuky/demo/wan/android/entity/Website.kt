@@ -24,9 +24,3 @@ data class AddWebsiteData(
     val errorCode: Int,
     val errorMsg: String
 )
-
-data class DeleteWebsiteData(
-    val `data`: Any,
-    val errorCode: Int,
-    val errorMsg: String
-)

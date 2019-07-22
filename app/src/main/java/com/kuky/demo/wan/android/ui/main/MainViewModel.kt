@@ -22,7 +22,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     // 未找到较好的解决方案，目前使用回调进行处理，有较好的方案请提 issue
-    fun login(username: String, password: String, success: () -> Unit, fail: (message: String) -> Unit) {
+    fun login(username: String, password: String, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch {
             val result = repository.login(username, password)
 
@@ -39,7 +39,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     // 未找到较好的解决方案，目前使用回调进行处理，有较好的方案请提 issue
     fun register(
         username: String, password: String, repass: String,
-        success: () -> Unit, fail: (message: String) -> Unit
+        success: () -> Unit, fail: (String) -> Unit
     ) {
         viewModelScope.safeLaunch {
             val result = repository.register(username, password, repass)

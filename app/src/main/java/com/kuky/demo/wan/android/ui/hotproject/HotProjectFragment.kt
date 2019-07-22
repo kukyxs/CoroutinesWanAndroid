@@ -8,12 +8,17 @@ import androidx.paging.PagedList
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import kotlinx.android.synthetic.main.fragment_hot_project.view.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -41,6 +46,22 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     it.link
                 )
             }
+        }
+
+        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
+            mAdapter.getItemData(position)?.let { article ->
+                requireContext().alert("是否收藏「${article.title}」") {
+                    yesButton {
+                        mViewModel.collectProject(article.id, {
+                            requireContext().toast("收藏成功")
+                        }, { message ->
+                            requireContext().toast(message)
+                        })
+                    }
+                    noButton { }
+                }.show()
+            }
+            true
         }
 
         mViewModel.fetchCategories()

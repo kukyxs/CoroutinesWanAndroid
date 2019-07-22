@@ -4,16 +4,17 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
 import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
@@ -27,6 +28,16 @@ class HotProjectRepository {
 
     suspend fun loadProjects(page: Int, pid: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.projectList(page, pid).data.datas
+    }
+
+    suspend fun collectProject(id: Int) = withContext(Dispatchers.IO) {
+        val result = RetrofitManager.apiService
+            .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
+
+        suspendCoroutine<ResultBack> { continuation ->
+            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
+            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+        }
     }
 }
 
@@ -135,7 +146,5 @@ class CategoryDiffCall(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         if (oldList.isNullOrEmpty() || newList.isNullOrEmpty()) false
-        else {
-            oldList[oldItemPosition].name == newList[newItemPosition].name
-        }
+        else oldList[oldItemPosition].name == newList[newItemPosition].name
 }
