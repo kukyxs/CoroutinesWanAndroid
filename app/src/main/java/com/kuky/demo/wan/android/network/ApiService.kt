@@ -84,15 +84,15 @@ interface ApiService {
 
     // 取消收藏，文章列表
     @POST("/lg/uncollect_originId/{articleId}/json")
-    suspend fun uncollectArticle(@Path("articleId") articleId: Int, @Header("Cookie") cookie: String): ResponseBody
+    suspend fun unCollectArticle(@Path("articleId") articleId: Int, @Header("Cookie") cookie: String): ResponseBody
 
     // 取消收藏，收藏列表
     @POST("/lg/uncollect/{articleId}/json")
     @FormUrlEncoded
-    suspend fun uncollectCollection(
+    suspend fun unCollectCollection(
         @Path("articleId") articleId: Int, @Field("originId") originId: Int,
         @Header("Cookie") cookie: String
-    ): ResponseBody
+    ): DeleteWebsiteData
 
     // 收藏网站列表
     @GET("/lg/collect/usertools/json")

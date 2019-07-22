@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.DiffUtil
  * @author kuky.
  * @description paging adapter 基类
  */
-abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.ItemCallback<T>) :
+abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffUtil.ItemCallback<T>) :
     PagedListAdapter<T, BaseViewHolder<VB>>(callback) {
 
-    var itemListener: OnItemClickListener? = null
-    var itemLongListener: OnItemLongClickListener? = null
+    private var itemListener: OnItemClickListener? = null
+    private var itemLongListener: OnItemLongClickListener? = null
 
     /**
      * 点击监听
@@ -58,6 +58,16 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(callback: DiffUtil.
      * @param viewType, 通过重写 getItemViewType 支持多布局
      */
     abstract fun getLayoutId(viewType: Int): Int
+
+    /**
+     * 移除指定 position 的 item
+     * @param position 下标
+     */
+    fun removeItem(position: Int) {
+        // todo 先提交，回头重新弄
+        currentList?.removeAt(position)
+        notifyItemRemoved(position)
+    }
 
     /**
      * 与 dataBinding 互相绑定的数据操作

@@ -8,6 +8,9 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.okButton
 
 /**
  * @author kuky.
@@ -34,6 +37,16 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             }
         }
         mBinding.setLongListener { position, _ ->
+            requireActivity().alert("是否删除本条收藏？") {
+                okButton {
+                    mAdapter.getItemData(position)?.let { data ->
+                        viewModel.deleteCollectedArticle(data.id, data.originId) {
+                            mAdapter.removeItem(position)
+                        }
+                    }
+                }
+                noButton { }
+            }.show()
             return@setLongListener true
         }
         viewModel.fetchCollectedArticleDatas()

@@ -29,6 +29,10 @@ class CollectedArticlesRepository {
     suspend fun getCollectedArticleDatas(page: Int): List<UserCollectDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.userCollectedArticles(page, getCookie()).data.datas
     }
+
+    suspend fun deleteCollectedArticle(articleId: Int, originId: Int) = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.unCollectCollection(articleId, originId,getCookie())
+    }
 }
 
 class CollectedArticlesDataSources(private val repo: CollectedArticlesRepository) :

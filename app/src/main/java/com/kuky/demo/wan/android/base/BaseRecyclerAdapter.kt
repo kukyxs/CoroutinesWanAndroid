@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableList<T>?) :
     RecyclerView.Adapter<BaseViewHolder<VB>>() {
 
-    var itemListener: OnItemClickListener? = null
-    var itemLongListener: OnItemLongClickListener? = null
+    private var itemListener: OnItemClickListener? = null
+    private var itemLongListener: OnItemLongClickListener? = null
 
     fun setOnItemListener(listener: OnItemClickListener?) {
         this.itemListener = listener
