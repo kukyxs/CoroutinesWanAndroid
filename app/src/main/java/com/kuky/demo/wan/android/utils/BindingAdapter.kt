@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.webkit.WebView
 import android.widget.ImageView
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -142,4 +145,22 @@ fun bindRecyclerItemLOngClick(recyclerView: RecyclerView, listener: OnItemLongCl
     if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
 
     adapter.setOnItemLongListener(listener)
+}
+
+/**
+ * 绑定 SwipeRefreshLayout 颜色，刷新状态，监听事件
+ */
+@BindingAdapter(
+    value = ["bind:refreshColor", "bind:refreshState", "bind:refreshListener"],
+    requireAll = false
+)
+fun bindRefreshColor(
+    refreshLayout: SwipeRefreshLayout,
+    color: Int,
+    refreshState: Boolean,
+    listener: SwipeRefreshLayout.OnRefreshListener
+) {
+    refreshLayout.setColorSchemeResources(color)
+    refreshLayout.isRefreshing = refreshState
+    refreshLayout.setOnRefreshListener(listener)
 }

@@ -11,8 +11,10 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
  * @description
  */
 class HomeArticleViewModel : ViewModel() {
-    val articles: LiveData<PagedList<ArticleDetail>> by lazy {
-        LivePagedListBuilder(
+    var articles: LiveData<PagedList<ArticleDetail>>? = null
+
+    fun fetchHomeArticle() {
+        articles = LivePagedListBuilder(
             HomeArticleDataSourceFactory(HomeArticleRepository()),
             PagedList.Config.Builder()
                 .setPageSize(20)

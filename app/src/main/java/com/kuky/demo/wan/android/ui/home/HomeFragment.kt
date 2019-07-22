@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
@@ -20,9 +21,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
+    private val mViewModel: HomeArticleViewModel by lazy { getViewModel(HomeArticleViewModel::class.java) }
+
     override fun getLayoutId(): Int = R.layout.fragment_home
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.refreshColor = R.color.colorAccent
+        mBinding.refreshing = true
+        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            fetchHomeArticleList()
+        }
+
         mBinding.adapter = mAdapter
         mBinding.itemClick = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let {
@@ -36,9 +45,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         view.article_list.setHasFixedSize(true)
 
-        val viewModel = getViewModel(HomeArticleViewModel::class.java)
+        fetchHomeArticleList()
+    }
 
-        viewModel.articles.observe(this, Observer<PagedList<ArticleDetail>> {
+    private fun fetchHomeArticleList() {
+        mViewModel.fetchHomeArticle()
+        mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
+            mBinding.refreshing = false
             mAdapter.submitList(it)
         })
     }
