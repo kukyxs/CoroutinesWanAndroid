@@ -127,7 +127,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 layoutParams = lp
                 setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
                 setOnClickListener {
-                    search_content.setText(name)
+                    mBinding.root.search_content.setText(name)
                     searchArticles(name)
                 }
             }
