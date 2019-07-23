@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.wxchapter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.kuky.demo.wan.android.data.wxchapter.WxChapterRepository
 
 /**
  * @author Taonce.

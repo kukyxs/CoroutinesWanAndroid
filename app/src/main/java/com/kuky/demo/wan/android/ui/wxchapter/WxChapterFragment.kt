@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.data.wxchapter.WxChapterRepository
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
 
 /**

@@ -1,14 +1,17 @@
 package com.kuky.demo.wan.android.ui.hotproject
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
@@ -25,6 +28,9 @@ import org.jetbrains.anko.yesButton
  * @description 首页项目模块界面
  */
 class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
+    companion object {
+        private val mHandler = Handler()
+    }
 
     private val mViewModel: HotProjectViewModel by lazy {
         ViewModelProviders.of(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
@@ -36,6 +42,13 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_hot_project
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.refreshColor = R.color.colorAccent
+        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            PreferencesHelper.fetchProjectCategory(requireContext()).let {
+                fetchProjects(it["id"] as Int, it["title"] as String)
+            }
+        }
+
         mBinding.adapter = mAdapter
         mBinding.holder = this@HotProjectFragment
         mBinding.itemClick = OnItemClickListener { position, _ ->
@@ -66,23 +79,29 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         mViewModel.fetchCategories()
 
-        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> {
-            updateProjects(it[0])
+        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
+            list[0].let {
+                PreferencesHelper.saveProjectCategory(requireContext(), it)
+                fetchProjects(it.id, it.name)
+            }
         })
     }
 
-    private fun updateProjects(category: ProjectCategoryData) {
-        mBinding.root.project_type.text = category.name
-        mViewModel.fetchDiffCategoryProjects(category.id)
+    private fun fetchProjects(id: Int, title: String) {
+        mBinding.root.project_type.text = title
+        mViewModel.fetchDiffCategoryProjects(id)
+        mBinding.refreshing = true
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
             mAdapter.submitList(it)
+            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
         })
     }
 
     fun selectCategory(view: View) {
         ProjectCategoryDialog().setOnSelectedListener { dialog, category ->
+            PreferencesHelper.saveProjectCategory(requireContext(), category)
+            fetchProjects(category.id, category.name)
             dialog.dismiss()
-            updateProjects(category)
         }.show(childFragmentManager, "category")
     }
 }

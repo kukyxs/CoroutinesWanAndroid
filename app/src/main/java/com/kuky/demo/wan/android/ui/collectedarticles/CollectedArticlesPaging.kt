@@ -31,7 +31,7 @@ class CollectedArticlesRepository {
     }
 
     suspend fun deleteCollectedArticle(articleId: Int, originId: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.unCollectCollection(articleId, originId,getCookie())
+        RetrofitManager.apiService.unCollectCollection(articleId, originId, getCookie())
     }
 }
 

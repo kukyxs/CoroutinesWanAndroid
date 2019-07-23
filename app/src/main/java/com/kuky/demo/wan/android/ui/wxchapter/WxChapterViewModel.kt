@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kuky.demo.wan.android.base.safeLaunch
-import com.kuky.demo.wan.android.data.wxchapter.WxChapterRepository
 import com.kuky.demo.wan.android.entity.WxChapterData
 
 /**

@@ -81,9 +81,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         mViewModel.hasLogin.observe(this, Observer<Boolean> {
             val header = view.user_profile_drawer.getHeaderView(0)
+            val menus = view.user_profile_drawer.menu
 
-            view.user_profile_drawer.menu.findItem(R.id.user_collections).isVisible = it
-            view.user_profile_drawer.menu.findItem(R.id.login_out).isVisible = it
+            menus.findItem(R.id.user_collections).isVisible = it
+            menus.findItem(R.id.login_out).isVisible = it
+            menus.findItem(R.id.todo_list).isVisible = it
 
             header.user_name.text =
                 if (it) PreferencesHelper.fetchUserName(requireContext())
@@ -98,7 +100,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         })
 
         Glide.with(requireContext())
-            .load(R.drawable.ava_kuky)
+            .load(R.drawable.ava_taonce)
             .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 80f))))
             .into(view.user_profile_drawer.getHeaderView(0).avatar)
 
@@ -122,6 +124,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                     view.drawer.closeDrawer(Gravity.START)
                 }
 
+                R.id.finish_todo -> {
+
+                }
+
+                R.id.todos -> {
+
+                }
+
                 R.id.about -> {
 
                 }
@@ -131,6 +141,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         .alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
                             yesButton { dialog -> dialog.dismiss() }
                         }.show()
+                }
+
+                R.id.go_star -> {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        "https://github.com/kukyxs/CoroutinesWanAndroid"
+                    )
+                    view.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.login_out -> {

@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.webkit.WebView
 import android.widget.ImageView
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -163,4 +161,9 @@ fun bindRefreshColor(
     refreshLayout.setColorSchemeResources(color)
     refreshLayout.isRefreshing = refreshState
     refreshLayout.setOnRefreshListener(listener)
+}
+
+@BindingAdapter("bind:refreshEnable")
+fun bindRefreshEnable(refreshLayout: SwipeRefreshLayout, enable: Boolean) {
+    refreshLayout.isEnabled = enable
 }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,6 +25,9 @@ import org.jetbrains.anko.yesButton
  * @description 主页面首页模块界面
  */
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
+    companion object {
+        private val mHandler = Handler()
+    }
 
     private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
@@ -38,7 +40,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshing = true
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
             fetchHomeArticleList()
         }
@@ -76,9 +77,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun fetchHomeArticleList() {
         mViewModel.fetchHomeArticle()
+        mBinding.refreshing = true
         mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
-            mBinding.refreshing = false
             mAdapter.submitList(it)
+            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
         })
     }
 }

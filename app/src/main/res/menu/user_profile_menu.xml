@@ -17,6 +17,22 @@
     </item>
 
     <item
+        android:id="@+id/todo_list"
+        android:title="@string/todo_title">
+        <menu>
+            <item
+                android:id="@+id/finish_todo"
+                android:icon="@drawable/ic_todo_24dp"
+                android:title="@string/finish_todo" />
+
+            <item
+                android:id="@+id/todos"
+                android:icon="@drawable/ic_todo_24dp"
+                android:title="@string/todo_list" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/app_about"
         android:title="@string/info_about">
         <menu>
@@ -31,6 +47,11 @@
                 android:title="@string/version_info" />
         </menu>
     </item>
+
+    <item
+        android:id="@+id/go_star"
+        android:icon="@drawable/ic_star_border_24dp"
+        android:title="@string/star" />
 
     <item
         android:id="@+id/login_out"

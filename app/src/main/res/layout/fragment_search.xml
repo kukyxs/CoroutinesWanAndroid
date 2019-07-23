@@ -7,6 +7,22 @@
     <data>
 
         <variable
+            name="enable"
+            type="Boolean" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
             name="adapter"
             type="androidx.recyclerview.widget.RecyclerView.Adapter" />
 
@@ -52,18 +68,27 @@
             android:layout_marginEnd="12dp"
             app:flexWrap="wrap" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_result"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:adapter="@{adapter}"
-            android:orientation="vertical"
-            android:padding="8dp"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            bind:pageItemClick="@{listener}"
-            bind:listItemClick="@{listener}"
-            tools:listitem="@layout/recycler_home_article" />
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshEnable="@{enable}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_result"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:adapter="@{adapter}"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:listItemClick="@{listener}"
+                bind:pageItemClick="@{listener}"
+                tools:listitem="@layout/recycler_home_article" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

@@ -11,7 +11,6 @@ import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /**
@@ -29,7 +28,6 @@ class CollectedWebsitesRepository {
 
     suspend fun addWebsite(name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
         val response = RetrofitManager.apiService.addWebsite(name, link, getCookie())
-        //TODO 泛型问题
         suspendCoroutine<ResultBack> { con ->
             response.let {
                 if (response.errorCode == 0) con.resume(ResultBack(CODE_SUCCEED, ""))
