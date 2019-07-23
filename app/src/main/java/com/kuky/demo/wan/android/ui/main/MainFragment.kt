@@ -16,6 +16,8 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
+import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
+import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
@@ -99,6 +101,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             )
         })
 
+        // TODO("由于 NavigationView header 和 menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
         Glide.with(requireContext())
             .load(R.drawable.ava_taonce)
             .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 60f))))
@@ -133,7 +136,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 }
 
                 R.id.about -> {
+                    AboutUsDialog().setHandler(object : AboutUsHandler {
+                        override fun spanClick(url: String) {
+                            WebsiteDetailFragment.viewDetail(
+                                mNavController,
+                                R.id.action_mainFragment_to_websiteDetailFragment,
+                                url
+                            )
 
+                            mBinding.root.drawer.closeDrawer(Gravity.START)
+                        }
+                    }).show(childFragmentManager, "about")
                 }
 
                 R.id.version -> {

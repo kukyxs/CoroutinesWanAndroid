@@ -2,8 +2,10 @@ package com.kuky.demo.wan.android.utils
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.text.method.MovementMethod
 import android.webkit.WebView
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -166,4 +168,9 @@ fun bindRefreshColor(
 @BindingAdapter("bind:refreshEnable")
 fun bindRefreshEnable(refreshLayout: SwipeRefreshLayout, enable: Boolean) {
     refreshLayout.isEnabled = enable
+}
+
+@BindingAdapter("bind:movementMethod")
+fun bindMovementMethod(textView: TextView, method: MovementMethod) {
+    textView.movementMethod = method
 }

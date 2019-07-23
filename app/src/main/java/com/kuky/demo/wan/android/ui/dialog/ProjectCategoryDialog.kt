@@ -69,4 +69,4 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
     }
 }
 
-typealias OnSelectedListener = (dialog: Dialog, category: ProjectCategoryData) -> Unit
+typealias OnSelectedListener = (Dialog, ProjectCategoryData) -> Unit

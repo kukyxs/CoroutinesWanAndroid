@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="holder"
+            type="com.kuky.demo.wan.android.ui.dialog.AboutUsDialog" />
+
+        <variable
+            name="kSpan"
+            type="android.text.SpannableString" />
+
+        <variable
+            name="tSpan"
+            type="android.text.SpannableString" />
+
+        <variable
+            name="movementMethod"
+            type="android.text.method.MovementMethod" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_bg"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/avatar_k"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:contentDescription="@null"
+            bind:circleImg="@{@drawable/ava_kuky}"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ava_kuky" />
+
+        <TextView
+            android:id="@+id/description_k"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:lineSpacingExtra="4dp"
+            android:text="@{kSpan}"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toEndOf="@id/avatar_k"
+            bind:layout_constraintTop_toTopOf="@id/avatar_k"
+            bind:movementMethod="@{movementMethod}"
+            tools:text="kukyxs：逗比码农一枚，主要做 Android，会写点 Flutter，Python，小程序和 Django 后台，传说中的样样通样样松~~" />
+
+        <ImageView
+            android:id="@+id/avatar_t"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="12dp"
+            android:contentDescription="@null"
+            bind:circleImg="@{@drawable/ava_taonce}"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@id/description_k"
+            tools:src="@drawable/ava_taonce" />
+
+        <TextView
+            android:id="@+id/description_t"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:lineSpacingExtra="4dp"
+            android:text="@{tSpan}"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="@id/description_k"
+            bind:layout_constraintTop_toTopOf="@id/avatar_t"
+            bind:movementMethod="@{movementMethod}"
+            tools:text="@string/description" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:onClick="@{holder::ensure}"
+            android:text="@string/ensure"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintTop_toBottomOf="@id/description_t" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
