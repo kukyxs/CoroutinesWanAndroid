@@ -101,7 +101,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         Glide.with(requireContext())
             .load(R.drawable.ava_taonce)
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 80f))))
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 60f))))
             .into(view.user_profile_drawer.getHeaderView(0).avatar)
 
         view.user_profile_drawer.setNavigationItemSelectedListener { menu ->
