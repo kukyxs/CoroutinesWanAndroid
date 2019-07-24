@@ -39,11 +39,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_home
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        // 绑定 SwipeRefreshLayout 属性
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
             fetchHomeArticleList()
         }
 
+        // 绑定 rv 属性
         mBinding.adapter = mAdapter
         mBinding.itemClick = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let {
@@ -69,8 +71,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
             true
         }
-
-        view.article_list.setHasFixedSize(true)
 
         fetchHomeArticleList()
     }

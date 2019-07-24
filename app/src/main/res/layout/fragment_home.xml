@@ -72,6 +72,7 @@
                     android:paddingBottom="8dp"
                     android:scrollbars="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    bind:hasFixedSize="@{true}"
                     bind:pageItemClick="@{itemClick}"
                     bind:pageItemLongClick="@{itemLongClick}"
                     tools:itemCount="20"

@@ -31,10 +31,11 @@ class HomeArticleViewModel(private val repository: HomeArticleRepository) : View
         viewModelScope.safeLaunch {
             val result = repository.collectArticle(id)
 
-            if (result.code == CODE_SUCCEED)
+            if (result.code == CODE_SUCCEED) {
                 success()
-            else
+            } else {
                 fail(result.message)
+            }
         }
     }
 }

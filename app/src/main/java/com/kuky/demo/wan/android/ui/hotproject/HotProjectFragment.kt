@@ -81,6 +81,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
             list[0].let {
+                // 保存当前选项，用于刷新
                 PreferencesHelper.saveProjectCategory(requireContext(), it)
                 fetchProjects(it.id, it.name)
             }

@@ -8,4 +8,4 @@ import androidx.recyclerview.widget.RecyclerView
  * @author kuky.
  * @description RecyclerView Adapter View Holder 基类
  */
-class BaseViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)
+open class BaseViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)

@@ -9,6 +9,10 @@
             name="detail"
             type="com.kuky.demo.wan.android.entity.ArticleDetail" />
 
+        <variable
+            name="description"
+            type="android.text.Spanned" />
+
         <import type="android.view.View" />
     </data>
 
@@ -33,6 +37,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:minLines="2"
+                android:text="@{description}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"

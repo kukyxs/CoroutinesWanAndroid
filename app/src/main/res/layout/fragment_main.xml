@@ -20,6 +20,14 @@
         <variable
             name="listener"
             type="com.youth.banner.listener.OnBannerListener" />
+
+        <variable
+            name="limit"
+            type="Integer" />
+
+        <variable
+            name="transformer"
+            type="androidx.viewpager.widget.ViewPager.PageTransformer" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -37,6 +45,7 @@
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
+                app:banner_default_image="@drawable/ic_place_holder"
                 app:layout_constraintTop_toTopOf="parent"
                 bind:bannerClick="@{listener}"
                 bind:banners="@{viewModel.banners}" />
@@ -53,7 +62,10 @@
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/banner" />
+                app:layout_constraintTop_toBottomOf="@id/banner"
+                bind:limitOffset="@{limit}"
+                bind:reversed="@{true}"
+                bind:transformer="@{transformer}" />
 
             <com.github.clans.fab.FloatingActionMenu
                 android:id="@+id/float_menu"

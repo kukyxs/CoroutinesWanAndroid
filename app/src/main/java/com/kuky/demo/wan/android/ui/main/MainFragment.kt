@@ -79,13 +79,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             layoutInflater, R.layout.user_profile_header, view.user_profile_drawer, false
         )
         headerBinding.holder = this@MainFragment
+        view.user_profile_drawer.addHeaderView(headerBinding.root)
+
+        // Bind ViewPager
+        mBinding.limit = mAdapter.count
+        mBinding.transformer = GalleryTransformer()
 
         mViewModel.hasLogin.value = PreferencesHelper.hasLogin(requireContext())
-
-        view.main_page.offscreenPageLimit = mAdapter.count
-        view.main_page.setPageTransformer(true, GalleryTransformer())
-
-        view.user_profile_drawer.addHeaderView(headerBinding.root)
 
         mViewModel.getBanners()
 

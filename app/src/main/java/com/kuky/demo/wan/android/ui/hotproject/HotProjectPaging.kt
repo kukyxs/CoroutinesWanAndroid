@@ -22,14 +22,17 @@ import kotlin.coroutines.suspendCoroutine
  */
 
 class HotProjectRepository {
+    // 加载分类
     suspend fun loadProjectCategories() = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.projectCategory().data
     }
 
+    // 加载分类下的项目列表
     suspend fun loadProjects(page: Int, pid: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.projectList(page, pid).data.datas
     }
 
+    // 收藏项目
     suspend fun collectProject(id: Int) = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService
             .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
@@ -109,15 +112,14 @@ class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeP
 class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = null) :
     BaseRecyclerAdapter<RecyclerProjectCategoryBinding, ProjectCategoryData>(categories) {
 
+    // 通过 diffutil 更新数据
     fun setCategories(categories: MutableList<ProjectCategoryData>?) {
         val result = DiffUtil.calculateDiff(CategoryDiffCall(getAdapterData(), categories), true)
         result.dispatchUpdatesTo(this)
-        if (mData == null) {
-            mData = arrayListOf()
+        mData = (mData ?: arrayListOf()).apply {
+            clear()
+            addAll(categories ?: arrayListOf())
         }
-
-        mData?.clear()
-        mData?.addAll(categories ?: arrayListOf())
     }
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_project_category

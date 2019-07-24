@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -26,6 +27,9 @@ import com.youth.banner.loader.ImageLoader
  * @description
  */
 
+/**
+ * 单独加载图片，没有 PlaceHolder
+ */
 @BindingAdapter("bind:img")
 fun loadImage(view: ImageView, url: String) {
     Glide.with(view.context)
@@ -111,16 +115,6 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickLis
 }
 
 /**
- * 绑定 webview 的 url
- * @param url
- */
-@BindingAdapter("bind:url")
-fun bindWebUrl(webView: WebView, url: String?) {
-    if (url.isNullOrBlank()) return
-    webView.loadUrl(url)
-}
-
-/**
  * 绑定 RecyclerView 的点击事件
  * @param listener 点击事件，[OnItemClickListener]
  */
@@ -134,14 +128,6 @@ fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListe
 }
 
 /**
- * 绑定分割线
- */
-@BindingAdapter("bind:divider")
-fun bindRecyclerDivider(recyclerView: RecyclerView, decor: RecyclerView.ItemDecoration) {
-    recyclerView.addItemDecoration(decor)
-}
-
-/**
  * 绑定 RecyclerView 的长按事件
  * @param listener 点击事件，[OnItemLongClickListener]
  */
@@ -152,6 +138,22 @@ fun bindRecyclerItemLOngClick(recyclerView: RecyclerView, listener: OnItemLongCl
     if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
 
     adapter.setOnItemLongListener(listener)
+}
+
+/**
+ * 绑定 recyclerView 分割线
+ */
+@BindingAdapter("bind:divider")
+fun bindRecyclerDivider(recyclerView: RecyclerView, decor: RecyclerView.ItemDecoration) {
+    recyclerView.addItemDecoration(decor)
+}
+
+/**
+ * recyclerView 是否固定高度
+ */
+@BindingAdapter("bind:hasFixedSize")
+fun bindRecyclerHasFixedSize(recyclerView: RecyclerView, hasFixedSize: Boolean) {
+    recyclerView.setHasFixedSize(hasFixedSize)
 }
 
 /**
@@ -175,6 +177,29 @@ fun bindRefreshColor(
 @BindingAdapter("bind:refreshEnable")
 fun bindRefreshEnable(refreshLayout: SwipeRefreshLayout, enable: Boolean) {
     refreshLayout.isEnabled = enable
+}
+
+/**
+ * 绑定 ViewPager 的一些属性
+ */
+@BindingAdapter("bind:limitOffset")
+fun bindOffscreenPageLimit(viewPager: ViewPager, limit: Int) {
+    viewPager.offscreenPageLimit = limit
+}
+
+@BindingAdapter(value = ["bind:reversed", "bind:transformer"], requireAll = false)
+fun bindTransformer(viewPager: ViewPager, reversed: Boolean, transformer: ViewPager.PageTransformer) {
+    viewPager.setPageTransformer(reversed, transformer)
+}
+
+/**
+ * 绑定 webview 的 url
+ * @param url
+ */
+@BindingAdapter("bind:url")
+fun bindWebUrl(webView: WebView, url: String?) {
+    if (url.isNullOrBlank()) return
+    webView.loadUrl(url)
 }
 
 @BindingAdapter("bind:movementMethod")

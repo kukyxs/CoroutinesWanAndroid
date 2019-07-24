@@ -26,10 +26,12 @@ class HomeArticleRepository {
         RetrofitManager.apiService.homeArticles(page).data.datas
     }
 
+    // 加载首页置顶文章
     suspend fun loadTops(): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.topArticle().data
     }
 
+    // 收藏文章
     suspend fun collectArticle(id: Int): ResultBack = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService
             .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
@@ -97,10 +99,10 @@ class HomeArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerHomeArtic
     @Suppress("DEPRECATION")
     override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
         holder.binding.detail = data
-        holder.itemView.article_title.text =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
-                Html.fromHtml(data.title, Html.FROM_HTML_MODE_COMPACT)
-            else Html.fromHtml(data.title)
+        // 后台有时候返回 H5 格式文字，需要转换
+        holder.binding.description = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+            Html.fromHtml(data.title, Html.FROM_HTML_MODE_COMPACT)
+        else Html.fromHtml(data.title)
     }
 
     companion object {
