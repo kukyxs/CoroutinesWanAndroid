@@ -26,10 +26,11 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/wx_pic"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            bind:circleImg="@{@drawable/ava_taonce}" />
+            bind:circleImg="@{@drawable/wx_pic}" />
 
         <TextView
             android:layout_width="0dp"
