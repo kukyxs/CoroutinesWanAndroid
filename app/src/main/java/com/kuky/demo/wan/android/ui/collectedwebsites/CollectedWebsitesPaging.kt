@@ -72,14 +72,16 @@ class CollectedDiffUtil(
     private val oldData: MutableList<WebsiteData>?
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        newData?.get(newItemPosition)?.id == oldData?.get(oldItemPosition)?.id
+        if (newData.isNullOrEmpty() || oldData.isNullOrEmpty()) false
+        else newData[newItemPosition].id == oldData[oldItemPosition].id
 
     override fun getOldListSize() = oldData?.size ?: 0
 
     override fun getNewListSize() = newData?.size ?: 0
 
-
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-        newData?.get(newItemPosition) == oldData?.get(oldItemPosition)
+        if (newData.isNullOrEmpty() || oldData.isNullOrEmpty()) false
+        else newData[newItemPosition].name == oldData[oldItemPosition].name
+                && newData[newItemPosition].link == oldData[oldItemPosition].link
 }
 

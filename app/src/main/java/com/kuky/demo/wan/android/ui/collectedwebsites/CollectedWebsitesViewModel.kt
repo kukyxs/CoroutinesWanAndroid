@@ -23,25 +23,30 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
         }
     }
 
-    fun addWebsites(name: String?, link: String?, success: () -> Unit, failed: (msg: String) -> Unit) {
+    fun addWebsites(
+        name: String?,
+        link: String?,
+        success: () -> Unit,
+        failed: (msg: String, isDismiss: Boolean) -> Unit
+    ) {
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(link)) {
-            WanApplication.instance.toast("输入不可为空!")
+            failed("输入不可为空!", false)
         } else {
             viewModelScope.safeLaunch {
                 val result = repo.addWebsite(name!!, link!!)
                 if (result.code == CODE_SUCCEED) success()
-                else failed(result.message)
+                else failed(result.message, true)
             }
         }
     }
 
-    fun deleteWebsite(id: Int) {
+    fun deleteWebsite(id: Int, onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit) {
         viewModelScope.safeLaunch {
             val result = repo.deleteWebsite(id)
             if (result.errorCode == 0) {
-                WanApplication.instance.toast("删除成功")
+                onSuccess()
                 fetchWebSitesData()
-            } else WanApplication.instance.toast(result.errorMsg)
+            } else onFailed(result.errorMsg)
         }
     }
 }

@@ -11,6 +11,7 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
+import org.jetbrains.anko.toast
 
 /**
  * @author kuky.
@@ -40,10 +41,9 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             requireActivity().alert("是否删除本条收藏？") {
                 okButton {
                     mAdapter.getItemData(position)?.let { data ->
-                        viewModel.deleteCollectedArticle(data.id, data.originId) {
-                            // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
-                            viewModel.articles?.value?.dataSource?.invalidate()
-                        }
+                        viewModel.deleteCollectedArticle(data.id, data.originId, { requireContext().toast("删除成功") }, {
+                            requireContext().toast(it)
+                        })
                     }
                 }
                 noButton { }

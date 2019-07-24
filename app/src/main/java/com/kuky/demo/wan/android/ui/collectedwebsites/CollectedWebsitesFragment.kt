@@ -13,6 +13,7 @@ import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
 
 /**
@@ -31,7 +32,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.fragment = this
         mBinding.adapter = mAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
+        mBinding.setListener { position, _ ->
             mAdapter.getItemData(position)?.let {
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
@@ -43,7 +44,13 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mBinding.setLongListener { position, _ ->
             mAdapter.getItemData(position)?.let { data ->
                 requireActivity().alert("是否删除本条收藏？") {
-                    yesButton { viewModel.deleteWebsite(data.id) }
+                    yesButton {
+                        viewModel.deleteWebsite(data.id, {
+                            requireContext().toast("删除成功")
+                        }, {
+                            requireContext().toast(it)
+                        })
+                    }
                     noButton { it.dismiss() }
                 }.show()
             }

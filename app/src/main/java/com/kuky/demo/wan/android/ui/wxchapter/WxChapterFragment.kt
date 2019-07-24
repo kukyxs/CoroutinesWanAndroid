@@ -18,7 +18,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
         ViewModelProviders.of(this, WxChapterFactory(WxChapterRepository()))
             .get(WxChapterViewModel::class.java)
     }
-    private val adapter by lazy { WxChapterAdapter(viewModel.mData) }
+    private val adapter by lazy { WxChapterAdapter(null) }
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter
 
@@ -34,8 +34,8 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                     })
             }
         }
-        viewModel.isRefresh.observe(this, Observer {
-            if (it) adapter.notifyDataSetChanged()
+        viewModel.mData.observe(this, Observer {
+            adapter.update(it)
         })
     }
 }

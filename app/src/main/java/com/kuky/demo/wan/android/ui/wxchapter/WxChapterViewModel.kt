@@ -12,17 +12,9 @@ import com.kuky.demo.wan.android.entity.WxChapterData
  */
 
 class WxChapterViewModel(private val repository: WxChapterRepository) : ViewModel() {
-    val isRefresh = MutableLiveData<Boolean>()
-    val mData = mutableListOf<WxChapterData>()
-
-    init {
-        isRefresh.value = false
-    }
+    val mData = MutableLiveData<MutableList<WxChapterData>>()
 
     fun getWxChapter() = viewModelScope.safeLaunch {
-        if (!isRefresh.value!!) {
-            mData.addAll(repository.getWxChapter().data)
-            isRefresh.value = true
-        }
+        mData.value = repository.getWxChapter().data
     }
 }

@@ -31,14 +31,20 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
         ).build()
     }
 
-    fun deleteCollectedArticle(articleId: Int, originId: Int, onSuccess: () -> Unit) {
+    fun deleteCollectedArticle(
+        articleId: Int,
+        originId: Int,
+        onSuccess: () -> Unit,
+        onFailed: (errorMsg: String) -> Unit
+    ) {
         viewModelScope.safeLaunch {
             val result = repo.deleteCollectedArticle(articleId, originId)
             if (result.errorCode == 0) {
-                WanApplication.instance.toast("取消成功")
+                // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
+                articles?.value?.dataSource?.invalidate()
                 onSuccess()
             } else {
-                WanApplication.instance.toast(result.errorMsg)
+                onFailed(result.errorMsg)
             }
         }
     }
