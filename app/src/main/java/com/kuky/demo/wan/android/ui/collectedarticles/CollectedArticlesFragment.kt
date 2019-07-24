@@ -1,9 +1,11 @@
 package com.kuky.demo.wan.android.ui.collectedarticles
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
@@ -18,7 +20,11 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
-    private val viewModel by lazy {
+    companion object {
+        private val mHandler = Handler()
+    }
+
+    private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), CollectedArticlesFactory(CollectedArticlesRepository()))
             .get(CollectedArticlesViewModel::class.java)
     }
@@ -27,6 +33,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.refreshColor = R.color.colorAccent
+        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            fetchCollectedArticleDatas()
+        }
+
         mBinding.adapter = mAdapter
         mBinding.setListener { position, _ ->
             mAdapter.getItemData(position)?.let { data ->
@@ -41,7 +52,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             requireActivity().alert("是否删除本条收藏？") {
                 okButton {
                     mAdapter.getItemData(position)?.let { data ->
-                        viewModel.deleteCollectedArticle(data.id, data.originId, { requireContext().toast("删除成功") }, {
+                        mViewModel.deleteCollectedArticle(data.id, data.originId, { requireContext().toast("删除成功") }, {
                             requireContext().toast(it)
                         })
                     }
@@ -50,9 +61,15 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             }.show()
             return@setLongListener true
         }
-        viewModel.fetchCollectedArticleDatas()
-        viewModel.articles?.observe(requireActivity(), Observer {
+        fetchCollectedArticleDatas()
+    }
+
+    private fun fetchCollectedArticleDatas() {
+        mViewModel.fetchCollectedArticleDatas()
+        mBinding.refreshing = true
+        mViewModel.mArticles?.observe(requireActivity(), Observer {
             mAdapter.submitList(it)
+            mHandler.postDelayed({ mBinding.refreshing = false }, 500L)
         })
     }
 }

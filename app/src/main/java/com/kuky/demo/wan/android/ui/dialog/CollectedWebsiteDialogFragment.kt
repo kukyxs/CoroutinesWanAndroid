@@ -21,7 +21,7 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsiteBinding>() {
-    private val viewModel by lazy {
+    private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
     }
@@ -51,8 +51,8 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
     }
 
     fun ensure(view: View) {
-        viewModel.addWebsites(collected_name.text.toString(), collected_link.text.toString(), {
-            viewModel.fetchWebSitesData()
+        mViewModel.addWebsites(collected_name.text.toString(), collected_link.text.toString(), {
+            mViewModel.fetchWebSitesData()
             toastAndDismiss("添加成功")
         }, { msg, dismiss -> toastAndDismiss(msg, dismiss) })
     }

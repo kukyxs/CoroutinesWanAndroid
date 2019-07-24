@@ -18,9 +18,7 @@ import kotlin.coroutines.suspendCoroutine
  * @description
  */
 class CollectedWebsitesRepository {
-    private suspend fun getCookie() = withContext(Dispatchers.IO) {
-        PreferencesHelper.fetchCookie(WanApplication.instance)
-    }
+    private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
 
     suspend fun getCollectedWebsites() = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.collectWebsiteList(getCookie())

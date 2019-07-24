@@ -7,6 +7,18 @@
     <data>
 
         <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
             name="adapter"
             type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
 
@@ -23,30 +35,40 @@
             type="com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment" />
     </data>
 
-    <FrameLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        bind:refreshColor="@{refreshColor}"
+        bind:refreshListener="@{refreshListener}"
+        bind:refreshState="@{refreshing}">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/website_list"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adapter="@{adapter}"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            bind:listItemClick="@{listener}"
-            bind:listItemLongClick="@{longListener}"
-            tools:itemCount="20"
-            tools:listitem="@layout/recycler_collected_websites" />
+            android:layout_height="match_parent">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:onClick="@{fragment::addCollectedWebsites}"
-            android:src="@drawable/ic_add_white_24dp"
-            app:fabSize="mini" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/website_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adapter="@{adapter}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:hasFixedSize="@{true}"
+                bind:listItemClick="@{listener}"
+                bind:listItemLongClick="@{longListener}"
+                tools:itemCount="20"
+                tools:listitem="@layout/recycler_collected_websites" />
 
-    </FrameLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="@{fragment::addCollectedWebsites}"
+                android:src="@drawable/ic_add_white_24dp"
+                app:fabSize="mini" />
+
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

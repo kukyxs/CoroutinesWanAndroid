@@ -16,17 +16,17 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
  * @description
  */
 class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository) : ViewModel() {
-    val type: MutableLiveData<List<SystemData>> = MutableLiveData()
-    var articles: LiveData<PagedList<WxChapterListDatas>>? = null
+    val mType: MutableLiveData<List<SystemData>> = MutableLiveData()
+    var mArticles: LiveData<PagedList<WxChapterListDatas>>? = null
 
     fun fetchType() {
         viewModelScope.safeLaunch {
-            type.value = repository.loadSystemType()
+            mType.value = repository.loadSystemType()
         }
     }
 
     fun fetchArticles(cid: Int) {
-        articles = LivePagedListBuilder(
+        mArticles = LivePagedListBuilder(
             KnowledgeSystemDataSourceFactory(KnowledgeSystemRepository(), cid),
             PagedList.Config.Builder()
                 .setPageSize(20)

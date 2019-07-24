@@ -16,10 +16,10 @@ import com.kuky.demo.wan.android.entity.UserCollectDetail
  * Desc:
  */
 class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) : ViewModel() {
-    var articles: LiveData<PagedList<UserCollectDetail>>? = null
+    var mArticles: LiveData<PagedList<UserCollectDetail>>? = null
 
     fun fetchCollectedArticleDatas() {
-        articles = LivePagedListBuilder(
+        mArticles = LivePagedListBuilder(
             CollectedArticlesDataSourceFactory(CollectedArticlesRepository()),
             PagedList.Config.Builder()
                 .setPageSize(20)
@@ -39,7 +39,7 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
             val result = repo.deleteCollectedArticle(articleId, originId)
             if (result.errorCode == 0) {
                 // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
-                articles?.value?.dataSource?.invalidate()
+                mArticles?.value?.dataSource?.invalidate()
                 onSuccess()
             } else {
                 onFailed(result.errorMsg)

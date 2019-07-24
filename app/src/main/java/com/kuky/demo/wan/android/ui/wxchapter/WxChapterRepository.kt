@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 
 class WxChapterRepository {
     suspend fun getWxChapter() = withContext(Dispatchers.IO) {
-        val result = RetrofitManager.apiService.wxCahpters()
-        result
+        RetrofitManager.apiService.wxCahpters()
     }
 }

@@ -22,9 +22,8 @@ import kotlinx.coroutines.*
  * Desc:
  */
 class CollectedArticlesRepository {
-    private suspend fun getCookie() = withContext(Dispatchers.IO) {
-        PreferencesHelper.fetchCookie(WanApplication.instance)
-    }
+    private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
+
 
     suspend fun getCollectedArticleDatas(page: Int): List<UserCollectDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.userCollectedArticles(page, getCookie()).data.datas

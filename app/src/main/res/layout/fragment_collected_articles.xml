@@ -7,6 +7,18 @@
     <data>
 
         <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
             name="listener"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
@@ -19,16 +31,25 @@
             type="androidx.paging.PagedListAdapter" />
     </data>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/collected_article_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:adapter="@{adapter}"
-        android:scrollbars="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        bind:pageItemClick="@{listener}"
-        bind:pageItemLongClick="@{longListener}"
-        tools:itemCount="20"
-        tools:listitem="@layout/recycler_collected_article" />
+        bind:refreshColor="@{refreshColor}"
+        bind:refreshListener="@{refreshListener}"
+        bind:refreshState="@{refreshing}">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/collected_article_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adapter="@{adapter}"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            bind:hasFixedSize="@{true}"
+            bind:pageItemClick="@{listener}"
+            bind:pageItemLongClick="@{longListener}"
+            tools:itemCount="20"
+            tools:listitem="@layout/recycler_collected_article" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

@@ -20,14 +20,14 @@ import com.kuky.demo.wan.android.utils.ScreenUtils
  * @description
  */
 class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBinding>() {
-    private val firstAdapter by lazy { KnowledgeSystemTypeAdapter() }
-    private val secAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
-    private val viewModel by lazy {
+    private val mFirstAdapter by lazy { KnowledgeSystemTypeAdapter() }
+    private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
+    private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
             .get(KnowledgeSystemViewModel::class.java)
     }
-    private var firstData: SystemData? = null
-    private var onClick: SystemClick? = null
+    private var mFirstData: SystemData? = null
+    private var mOnClick: SystemClick? = null
 
     override fun onStart() {
         super.onStart()
@@ -47,28 +47,28 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
     override fun getLayoutId() = R.layout.dialog_knowledge_system
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.firstAdapter = firstAdapter
-        mBinding.secAdapter = secAdapter
+        mBinding.firstAdapter = mFirstAdapter
+        mBinding.secAdapter = mSecAdapter
         mBinding.firstItemClick = OnItemClickListener { position, _ ->
-            firstAdapter.getItemData(position)?.let {
-                firstData = it
-                secAdapter.setNewData(it.children as MutableList<SystemCategory>)
+            mFirstAdapter.getItemData(position)?.let {
+                mFirstData = it
+                mSecAdapter.setNewData(it.children as MutableList<SystemCategory>)
             }
         }
         mBinding.secItemClick = OnItemClickListener { position, _ ->
-            secAdapter.getItemData(position)?.let {
-                onClick?.invoke(this, firstData?.name, it.name, it.id)
+            mSecAdapter.getItemData(position)?.let {
+                mOnClick?.invoke(this, mFirstData?.name, it.name, it.id)
             }
         }
-        viewModel.type.observe(this, Observer {
-            firstAdapter.setNewData(it as MutableList<SystemData>)
-            firstData = it[0]
-            secAdapter.setNewData(it[0].children as MutableList<SystemCategory>)
+        mViewModel.mType.observe(this, Observer {
+            mFirstAdapter.setNewData(it as MutableList<SystemData>)
+            mFirstData = it[0]
+            mSecAdapter.setNewData(it[0].children as MutableList<SystemCategory>)
         })
     }
 
     fun setSelect(block: SystemClick): KnowledgeSystemDialogFragment {
-        this.onClick = block
+        this.mOnClick = block
         return this
     }
 }

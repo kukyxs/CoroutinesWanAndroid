@@ -1,9 +1,11 @@
 package com.kuky.demo.wan.android.ui.system
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
@@ -18,17 +20,25 @@ import kotlinx.android.synthetic.main.fragment_knowledge_system.*
  * @description 首页体系模块界面
  */
 class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
+    companion object {
+        private val mHandler = Handler()
+    }
 
     private val mAdapter by lazy { WxChapterListAdapter() }
-
-    private val viewModel by lazy {
+    private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
             .get(KnowledgeSystemViewModel::class.java)
     }
+    private var mCid: Int = 0 // 体系id
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.refreshColor = R.color.colorAccent
+        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            fetchType(mCid)
+        }
+
         mBinding.holder = this
         mBinding.adapter = mAdapter
         mBinding.itemClick = OnItemClickListener { position, _ ->
@@ -40,23 +50,36 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                 )
             }
         }
-        viewModel.fetchType()
-        viewModel.type.observe(this, Observer {
+        mViewModel.fetchType()
+        mViewModel.mType.observe(this, Observer {
             updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
         })
     }
 
+    /**
+     * 刷新文章列表
+     */
+    private fun fetchType(cid: Int) {
+        mViewModel.fetchArticles(cid)
+        mBinding.refreshing = true
+        mViewModel.mArticles?.observe(this, Observer {
+            mAdapter.submitList(it)
+            mHandler.postDelayed({ mBinding.refreshing = false }, 500L)
+        })
+    }
+
+    /**
+     * 选择体系后更新文章列表
+     */
     private fun updateSystemArticles(
         first: String?,
         sec: String?,
         cid: Int
     ) {
+        this.mCid = cid
         system_first.text = first
         system_sec.text = sec
-        viewModel.fetchArticles(cid)
-        viewModel.articles?.observe(this, Observer {
-            mAdapter.submitList(it)
-        })
+        fetchType(cid)
     }
 
     fun typeClick(view: View) {

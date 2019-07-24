@@ -9,6 +9,18 @@
         <variable
             name="listener"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -16,39 +28,43 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="8dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
 
-            <TextView
-                android:id="@+id/wx_chapter_type"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/home_title_bg"
-                android:drawablePadding="4dp"
-                android:gravity="center"
-                android:padding="12dp"
-                android:singleLine="true"
-                android:text="@string/wx_chapter"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_chapter"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:scrollbars="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
-                bind:listItemClick="@{listener}"
-                tools:listitem="@layout/recycler_wx_chapter" />
+                <TextView
+                    android:id="@+id/wx_chapter_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/home_title_bg"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:singleLine="true"
+                    android:text="@string/wx_chapter"
+                    android:textColor="@color/colorAccent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcv_chapter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    bind:hasFixedSize="@{true}"
+                    bind:listItemClick="@{listener}"
+                    tools:listitem="@layout/recycler_wx_chapter" />
+
+            </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.cardview.widget.CardView>
 </layout>
