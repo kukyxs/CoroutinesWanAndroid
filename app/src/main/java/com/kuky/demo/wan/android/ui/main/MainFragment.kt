@@ -5,16 +5,15 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
+import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
@@ -26,10 +25,8 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
-import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.view.*
-import kotlinx.android.synthetic.main.user_profile_header.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
@@ -59,7 +56,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_main
 
-    @SuppressLint("WrongConstant")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@MainFragment
         mBinding.viewModel = mViewModel
@@ -74,40 +70,40 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
         }
 
+        // Bind NavigationView Header Layout
+        val headerBinding = DataBindingUtil.inflate<UserProfileHeaderBinding>(
+            layoutInflater, R.layout.user_profile_header, view.user_profile_drawer, false
+        )
+        headerBinding.holder = this@MainFragment
+
         mViewModel.hasLogin.value = PreferencesHelper.hasLogin(requireContext())
 
         view.main_page.offscreenPageLimit = mAdapter.count
         view.main_page.setPageTransformer(true, GalleryTransformer())
 
+        view.user_profile_drawer.addHeaderView(headerBinding.root)
+
         mViewModel.getBanners()
 
         mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            val header = view.user_profile_drawer.getHeaderView(0)
             val menus = view.user_profile_drawer.menu
 
             menus.findItem(R.id.user_collections).isVisible = it
             menus.findItem(R.id.login_out).isVisible = it
             menus.findItem(R.id.todo_list).isVisible = it
 
-            header.user_name.text =
+            headerBinding.name =
                 if (it) PreferencesHelper.fetchUserName(requireContext())
                 else requireContext().getString(R.string.click_to_login)
-
-            header.user_name.setOnClickListener(
-                if (it) null
-                else View.OnClickListener {
-                    LoginDialogFragment().show(childFragmentManager, "login")
-                }
-            )
         })
 
-        // TODO("由于 NavigationView header 和 menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
-        Glide.with(requireContext())
-            .load(R.drawable.ava_taonce)
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(ScreenUtils.dip2px(requireContext(), 60f))))
-            .into(view.user_profile_drawer.getHeaderView(0).avatar)
+        handleUserProfile()
+    }
 
-        view.user_profile_drawer.setNavigationItemSelectedListener { menu ->
+    @SuppressLint("WrongConstant")
+    private fun handleUserProfile() {
+        // TODO("由于 NavigationView menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
+        mBinding.root.user_profile_drawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> {
                     CollectionFragment.viewCollections(
@@ -115,7 +111,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         0
                     )
-                    view.drawer.closeDrawer(Gravity.START)
+                    mBinding.root.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.favourite_website -> {
@@ -124,7 +120,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_collectionFragment,
                         1
                     )
-                    view.drawer.closeDrawer(Gravity.START)
+                    mBinding.root.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.finish_todo -> {
@@ -143,7 +139,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                                 R.id.action_mainFragment_to_websiteDetailFragment,
                                 url
                             )
-
                             mBinding.root.drawer.closeDrawer(Gravity.START)
                         }
                     }).show(childFragmentManager, "about")
@@ -162,7 +157,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         "https://github.com/kukyxs/CoroutinesWanAndroid"
                     )
-                    view.drawer.closeDrawer(Gravity.START)
+                    mBinding.root.drawer.closeDrawer(Gravity.START)
                 }
 
                 R.id.login_out -> {
@@ -175,6 +170,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
             true
         }
+    }
+
+    /**
+     * click to login in Navigation HeaderLayout
+     */
+    fun headerLogin(view: View) {
+        mViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (!it) {
+                LoginDialogFragment().show(childFragmentManager, "login")
+            }
+        })
     }
 
     fun openSettings(view: View) {

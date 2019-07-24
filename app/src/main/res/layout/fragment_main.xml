@@ -90,7 +90,6 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             android:overScrollMode="never"
-            app:headerLayout="@layout/user_profile_header"
             app:menu="@menu/user_profile_menu" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
