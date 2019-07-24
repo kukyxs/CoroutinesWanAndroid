@@ -10,7 +10,7 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
-import kotlinx.android.synthetic.main.fragment_collection.*
+import kotlinx.android.synthetic.main.fragment_collection.view.*
 
 /**
  * @author kuky.
@@ -32,12 +32,10 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.adapter = mAdapter
-        collection_indicator.setupWithViewPager(collection_vp)
-
-        arguments?.getInt("position", 0)?.let {
-            collection_vp.currentItem = it
-        }
+        // TODO("不通过 DataBinding 绑定 Adapter，若通过 DataBinding 绑定则 currentItem 失效，待解决")
+        view.collection_vp.adapter = mAdapter
+        view.collection_vp.currentItem = arguments?.getInt("position", 0) ?: 0
+        view.collection_indicator.setupWithViewPager(view.collection_vp)
     }
 
     companion object {

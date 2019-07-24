@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import org.jetbrains.anko.alert
@@ -39,7 +41,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         }
 
         mBinding.adapter = mAdapter
-        mBinding.setListener { position, _ ->
+        mBinding.listener = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { data ->
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
@@ -48,7 +50,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                 )
             }
         }
-        mBinding.setLongListener { position, _ ->
+        mBinding.longListener = OnItemLongClickListener { position, _ ->
             requireActivity().alert("是否删除本条收藏？") {
                 okButton {
                     mAdapter.getItemData(position)?.let { data ->
@@ -59,7 +61,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                 }
                 noButton { }
             }.show()
-            return@setLongListener true
+            true
         }
         fetchCollectedArticleDatas()
     }

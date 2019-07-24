@@ -4,9 +4,6 @@
 
     <data>
 
-        <variable
-            name="adapter"
-            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
     </data>
 
     <LinearLayout
@@ -28,7 +25,6 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/collection_vp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adapter="@{adapter}" />
+            android:layout_height="match_parent" />
     </LinearLayout>
 </layout>
