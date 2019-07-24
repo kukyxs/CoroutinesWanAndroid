@@ -29,12 +29,10 @@
             <ImageView
                 android:id="@+id/env_image"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@null"
-                bind:error="@{@drawable/ic_broken_image}"
-                bind:imgUrl="@{data.envelopePic}"
-                bind:placeHolder="@{@drawable/ic_place_holder}"
+                bind:img="@{data.envelopePic}"
                 tools:src="@drawable/ic_place_holder" />
 
             <TextView

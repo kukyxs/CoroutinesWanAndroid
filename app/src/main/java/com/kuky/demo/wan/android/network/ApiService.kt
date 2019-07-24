@@ -146,4 +146,74 @@ interface ApiService {
         @Path("wxid") wxid: Int, @Path("page") page: Int,
         @Query("k") keyword: String
     ): TopArticleEntity
+
+    // ===============================>
+    /**
+     * 获取所有的待办列表
+     * @param page 页码，从 1 开始
+     * @param cookie 登录后保存的 Cookie，通过 [com.kuky.demo.wan.android.data.PreferencesHelper] #fetchCookie 方法获取
+     * @param param 参数设置如下：
+     *      status 状态， 1-完成；0未完成; 默认全部展示；
+     *      type 创建时传入的类型, 默认全部展示
+     *      priority 创建时传入的优先级；默认全部展示
+     *      orderby 1:完成日期顺序；2.完成日期逆序；3.创建日期顺序；4.创建日期逆序(默认)
+     *
+     * @return 查询接口后替换 ResponseBody
+     */
+    @GET("/lg/todo/v2/list/{page}/json")
+    suspend fun fetchTodoList(
+        @Path("page") page: Int, @Header("Cookie") cookie: String,
+        @QueryMap param: HashMap<String, Any>
+    ): ResponseBody
+
+    /**
+     * 新增一条待办
+     * @param param 参数设置如下：
+     *      title: 新增标题（必须）
+     *      content: 新增详情（必须）
+     *      date: 2018-08-01 预定完成时间（不传默认当天，建议传）
+     *      type: 大于0的整数（可选）用于，在app 中预定义几个类别：例如 工作1，生活2，娱乐3，新增的时候传入0，1，2 查询的时候，传入type 进行筛选
+     *      priority 大于0的整数，在app 中预定义几个优先级：重要（1），一般（2）等，查询的时候，传入priority 进行筛选
+     *
+     * @param cookie 登录后保存的 Cookie，通过 [com.kuky.demo.wan.android.data.PreferencesHelper] #fetchCookie 方法获取
+     */
+    @POST("/lg/todo/add/json")
+    @FormUrlEncoded
+    suspend fun addTodo(@FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String): ResponseBody
+
+    /**
+     * 更新一条待办
+     * @param id 更新待办 id
+     * @param cookie 登录后保存的 Cookie，通过 [com.kuky.demo.wan.android.data.PreferencesHelper] #fetchCookie 方法获取
+     * @param param 参数设置如下：
+     *      title: 更新标题 （必须）
+     *      content: 新增详情（必须）
+     *      date: 2018-08-01（必须）
+     *      status: 0 // 0为未完成，1为完成
+     *      type: 大于0的整数（可选）用于，在app 中预定义几个类别：例如 工作1，生活2，娱乐3，新增的时候传入0，1，2 查询的时候，传入type 进行筛选
+     *      priority 大于0的整数，在app 中预定义几个优先级：重要（1），一般（2）等，查询的时候，传入priority 进行筛选
+     */
+    @POST("lg/todo/update/{id}/json")
+    @FormUrlEncoded
+    suspend fun updateTodo(
+        @Path("id") id: Int, @Header("Cookie") cookie: String,
+        @FieldMap param: HashMap<String, Any>
+    ): ResponseBody
+
+    /**
+     * 仅更新待办状态
+     * @param id 更新待办 id
+     * @param status 1 完成 0 未完成
+     * @param cookie 登录后保存的 Cookie，通过 [com.kuky.demo.wan.android.data.PreferencesHelper] #fetchCookie 方法获取
+     */
+    @POST("lg/todo/done/{id}/json")
+    @FormUrlEncoded
+    suspend fun updateTodoState(
+        @Path("id") id: Int, @Field("status") status: Int,
+        @Header("Cookie") cookie: String
+    ): ResponseBody
+
+    // 删除一条待办
+    @POST("/lg/todo/delete/{id}/json")
+    suspend fun deleteTodo(@Path("id") id: Int, @Header("Cookie") cookie: String): ResponseBody
 }

@@ -26,6 +26,13 @@ import com.youth.banner.loader.ImageLoader
  * @description
  */
 
+@BindingAdapter("bind:img")
+fun loadImage(view: ImageView, url: String) {
+    Glide.with(view.context)
+        .load(url).apply(RequestOptions.centerCropTransform())
+        .into(view)
+}
+
 /**
  * 绑定图片加载
  * @param url 图片地址
@@ -33,7 +40,7 @@ import com.youth.banner.loader.ImageLoader
  * @param errorHolder 出错占位图
  */
 @BindingAdapter(value = ["bind:imgUrl", "bind:placeHolder", "bind:error"], requireAll = false)
-fun loadImage(view: ImageView, url: String, placeholder: Drawable, errorHolder: Drawable) {
+fun loadImageWithPlace(view: ImageView, url: String, placeholder: Drawable, errorHolder: Drawable) {
     Glide.with(view.context)
         .load(url)
         .apply(

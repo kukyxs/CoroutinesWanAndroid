@@ -41,7 +41,8 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                 okButton {
                     mAdapter.getItemData(position)?.let { data ->
                         viewModel.deleteCollectedArticle(data.id, data.originId) {
-                            mAdapter.removeItem(position)
+                            // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
+                            viewModel.articles?.value?.dataSource?.invalidate()
                         }
                     }
                 }

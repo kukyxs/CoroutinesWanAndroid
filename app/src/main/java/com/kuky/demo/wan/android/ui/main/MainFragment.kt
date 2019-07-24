@@ -14,6 +14,7 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
+import com.kuky.demo.wan.android.network.RetrofitManager
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
@@ -25,8 +26,11 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
+import com.kuky.demo.wan.android.utils.LogUtils
 import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton

@@ -60,16 +60,6 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
     abstract fun getLayoutId(viewType: Int): Int
 
     /**
-     * 移除指定 position 的 item
-     * @param position 下标
-     */
-    fun removeItem(position: Int) {
-        // todo 先提交，回头重新弄
-        currentList?.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-    /**
      * 与 dataBinding 互相绑定的数据操作
      * @param data 列表中当前 position 的数据
      * @param position 数据的位置
