@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.utils
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -60,6 +61,21 @@ object ApplicationUtils {
         e.printStackTrace()
         0L
     }
+
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    @JvmStatic
+    fun starApp(context: Context, packageName: String, fail: () -> Unit) =
+        try {
+            context.startActivity(Intent(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_LAUNCHER)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                component = context.packageManager.getLaunchIntentForPackage(packageName).component
+            })
+            true
+        } catch (e: Exception) {
+            fail()
+            false
+        }
 
     @JvmStatic
     fun getAppIcon(context: Context, pkgName: String): Bitmap? {

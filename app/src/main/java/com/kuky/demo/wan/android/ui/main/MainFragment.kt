@@ -18,6 +18,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
+import com.kuky.demo.wan.android.ui.dialog.WxDialog
 import com.kuky.demo.wan.android.ui.home.HomeFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
@@ -155,6 +156,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 mBinding.root.drawer.closeDrawer(Gravity.START)
             }
         }).show(childFragmentManager, "about")
+        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
     @SuppressLint("WrongConstant")
@@ -181,6 +183,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     fun openSettings(view: View) {
         mBinding.root.float_menu.close(true)
         mBinding.root.drawer.openDrawer(GravityCompat.START)
+    }
+
+    fun showWxDialog(view: View) {
+        WxDialog().show(childFragmentManager, "qrcode")
+        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
     fun searchArticles(view: View) {

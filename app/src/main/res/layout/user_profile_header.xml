@@ -26,8 +26,9 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
-            android:src="@drawable/wx_pic"
+            android:onClick="@{holder::showWxDialog}"
             android:scaleType="centerCrop"
+            android:src="@drawable/wx_pic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             bind:circleImg="@{@drawable/wx_pic}" />
