@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
-import kotlinx.coroutines.launch
 
 /**
  * @author kuky.
@@ -16,12 +18,19 @@ import kotlinx.coroutines.launch
  */
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
+    val history = MutableLiveData<List<String>>()
     val hotKeys = MutableLiveData<List<HotKeyData>>()
     var result: LiveData<PagedList<ArticleDetail>>? = null
 
     fun fetchKeys() {
-        viewModelScope.launch {
+        viewModelScope.safeLaunch {
             hotKeys.value = repository.hotKeys().data
+        }
+    }
+
+    fun fetchHistory() {
+        viewModelScope.safeLaunch {
+            history.value = SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance)
         }
     }
 

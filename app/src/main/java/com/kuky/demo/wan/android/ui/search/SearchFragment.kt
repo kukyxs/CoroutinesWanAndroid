@@ -39,9 +39,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
-    private val mHistoryAdapter: HistoryAdapter by lazy {
-        HistoryAdapter(SearchHistoryUtils.fetchHistoryKeys(requireActivity()))
-    }
+    private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
 
     private val mViewModel: SearchViewModel by lazy {
         ViewModelProviders
@@ -58,6 +56,13 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             searchArticles(PreferencesHelper.fetchSearchKeyword(requireContext()))
         }
 
+        mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                searchArticles(v.text.toString())
+            }
+            true
+        }
+
         mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
             mHistoryAdapter.getItemData(position)?.let {
@@ -66,18 +71,17 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             }
         }
 
-        mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> { keys ->
-            addLabel(keys)
+        mViewModel.history.observe(this, Observer<List<String>> {
+            mHistoryAdapter.updateHistory(it as MutableList<String>)
         })
 
-        mViewModel.fetchKeys()
+        mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> {
+            addLabel(it)
+        })
 
-        view.search_content.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
-                searchArticles(v.text.toString())
-            }
-            true
-        }
+        mViewModel.fetchHistory()
+
+        mViewModel.fetchKeys()
     }
 
     /**

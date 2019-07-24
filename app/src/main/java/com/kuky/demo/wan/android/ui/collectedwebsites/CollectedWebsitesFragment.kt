@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.method.MovementMethod
 import android.webkit.WebView
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -190,6 +191,14 @@ fun bindOffscreenPageLimit(viewPager: ViewPager, limit: Int) {
 @BindingAdapter(value = ["bind:reversed", "bind:transformer"], requireAll = false)
 fun bindTransformer(viewPager: ViewPager, reversed: Boolean, transformer: ViewPager.PageTransformer) {
     viewPager.setPageTransformer(reversed, transformer)
+}
+
+/**
+ * 绑定 EditText 一些属性
+ */
+@BindingAdapter("bind:editAction")
+fun bindEditAction(editText: EditText, editorActionListener: TextView.OnEditorActionListener) {
+    editText.setOnEditorActionListener(editorActionListener)
 }
 
 /**

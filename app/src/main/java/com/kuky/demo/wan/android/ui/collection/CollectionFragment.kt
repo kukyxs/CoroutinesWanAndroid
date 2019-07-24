@@ -32,9 +32,9 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        collection_vp.adapter = mAdapter
+        mBinding.adapter = mAdapter
         collection_indicator.setupWithViewPager(collection_vp)
-        collection_indicator.isTabIndicatorFullWidth = false
+
         arguments?.getInt("position", 0)?.let {
             collection_vp.currentItem = it
         }

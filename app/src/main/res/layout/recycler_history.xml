@@ -7,6 +7,10 @@
         <variable
             name="history"
             type="String" />
+
+        <variable
+            name="listener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <LinearLayout
@@ -37,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
+            android:onClickListener="@{listener}"
             android:padding="4dp"
             android:src="@drawable/ic_close_grey_24dp" />
 

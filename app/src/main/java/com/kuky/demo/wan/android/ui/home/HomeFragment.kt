@@ -14,7 +14,6 @@ import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast

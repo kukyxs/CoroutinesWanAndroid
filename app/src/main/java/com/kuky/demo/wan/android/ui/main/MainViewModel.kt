@@ -3,8 +3,10 @@ package com.kuky.demo.wan.android.ui.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
 
 /**
@@ -14,6 +16,10 @@ import com.kuky.demo.wan.android.entity.BannerData
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val hasLogin = MutableLiveData<Boolean>()
     val banners = MutableLiveData<List<BannerData>>()
+
+    init {
+        hasLogin.value = PreferencesHelper.hasLogin(WanApplication.instance)
+    }
 
     fun getBanners() {
         viewModelScope.safeLaunch {

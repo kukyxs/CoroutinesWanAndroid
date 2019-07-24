@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="adapter"
+            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
     </data>
 
     <LinearLayout
@@ -17,6 +20,7 @@
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
             app:tabIndicatorColor="@color/colorAccent"
+            app:tabIndicatorFullWidth="false"
             app:tabIndicatorHeight="1dp"
             app:tabRippleColor="#FFEFEFEF"
             app:tabSelectedTextColor="@color/colorAccent" />
@@ -24,6 +28,7 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/collection_vp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:adapter="@{adapter}" />
     </LinearLayout>
 </layout>

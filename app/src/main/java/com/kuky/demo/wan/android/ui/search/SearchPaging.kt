@@ -14,11 +14,13 @@ import kotlinx.coroutines.*
 
 class SearchRepository {
 
+    // 搜索热词
     suspend fun hotKeys() = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService.hotKeys()
         result
     }
 
+    // 搜索结果
     suspend fun loadSearchResult(page: Int, key: String): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService.searchArticle(page, key).data.datas
         result

@@ -14,7 +14,6 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
-import com.kuky.demo.wan.android.network.RetrofitManager
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
@@ -26,11 +25,8 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
-import com.kuky.demo.wan.android.utils.LogUtils
 import com.youth.banner.listener.OnBannerListener
 import kotlinx.android.synthetic.main.fragment_main.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
@@ -63,7 +59,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@MainFragment
         mBinding.viewModel = mViewModel
-        mBinding.adapter = mAdapter
         mBinding.listener = OnBannerListener { position ->
             mViewModel.banners.value?.let {
                 WebsiteDetailFragment.viewDetail(
@@ -82,10 +77,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         view.user_profile_drawer.addHeaderView(headerBinding.root)
 
         // Bind ViewPager
+        mBinding.adapter = mAdapter
         mBinding.limit = mAdapter.count
         mBinding.transformer = GalleryTransformer()
-
-        mViewModel.hasLogin.value = PreferencesHelper.hasLogin(requireContext())
 
         mViewModel.getBanners()
 
@@ -104,28 +98,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         handleUserProfile()
     }
 
-    @SuppressLint("WrongConstant")
     private fun handleUserProfile() {
         // TODO("由于 NavigationView menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
         mBinding.root.user_profile_drawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
-                R.id.favourite_article -> {
-                    CollectionFragment.viewCollections(
-                        mNavController,
-                        R.id.action_mainFragment_to_collectionFragment,
-                        0
-                    )
-                    mBinding.root.drawer.closeDrawer(Gravity.START)
-                }
+                R.id.favourite_article -> toFavourite(0)
 
-                R.id.favourite_website -> {
-                    CollectionFragment.viewCollections(
-                        mNavController,
-                        R.id.action_mainFragment_to_collectionFragment,
-                        1
-                    )
-                    mBinding.root.drawer.closeDrawer(Gravity.START)
-                }
+                R.id.favourite_website -> toFavourite(1)
 
                 R.id.finish_todo -> {
 
@@ -135,45 +114,57 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 }
 
-                R.id.about -> {
-                    AboutUsDialog().setHandler(object : AboutUsHandler {
-                        override fun spanClick(url: String) {
-                            WebsiteDetailFragment.viewDetail(
-                                mNavController,
-                                R.id.action_mainFragment_to_websiteDetailFragment,
-                                url
-                            )
-                            mBinding.root.drawer.closeDrawer(Gravity.START)
-                        }
-                    }).show(childFragmentManager, "about")
-                }
+                R.id.about -> showAboutUs()
 
-                R.id.version -> {
-                    requireContext()
-                        .alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
-                            yesButton { dialog -> dialog.dismiss() }
-                        }.show()
-                }
+                R.id.go_star -> starForUs()
 
-                R.id.go_star -> {
-                    WebsiteDetailFragment.viewDetail(
-                        mNavController,
-                        R.id.action_mainFragment_to_websiteDetailFragment,
-                        "https://github.com/kukyxs/CoroutinesWanAndroid"
-                    )
-                    mBinding.root.drawer.closeDrawer(Gravity.START)
-                }
+                R.id.version -> requireContext()
+                    .alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
+                        yesButton { dialog -> dialog.dismiss() }
+                    }.show()
 
-                R.id.login_out -> {
-                    requireContext()
-                        .alert("是否退出登录") {
-                            yesButton { mViewModel.loginout() }
-                            noButton { }
-                        }.show()
-                }
+                R.id.login_out -> requireContext()
+                    .alert("是否退出登录") {
+                        yesButton { mViewModel.loginout() }
+                        noButton { }
+                    }.show()
             }
             true
         }
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun toFavourite(position: Int) {
+        CollectionFragment.viewCollections(
+            mNavController,
+            R.id.action_mainFragment_to_collectionFragment,
+            position
+        )
+        mBinding.root.drawer.closeDrawer(Gravity.START)
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun showAboutUs() {
+        AboutUsDialog().setHandler(object : AboutUsHandler {
+            override fun spanClick(url: String) {
+                WebsiteDetailFragment.viewDetail(
+                    mNavController,
+                    R.id.action_mainFragment_to_websiteDetailFragment,
+                    url
+                )
+                mBinding.root.drawer.closeDrawer(Gravity.START)
+            }
+        }).show(childFragmentManager, "about")
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun starForUs() {
+        WebsiteDetailFragment.viewDetail(
+            mNavController,
+            R.id.action_mainFragment_to_websiteDetailFragment,
+            "https://github.com/kukyxs/CoroutinesWanAndroid"
+        )
+        mBinding.root.drawer.closeDrawer(Gravity.START)
     }
 
     /**

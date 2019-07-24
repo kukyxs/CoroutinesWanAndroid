@@ -4,11 +4,9 @@ import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.WebsiteData
-import org.jetbrains.anko.toast
 
 /**
  * @author Taonce.
