@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="adapter"
+            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
+
+        <variable
+            name="current"
+            type="Integer" />
     </data>
 
     <LinearLayout
@@ -25,6 +33,9 @@
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/collection_vp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:adapter="@{adapter}"
+            bind:currentItem="@{current}"
+            bind:smoothScroll="@{false}" />
     </LinearLayout>
 </layout>

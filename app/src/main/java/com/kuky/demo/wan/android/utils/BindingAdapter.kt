@@ -193,6 +193,11 @@ fun bindTransformer(viewPager: ViewPager, reversed: Boolean, transformer: ViewPa
     viewPager.setPageTransformer(reversed, transformer)
 }
 
+@BindingAdapter(value = ["bind:currentItem", "bind:smoothScroll"])
+fun bindCurrentItem(viewPager: ViewPager, current: Int, smoothScroll: Boolean) {
+    viewPager.setCurrentItem(current, smoothScroll)
+}
+
 /**
  * 绑定 EditText 一些属性
  */

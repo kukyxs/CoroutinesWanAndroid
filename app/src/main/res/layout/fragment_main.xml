@@ -75,6 +75,7 @@
                 android:layout_marginBottom="30dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:menu_colorNormal="@color/colorAccent"
                 app:menu_fab_size="mini"
                 app:menu_openDirection="up">
 
@@ -83,6 +84,7 @@
                     android:layout_height="wrap_content"
                     android:onClick="@{holder::searchArticles}"
                     android:src="@drawable/ic_search_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
                     app:fab_size="mini" />
 
                 <com.github.clans.fab.FloatingActionButton
@@ -90,6 +92,7 @@
                     android:layout_height="wrap_content"
                     android:onClick="@{holder::openSettings}"
                     android:src="@drawable/ic_settings_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
                     app:fab_size="mini" />
             </com.github.clans.fab.FloatingActionMenu>
 

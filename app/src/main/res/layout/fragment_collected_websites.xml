@@ -62,9 +62,9 @@
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|bottom"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
                 android:onClick="@{fragment::addCollectedWebsites}"
                 android:src="@drawable/ic_add_white_24dp"
                 app:fabSize="mini" />

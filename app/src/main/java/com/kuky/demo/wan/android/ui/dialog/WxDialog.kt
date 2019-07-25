@@ -32,9 +32,7 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
     }
 
     fun saveImg(view: View): Boolean {
-        val file = ImageSaveUtils.getNewFile(requireContext(), "play_android", "wx_taonce") ?: return false
-
-        var result = false
+        val file = ImageSaveUtils.getNewFile(requireContext(), "wx_taonce")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             (requireActivity() as BaseActivity<*>).onRuntimePermissionsAsk(
@@ -43,7 +41,7 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ), object : PermissionListener {
                     override fun onGranted() {
-                        result = saveQrCode(file)
+                        saveQrCode(file)
                     }
 
                     override fun onDenied(deniedPermissions: List<String>) {
@@ -52,33 +50,36 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
                 }
             )
         } else {
-            result = saveQrCode(file)
+            saveQrCode(file)
         }
 
-        if (result) {
-            requireContext().toast("保存图片成功，即将打开微信")
-            mHandler.postDelayed({
-                ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
-                dialog?.dismiss()
-            }, 1000)
-        } else {
-            requireContext().toast("保存图片出错")
-        }
         return true
     }
 
-    private fun saveQrCode(file: File): Boolean {
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
+    private fun saveQrCode(file: File?) {
+        file?.let {
+            if (!it.parentFile.exists()) {
+                it.parentFile.mkdirs()
+            }
 
-        if (file.exists()) {
-            file.delete()
-        }
+            if (it.exists()) {
+                it.delete()
+            }
 
-        return if (file.createNewFile())
-            ImageSaveUtils.cropView(mBinding.wxCode, file)
-        else false
+            val result = if (it.createNewFile())
+                ImageSaveUtils.cropView(mBinding.wxCode, it)
+            else false
+
+            if (result) {
+                requireContext().toast("保存图片成功，即将打开微信")
+                mHandler.postDelayed({
+                    ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
+                    dialog?.dismiss()
+                }, 1000)
+            } else {
+                requireContext().toast("保存图片出错")
+            }
+        }
     }
 
     fun close(view: View) {

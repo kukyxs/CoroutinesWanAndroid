@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.View
@@ -61,21 +60,8 @@ object ImageSaveUtils {
         return bitmap
     }
 
-    private fun isSDAvailable(): Boolean = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
-
-    private fun getFolderName(name: String): String {
-        val mediaStorageDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), name)
-        return if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) ""
-        else mediaStorageDir.absolutePath
-    }
-
-    fun getNewFile(context: Context, folderName: String, fileName: String): File? {
-
-        val path = if (isSDAvailable()) {
-            getFolderName(folderName) + File.separator + fileName + ".jpg"
-        } else {
-            context.filesDir.path + File.separator + fileName + ".jpg"
-        }
+    fun getNewFile(context: Context, fileName: String): File? {
+        val path = File(context.externalCacheDir, "images/$fileName.jpg").absolutePath
 
         return if (TextUtils.isEmpty(path)) {
             null

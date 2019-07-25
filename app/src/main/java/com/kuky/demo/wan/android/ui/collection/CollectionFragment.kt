@@ -32,9 +32,8 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        // TODO("不通过 DataBinding 绑定 Adapter，若通过 DataBinding 绑定则 currentItem 失效，待解决")
-        view.collection_vp.adapter = mAdapter
-        view.collection_vp.currentItem = arguments?.getInt("position", 0) ?: 0
+        mBinding.adapter = mAdapter
+        mBinding.current = arguments?.getInt("position", 0) ?: 0
         view.collection_indicator.setupWithViewPager(view.collection_vp)
     }
 
