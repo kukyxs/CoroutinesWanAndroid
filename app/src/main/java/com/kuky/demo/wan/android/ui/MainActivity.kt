@@ -12,4 +12,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun initActivity(savedInstanceState: Bundle?) {
 
     }
+
+    override fun needTransparentStatus(): Boolean = true
 }

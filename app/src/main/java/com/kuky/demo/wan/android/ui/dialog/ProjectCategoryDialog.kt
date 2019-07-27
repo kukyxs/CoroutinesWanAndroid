@@ -61,10 +61,18 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         mBinding.listener = OnItemClickListener { position, _ ->
             onSelectedListener?.invoke(dialog!!, mAdapter.getItemData(position)!!)
+            mViewModel.selectedCategoryPosition.value = position
         }
+
+        mBinding.offset = (ScreenUtils.getScreenWidth(requireContext()) * 0.4f).toInt()
 
         mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> {
             mAdapter.setCategories(it as MutableList<ProjectCategoryData>?)
+        })
+
+        mViewModel.selectedCategoryPosition.observe(this, Observer<Int> {
+            mAdapter.updateSelectedPosition(it)
+            mBinding.position = it
         })
     }
 }

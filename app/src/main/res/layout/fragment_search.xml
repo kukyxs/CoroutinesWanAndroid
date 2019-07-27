@@ -42,6 +42,8 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
+        <include layout="@layout/include_status_bar" />
+
         <EditText
             android:id="@+id/search_content"
             android:layout_width="match_parent"

@@ -84,6 +84,7 @@ class KnowledgeSystemTypeAdapter(
         holder: BaseViewHolder<RecyclerKnowledgeSystemBinding>
     ) {
         holder.binding.name = mData?.get(position)?.name
+        holder.binding.selected = mSelectionPosition == position
     }
 
     fun setNewData(newData: MutableList<SystemData>?) {
@@ -110,6 +111,7 @@ class KnowledgeSystemSecTypeAdapter(
         holder: BaseViewHolder<RecyclerKnowledgeSystemBinding>
     ) {
         holder.binding.name = mData?.get(position)?.name
+        holder.binding.selected = mSelectionPosition == position
     }
 
     fun setNewData(newData: MutableList<SystemCategory>?) {

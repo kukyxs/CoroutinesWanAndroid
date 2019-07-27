@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 
@@ -18,6 +19,15 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
 class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository) : ViewModel() {
     val mType: MutableLiveData<List<SystemData>> = MutableLiveData()
     var mArticles: LiveData<PagedList<WxChapterListDatas>>? = null
+    val firstSelectedPosition = MutableLiveData<Int>()
+    val secSelectedPosition = MutableLiveData<Int>()
+    val children = MutableLiveData<MutableList<SystemCategory>>()
+
+    init {
+        firstSelectedPosition.value = 0
+        secSelectedPosition.value = 0
+        children.value = arrayListOf()
+    }
 
     fun fetchType() {
         viewModelScope.safeLaunch {

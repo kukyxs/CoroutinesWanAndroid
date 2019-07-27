@@ -19,6 +19,11 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
 
     val categories: MutableLiveData<List<ProjectCategoryData>> = MutableLiveData()
     var projects: LiveData<PagedList<ProjectDetailData>>? = null
+    val selectedCategoryPosition = MutableLiveData<Int>()
+
+    init {
+        selectedCategoryPosition.value = 0
+    }
 
     fun fetchCategories() {
         viewModelScope.safeLaunch {

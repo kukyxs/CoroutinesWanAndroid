@@ -156,7 +156,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 mBinding.root.drawer.closeDrawer(Gravity.START)
             }
         }).show(childFragmentManager, "about")
-        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
     @SuppressLint("WrongConstant")
@@ -187,7 +186,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     fun showWxDialog(view: View) {
         WxDialog().show(childFragmentManager, "qrcode")
-        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
     fun searchArticles(view: View) {

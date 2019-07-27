@@ -1,7 +1,5 @@
 package com.kuky.demo.wan.android.ui.home
 
-import android.os.Build
-import android.text.Html
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -98,10 +96,7 @@ class HomeArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerHomeArtic
     @Suppress("DEPRECATION")
     override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
         holder.binding.detail = data
-        // 后台有时候返回 H5 格式文字，需要转换
-        holder.binding.description = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
-            Html.fromHtml(data.title, Html.FROM_HTML_MODE_COMPACT)
-        else Html.fromHtml(data.title)
+        holder.binding.description = data.title
     }
 
     companion object {

@@ -7,6 +7,10 @@
         <variable
             name="category"
             type="com.kuky.demo.wan.android.entity.ProjectCategoryData" />
+
+        <variable
+            name="selected"
+            type="Boolean" />
     </data>
 
     <TextView
@@ -16,7 +20,7 @@
         android:padding="8dp"
         android:singleLine="true"
         android:text="@{category.name}"
-        android:textColor="@android:color/black"
+        android:textColor="@{selected ? @color/colorAccent : @android:color/black }"
         android:textSize="14sp"
         tools:text="完整项目" />
 </layout>

@@ -15,7 +15,8 @@
         android:gravity="center"
         android:padding="10dp"
         android:text="@{data.name}"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="码个蛋" />
 </layout>

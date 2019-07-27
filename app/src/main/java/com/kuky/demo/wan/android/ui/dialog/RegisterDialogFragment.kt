@@ -47,4 +47,8 @@ class RegisterDialogFragment : BaseDialogFragment<DialogRegisterBinding>() {
             })
         }
     }
+
+    fun close(view: View) {
+        dialog?.dismiss()
+    }
 }

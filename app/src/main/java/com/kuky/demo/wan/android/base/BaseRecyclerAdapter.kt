@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableList<T>?) :
     RecyclerView.Adapter<BaseViewHolder<VB>>() {
 
+    protected var mSelectionPosition = -1
     private var itemListener: OnItemClickListener? = null
     private var itemLongListener: OnItemLongClickListener? = null
 
@@ -44,6 +45,11 @@ abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableLi
     }
 
     override fun getItemCount(): Int = mData?.size ?: 0
+
+    fun updateSelectedPosition(position: Int) {
+        this.mSelectionPosition = position
+        notifyDataSetChanged()
+    }
 
     fun getAdapterData(): MutableList<T>? = mData
 

@@ -130,6 +130,7 @@ class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = nul
         holder: BaseViewHolder<RecyclerProjectCategoryBinding>
     ) {
         holder.binding.category = data
+        holder.binding.selected = mSelectionPosition == position
     }
 }
 

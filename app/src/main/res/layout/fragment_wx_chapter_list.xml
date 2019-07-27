@@ -27,17 +27,20 @@
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
     </data>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        bind:refreshColor="@{refreshColor}"
-        bind:refreshListener="@{refreshListener}"
-        bind:refreshState="@{refreshing}">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <include layout="@layout/include_status_bar" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chapter_list"
@@ -50,6 +53,6 @@
                 bind:pageItemClick="@{listener}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_wx_chapter_list" />
-        </LinearLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 </layout>

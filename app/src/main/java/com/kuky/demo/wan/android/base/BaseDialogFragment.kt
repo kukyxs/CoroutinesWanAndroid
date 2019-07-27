@@ -6,6 +6,7 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
+import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -20,8 +21,11 @@ abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(), Coro
     protected lateinit var mBinding: VB
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         setStyle(STYLE_NO_FRAME, android.R.style.Theme_Material_Dialog_Alert)
+        dialog?.window?.let {
+            it.requestFeature(Window.FEATURE_NO_TITLE)
+            it.setWindowAnimations(R.style.DialogPushInOutAnimation)
+        }
 
         mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         return mBinding.root

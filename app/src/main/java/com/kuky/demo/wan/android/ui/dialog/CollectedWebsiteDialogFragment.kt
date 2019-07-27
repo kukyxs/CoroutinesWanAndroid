@@ -1,7 +1,9 @@
 package com.kuky.demo.wan.android.ui.dialog
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
@@ -21,6 +23,11 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
     private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        dialog?.window?.setWindowAnimations(R.style.DialogPushInOutAnimation)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun getLayoutId() = R.layout.dialog_collected_website

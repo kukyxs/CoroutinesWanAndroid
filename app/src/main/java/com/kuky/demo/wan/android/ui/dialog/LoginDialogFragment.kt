@@ -51,4 +51,8 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
         dialog?.dismiss()
         RegisterDialogFragment().show(requireActivity().supportFragmentManager, "register")
     }
+
+    fun close(view: View) {
+        dialog?.dismiss()
+    }
 }

@@ -14,10 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include layout="@layout/include_status_bar" />
+
         <WebView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/barHeight"
+            android:overScrollMode="never"
             bind:url="@{url}" />
 
         <ProgressBar
@@ -25,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="@dimen/halfBarHeight"
             android:alpha="0.4" />
     </FrameLayout>
 </layout>

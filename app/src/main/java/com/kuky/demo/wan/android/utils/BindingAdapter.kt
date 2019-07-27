@@ -2,13 +2,19 @@ package com.kuky.demo.wan.android.utils
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.text.Html
 import android.text.method.MovementMethod
 import android.webkit.WebView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
@@ -158,6 +164,22 @@ fun bindRecyclerHasFixedSize(recyclerView: RecyclerView, hasFixedSize: Boolean) 
 }
 
 /**
+ * recyclerView 滚动到指定 position，并指定偏移量
+ */
+@BindingAdapter(value = ["bind:scrollTo", "bind:offset"])
+fun bindScrollTo(recyclerView: RecyclerView, position: Int, offset: Int) {
+    recyclerView.layoutManager.let {
+        when (it) {
+            is LinearLayoutManager -> it.scrollToPositionWithOffset(position, offset)
+
+            is GridLayoutManager -> it.scrollToPositionWithOffset(position, offset)
+
+            is StaggeredGridLayoutManager -> it.scrollToPositionWithOffset(position, offset)
+        }
+    }
+}
+
+/**
  * 绑定 SwipeRefreshLayout 颜色，刷新状态，监听事件
  */
 @BindingAdapter(
@@ -219,4 +241,11 @@ fun bindWebUrl(webView: WebView, url: String?) {
 @BindingAdapter("bind:movementMethod")
 fun bindMovementMethod(textView: TextView, method: MovementMethod) {
     textView.movementMethod = method
+}
+
+@BindingAdapter("bind:renderHtml")
+fun bindRenderHtml(textView: TextView, description: String) {
+    textView.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+        Html.fromHtml(description, HtmlCompat.FROM_HTML_MODE_COMPACT)
+    else Html.fromHtml(description)
 }

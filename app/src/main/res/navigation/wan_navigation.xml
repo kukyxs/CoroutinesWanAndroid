@@ -18,16 +18,32 @@
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_websiteDetailFragment"
-            app:destination="@id/websiteDetailFragment" />
+            app:destination="@id/websiteDetailFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
         <action
             android:id="@+id/action_mainFragment_to_wxChapterListFragment"
-            app:destination="@id/wxChapterListFragment" />
+            app:destination="@id/wxChapterListFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
         <action
             android:id="@+id/action_mainFragment_to_collectionFragment"
-            app:destination="@id/collectionFragment" />
+            app:destination="@id/collectionFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
     </fragment>
 
     <fragment
@@ -43,7 +59,11 @@
         tools:layout="@layout/fragment_wx_chapter_list">
         <action
             android:id="@+id/action_wxChapterListFragment_to_websiteDetailFragment"
-            app:destination="@id/websiteDetailFragment" />
+            app:destination="@id/websiteDetailFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
     </fragment>
 
     <fragment
@@ -53,7 +73,11 @@
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_websiteDetailFragment"
-            app:destination="@id/websiteDetailFragment" />
+            app:destination="@id/websiteDetailFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
     </fragment>
 
     <fragment
@@ -63,7 +87,11 @@
         tools:layout="@layout/fragment_collection">
         <action
             android:id="@+id/action_collectionFragment_to_websiteDetailFragment"
-            app:destination="@id/websiteDetailFragment" />
+            app:destination="@id/websiteDetailFragment"
+            app:enterAnim="@anim/slide_right_int"
+            app:exitAnim="@anim/slide_left_out"
+            app:popEnterAnim="@anim/slide_left_in"
+            app:popExitAnim="@anim/slide_right_out" />
     </fragment>
 
 </navigation>

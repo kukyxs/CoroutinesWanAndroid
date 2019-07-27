@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -10,19 +11,32 @@
             type="com.kuky.demo.wan.android.ui.dialog.RegisterDialogFragment" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_bg_with_padding"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:gravity="center_horizontal">
 
         <ImageView
+            android:id="@+id/dismiss_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:onClick="@{holder::close}"
+            android:src="@drawable/ic_close_grey_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/register_avatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
-            bind:circleImg="@{@drawable/ava_kuky}"
-            tools:src="@drawable/ava_kuky" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dismiss_dialog"
+            bind:circleImg="@{@drawable/ava_taonce}"
+            tools:src="@drawable/ava_taonce" />
 
         <EditText
             android:id="@+id/user_name"
@@ -36,6 +50,7 @@
             android:padding="8dp"
             android:singleLine="true"
             android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/register_avatar"
             tools:ignore="Autofill,LabelFor" />
 
         <EditText
@@ -50,6 +65,7 @@
             android:padding="8dp"
             android:singleLine="true"
             android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/user_name"
             tools:ignore="Autofill,LabelFor" />
 
         <EditText
@@ -64,6 +80,7 @@
             android:padding="8dp"
             android:singleLine="true"
             android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/password"
             tools:ignore="Autofill,LabelFor" />
 
         <Button
@@ -73,6 +90,7 @@
             android:layout_marginTop="12dp"
             android:onClick="@{holder::register}"
             android:text="@string/register_text"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/repass" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

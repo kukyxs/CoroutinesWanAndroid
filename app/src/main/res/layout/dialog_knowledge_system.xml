@@ -21,6 +21,22 @@
         <variable
             name="secItemClick"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="divider"
+            type="androidx.recyclerview.widget.RecyclerView.ItemDecoration" />
+
+        <variable
+            name="firstPosition"
+            type="Integer" />
+
+        <variable
+            name="secPosition"
+            type="Integer" />
+
+        <variable
+            name="offset"
+            type="Integer" />
     </data>
 
 
@@ -32,7 +48,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/system_first_list"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:adapter="@{firstAdapter}"
             android:orientation="vertical"
             android:overScrollMode="never"
@@ -41,7 +57,10 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent"
+            bind:divider="@{divider}"
             bind:listItemClick="@{firstItemClick}"
+            bind:offset="@{offset}"
+            bind:scrollTo="@{firstPosition}"
             tools:itemCount="20"
             tools:listitem="@layout/recycler_knowledge_system" />
 
@@ -56,8 +75,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/system_first_list"
+            bind:divider="@{divider}"
             bind:listItemClick="@{secItemClick}"
+            bind:offset="@{offset}"
+            bind:scrollTo="@{secPosition}"
             tools:itemCount="20"
             tools:listitem="@layout/recycler_knowledge_system" />
 
@@ -67,6 +89,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
+
+        <View
+            android:layout_width="0.1dp"
+            android:layout_height="match_parent"
+            android:background="#44000000"
+            app:layout_constraintStart_toStartOf="@id/guideline" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

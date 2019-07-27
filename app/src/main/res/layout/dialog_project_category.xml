@@ -17,6 +17,14 @@
         <variable
             name="divider"
             type="androidx.recyclerview.widget.RecyclerView.ItemDecoration" />
+
+        <variable
+            name="position"
+            type="Integer" />
+
+        <variable
+            name="offset"
+            type="Integer" />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -29,6 +37,8 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         bind:divider="@{divider}"
         bind:listItemClick="@{listener}"
+        bind:offset="@{offset}"
+        bind:scrollTo="@{position}"
         tools:listitem="@layout/recycler_project_category">
 
     </androidx.recyclerview.widget.RecyclerView>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -10,17 +11,30 @@
             type="com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_bg_with_padding"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:gravity="center_horizontal">
 
         <ImageView
+            android:id="@+id/dismiss_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:onClick="@{holder::close}"
+            android:src="@drawable/ic_close_grey_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/login_avatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dismiss_dialog"
             bind:circleImg="@{@drawable/ava_kuky}"
             tools:src="@drawable/ava_kuky" />
 
@@ -36,6 +50,7 @@
             android:padding="8dp"
             android:singleLine="true"
             android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/login_avatar"
             tools:ignore="Autofill,LabelFor" />
 
         <EditText
@@ -50,24 +65,29 @@
             android:padding="8dp"
             android:singleLine="true"
             android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/user_name"
             tools:ignore="Autofill,LabelFor" />
 
         <Button
+            android:id="@+id/login_btn"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:onClick="@{holder::login}"
             android:text="@string/login_text"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/password" />
 
         <Button
+            android:id="@+id/register_btn"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:onClick="@{holder::register}"
             android:text="@string/register_text"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/login_btn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

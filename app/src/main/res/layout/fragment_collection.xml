@@ -19,6 +19,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include layout="@layout/include_status_bar" />
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/collection_indicator"
             android:layout_width="match_parent"
@@ -34,6 +36,7 @@
             android:id="@+id/collection_vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
             android:adapter="@{adapter}"
             bind:currentItem="@{current}"
             bind:smoothScroll="@{false}" />
