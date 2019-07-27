@@ -16,7 +16,6 @@ import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
-import com.kuky.demo.wan.android.ui.dialog.AboutUsHandler
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.dialog.WxDialog
 import com.kuky.demo.wan.android.ui.home.HomeFragment
@@ -155,16 +154,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     @SuppressLint("WrongConstant")
     private fun showAboutUs() {
-        AboutUsDialog().setHandler(object : AboutUsHandler {
-            override fun spanClick(url: String) {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_mainFragment_to_websiteDetailFragment,
-                    url
-                )
-                mBinding.root.drawer.closeDrawer(Gravity.START)
-            }
-        }).show(childFragmentManager, "about")
+        AboutUsDialog().setHandler { url ->
+            WebsiteDetailFragment.viewDetail(
+                mNavController,
+                R.id.action_mainFragment_to_websiteDetailFragment,
+                url
+            )
+            mBinding.root.drawer.closeDrawer(Gravity.START)
+        }.show(childFragmentManager, "about")
     }
 
     @SuppressLint("WrongConstant")

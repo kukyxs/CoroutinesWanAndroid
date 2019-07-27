@@ -94,5 +94,6 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
         return this
     }
 }
+
 typealias SystemClick = (KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit
 

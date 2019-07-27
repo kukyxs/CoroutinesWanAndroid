@@ -28,7 +28,7 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
                 .apply {
                     setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
-                            mAboutUsHandler?.spanClick("https://github.com/kukyxs")
+                            mAboutUsHandler?.invoke("https://github.com/kukyxs")
                             dialog?.dismiss()
                         }
                     }, 0, 6, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -39,7 +39,7 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
                 .apply {
                     setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
-                            mAboutUsHandler?.spanClick("https://github.com/Taonce")
+                            mAboutUsHandler?.invoke("https://github.com/Taonce")
                             dialog?.dismiss()
                         }
                     }, 0, 6, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -56,6 +56,4 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
     }
 }
 
-interface AboutUsHandler {
-    fun spanClick(url: String)
-}
+typealias AboutUsHandler = (String) -> Unit
