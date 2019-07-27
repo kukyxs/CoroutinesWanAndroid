@@ -26,7 +26,9 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
+import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -67,6 +69,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                     R.id.action_mainFragment_to_websiteDetailFragment,
                     it[position].url
                 )
+            }
+        }
+
+        banner.let {
+            it.layoutParams = it.layoutParams.apply {
+                width = ScreenUtils.getScreenWidth(requireContext())
+                height = (width * 0.45f).toInt()
             }
         }
 

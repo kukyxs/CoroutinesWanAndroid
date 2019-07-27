@@ -44,7 +44,7 @@
             <com.youth.banner.Banner
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 app:banner_default_image="@drawable/ic_place_holder"
                 app:layout_constraintTop_toTopOf="parent"
                 bind:bannerClick="@{listener}"
