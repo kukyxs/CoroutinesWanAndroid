@@ -20,7 +20,7 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
 
     fun fetchCollectedArticleDatas() {
         mArticles = LivePagedListBuilder(
-            CollectedArticlesDataSourceFactory(CollectedArticlesRepository()),
+            CollectedArticlesDataSourceFactory(repo),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

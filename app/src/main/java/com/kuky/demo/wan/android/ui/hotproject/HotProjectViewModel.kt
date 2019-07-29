@@ -33,7 +33,7 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
 
     fun fetchDiffCategoryProjects(pid: Int) {
         projects = LivePagedListBuilder(
-            HotProjectDataSourceFactory(HotProjectRepository(), pid),
+            HotProjectDataSourceFactory(repository, pid),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

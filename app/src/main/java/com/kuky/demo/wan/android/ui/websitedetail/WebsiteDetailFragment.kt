@@ -10,7 +10,6 @@ import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentWesiteDetailBinding
-import kotlinx.android.synthetic.main.fragment_wesite_detail.*
 import kotlinx.android.synthetic.main.fragment_wesite_detail.view.*
 
 /**
@@ -26,7 +25,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
         mBinding.url = arguments?.getString("url")
 
-        content.settings.apply {
+        view.content.settings.apply {
             javaScriptEnabled = true
             javaScriptCanOpenWindowsAutomatically = true
             allowFileAccess = true
@@ -43,7 +42,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             cacheMode = WebSettings.LOAD_NO_CACHE
         }
 
-        content.apply {
+        view.content.apply {
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     view?.loadUrl(url)

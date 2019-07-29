@@ -1,11 +1,14 @@
 package com.kuky.demo.wan.android.ui.main
 
 import android.text.TextUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.CODE_FAILED
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.ResultBack
 import com.kuky.demo.wan.android.data.PreferencesHelper
+import com.kuky.demo.wan.android.entity.BannerData
 import com.kuky.demo.wan.android.entity.WanUserEntity
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
@@ -21,10 +24,15 @@ import kotlin.coroutines.suspendCoroutine
  */
 class MainRepository {
 
+    fun getCachedBanners(): List<BannerData>? = Gson().fromJson(
+        PreferencesHelper.fetchBannerCache(WanApplication.instance),
+        object : TypeToken<List<BannerData>>() {}.type
+    )
+
     suspend fun getHomeBanners() = withContext(Dispatchers.IO) {
-        val banners = RetrofitManager.apiService.homeBanner().data
-        // need cache
-        banners
+        val result = RetrofitManager.apiService.homeBanner().data
+        PreferencesHelper.saveBannerCache(WanApplication.instance, Gson().toJson(result))
+        result
     }
 
     suspend fun login(username: String, password: String) = withContext(Dispatchers.IO) {

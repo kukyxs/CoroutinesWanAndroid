@@ -15,6 +15,8 @@ object PreferencesHelper {
     private const val PROJECT_KEY_ID = "wan.project.id"
     private const val PROJECT_KEY_TITLE = "wan.project.title"
     private const val SEARCH_KEY_KEYWORD = "wan.search.keyword"
+    private const val CACHE_KEY_BANNER = "wan.cache.banner"
+    private const val CACHE_KEY_HOME_ARTICLES = "wan.cache.home.articles"
 
     fun saveUserId(context: Context, id: Int) =
         SharePreferencesUtils.saveInteger(context, USER_KEY_ID, id)
@@ -49,4 +51,18 @@ object PreferencesHelper {
 
     fun fetchSearchKeyword(context: Context) =
         SharePreferencesUtils.getString(context, SEARCH_KEY_KEYWORD)
+
+    // =======================> LOCAL CACHES <=================================
+
+    fun saveBannerCache(context: Context, bannerJson: String) =
+        SharePreferencesUtils.saveString(context, CACHE_KEY_BANNER, bannerJson)
+
+    fun fetchBannerCache(context: Context) =
+        SharePreferencesUtils.getString(context, CACHE_KEY_BANNER)
+
+    fun saveHomeArticleCache(context: Context, articleJson: String) =
+        SharePreferencesUtils.saveString(context, CACHE_KEY_HOME_ARTICLES, articleJson)
+
+    fun fetchHomeArticleCache(context: Context) =
+        SharePreferencesUtils.getString(context, CACHE_KEY_HOME_ARTICLES)
 }

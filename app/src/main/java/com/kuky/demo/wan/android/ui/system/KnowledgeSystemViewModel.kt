@@ -37,7 +37,7 @@ class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository
 
     fun fetchArticles(cid: Int) {
         mArticles = LivePagedListBuilder(
-            KnowledgeSystemDataSourceFactory(KnowledgeSystemRepository(), cid),
+            KnowledgeSystemDataSourceFactory(repository, cid),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

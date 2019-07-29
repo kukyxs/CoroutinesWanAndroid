@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/include_status_bar" />
+
+        <com.kuky.demo.wan.android.ui.widget.DrawableTextView
+            android:id="@+id/filter_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/barHeight"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
+            android:text="全部"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/filter_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rightDrawable="@drawable/ic_arrow_drop_down_black_18dp"
+            app:rightDrawableHeight="18dp"
+            app:rightDrawableWidth="18dp" />
+
+        <TextView
+            android:id="@+id/filter_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_black_18dp"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
+            android:text="全部"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/filter_priority"
+            app:layout_constraintStart_toEndOf="@id/filter_status"
+            app:layout_constraintTop_toTopOf="@id/filter_status" />
+
+        <TextView
+            android:id="@+id/filter_priority"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_black_18dp"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
+            android:text="全部"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/filter_order"
+            app:layout_constraintStart_toEndOf="@id/filter_type"
+            app:layout_constraintTop_toTopOf="@id/filter_status" />
+
+        <TextView
+            android:id="@+id/filter_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_black_18dp"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
+            android:text="完成时间倒序"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/filter_priority"
+            app:layout_constraintTop_toTopOf="@id/filter_status" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

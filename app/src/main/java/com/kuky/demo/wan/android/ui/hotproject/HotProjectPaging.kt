@@ -44,6 +44,9 @@ class HotProjectRepository {
     }
 }
 
+/**
+ * 网络数据来源
+ */
 class HotProjectDataSource(private val repository: HotProjectRepository, private val pid: Int) :
     PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
 
@@ -86,7 +89,9 @@ class HotProjectDataSourceFactory(private val repository: HotProjectRepository, 
     override fun create(): DataSource<Int, ProjectDetailData> = HotProjectDataSource(repository, pid)
 }
 
-
+/**
+ * Adapter
+ */
 class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeProjectBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_home_project

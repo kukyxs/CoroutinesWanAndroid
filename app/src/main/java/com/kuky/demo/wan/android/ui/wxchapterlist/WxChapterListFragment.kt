@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -22,7 +24,11 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     }
 
     private val mAdapter by lazy { WxChapterListAdapter() }
-    private val mViewMode by lazy { getViewModel(WxChapterListViewModel::class.java) }
+    private val mViewMode by lazy {
+        ViewModelProviders.of(
+            requireActivity(), WxChapterListModelFactory(WxChapterListRepository())
+        ).get(WxChapterListViewModel::class.java)
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 
@@ -49,7 +55,8 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     private fun fetchWxChapterList(id: Int?) {
         mBinding.refreshing = true
-        mViewMode.fetchResult(id ?: 0).observe(this, Observer {
+        mViewMode.fetchResult(id ?: 0)
+        mViewMode.chapters?.observe(this, Observer {
             mAdapter.submitList(it)
             mHandler.postDelayed({ mBinding.refreshing = false }, 500)
         })

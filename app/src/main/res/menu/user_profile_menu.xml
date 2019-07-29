@@ -17,16 +17,11 @@
     </item>
 
     <item
-        android:id="@+id/todo_list"
+        android:id="@+id/todo_group"
         android:title="@string/todo_title">
         <menu>
             <item
-                android:id="@+id/finish_todo"
-                android:icon="@drawable/ic_todo_24dp"
-                android:title="@string/finish_todo" />
-
-            <item
-                android:id="@+id/todos"
+                android:id="@+id/todo_list"
                 android:icon="@drawable/ic_todo_24dp"
                 android:title="@string/todo_list" />
         </menu>

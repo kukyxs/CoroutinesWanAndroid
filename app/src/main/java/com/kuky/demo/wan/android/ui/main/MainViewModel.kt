@@ -19,6 +19,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     init {
         hasLogin.value = PreferencesHelper.hasLogin(WanApplication.instance)
+        banners.value = repository.getCachedBanners()
     }
 
     fun getBanners() {

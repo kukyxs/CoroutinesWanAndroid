@@ -26,6 +26,7 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.entity.BannerData
 import com.youth.banner.Banner
+import com.youth.banner.BannerConfig
 import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.loader.ImageLoader
 
@@ -84,7 +85,9 @@ fun loadBannerImg(banner: Banner, banners: List<BannerData>?, listener: OnBanner
     banners.forEach { images.add(it.imagePath) }
 
     banner.setImages(images)
-        .setImageLoader(GlideLoader()).setDelayTime(5000).start()
+        .setImageLoader(GlideLoader())
+        .setBannerStyle(BannerConfig.RIGHT)
+        .setDelayTime(5000).start()
 
     banner.setOnBannerListener(listener)
 }
@@ -230,7 +233,6 @@ fun bindEditAction(editText: EditText, editorActionListener: TextView.OnEditorAc
 
 /**
  * 绑定 webview 的 url
- * @param url
  */
 @BindingAdapter("bind:url")
 fun bindWebUrl(webView: WebView, url: String?) {
@@ -238,6 +240,9 @@ fun bindWebUrl(webView: WebView, url: String?) {
     webView.loadUrl(url)
 }
 
+/**
+ * 绑定 TextView 的一些属性
+ */
 @BindingAdapter("bind:movementMethod")
 fun bindMovementMethod(textView: TextView, method: MovementMethod) {
     textView.movementMethod = method

@@ -8,6 +8,7 @@ import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.ArticleDetail
+import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.
@@ -16,9 +17,20 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
 class HomeArticleViewModel(private val repository: HomeArticleRepository) : ViewModel() {
     var articles: LiveData<PagedList<ArticleDetail>>? = null
 
+    fun fetchHomeArticleCache() {
+        articles = LivePagedListBuilder(
+            HomeArticleCacheDataSourceFactory(repository),
+            PagedList.Config.Builder()
+                .setPageSize(20)
+                .setEnablePlaceholders(true)
+                .setInitialLoadSizeHint(20)
+                .build()
+        ).build()
+    }
+
     fun fetchHomeArticle() {
         articles = LivePagedListBuilder(
-            HomeArticleDataSourceFactory(HomeArticleRepository()),
+            HomeArticleDataSourceFactory(repository),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

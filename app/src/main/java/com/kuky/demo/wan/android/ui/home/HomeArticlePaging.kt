@@ -3,6 +3,8 @@ package com.kuky.demo.wan.android.ui.home
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
@@ -10,6 +12,7 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -19,8 +22,19 @@ import kotlin.coroutines.suspendCoroutine
  * @description
  */
 class HomeArticleRepository {
+    fun getHomeArticleCache(): List<ArticleDetail>? {
+        return Gson().fromJson(
+            PreferencesHelper.fetchHomeArticleCache(WanApplication.instance),
+            object : TypeToken<List<ArticleDetail>>() {}.type
+        )
+    }
+
     suspend fun loadPageData(page: Int): List<ArticleDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.homeArticles(page).data.datas
+        val result = RetrofitManager.apiService.homeArticles(page).data.datas
+        if (page == 0) {
+            PreferencesHelper.saveHomeArticleCache(WanApplication.instance, Gson().toJson(result))
+        }
+        result
     }
 
     // 加载首页置顶文章
@@ -40,6 +54,9 @@ class HomeArticleRepository {
     }
 }
 
+/**
+ * 网络数据加载
+ */
 class HomeArticleDataSource(private val repository: HomeArticleRepository) :
     PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by MainScope() {
 
@@ -84,6 +101,29 @@ class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository
     DataSource.Factory<Int, ArticleDetail>() {
 
     override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository)
+}
+
+/**
+ * 本地数据加载
+ */
+class HomeArticleCacheDataSource(private val repository: HomeArticleRepository) :
+    PageKeyedDataSource<Int, ArticleDetail>() {
+
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) =
+        callback.onResult(repository.getHomeArticleCache() ?: arrayListOf(), null, null)
+
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
+
+    }
+
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
+
+    }
+}
+
+class HomeArticleCacheDataSourceFactory(private val repository: HomeArticleRepository) :
+    DataSource.Factory<Int, ArticleDetail>() {
+    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleCacheDataSource(repository)
 }
 
 /**

@@ -14,6 +14,7 @@ import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.utils.LogUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -71,7 +72,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             true
         }
 
-        fetchHomeArticleList()
+        fetchCache()
+
+        // 必要延时有利于提升体验
+        mHandler.postDelayed({ fetchHomeArticleList() }, 300)
+    }
+
+    private fun fetchCache() {
+        mViewModel.fetchHomeArticleCache()
+        mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
+            mAdapter.submitList(it)
+        })
     }
 
     private fun fetchHomeArticleList() {

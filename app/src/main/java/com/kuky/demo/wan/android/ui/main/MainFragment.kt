@@ -97,7 +97,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
             menus.findItem(R.id.user_collections).isVisible = it
             menus.findItem(R.id.login_out).isVisible = it
-            menus.findItem(R.id.todo_list).isVisible = it
+            menus.findItem(R.id.todo_group).isVisible = it
 
             headerBinding.name =
                 if (it) PreferencesHelper.fetchUserName(requireContext())
@@ -115,13 +115,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 R.id.favourite_website -> toFavourite(1)
 
-                R.id.finish_todo -> {
-
-                }
-
-                R.id.todos -> {
-
-                }
+                R.id.todo_list -> mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
 
                 R.id.about -> showAboutUs()
 
