@@ -125,8 +125,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
      * 添加热词
      */
     private fun addLabel(hotKeys: List<HotKeyData>) {
-        val marginValue = ScreenUtils.dip2px(requireActivity(), 4f)
-        val paddingValue = ScreenUtils.dip2px(requireActivity(), 6f)
+        val verticalValue = ScreenUtils.dip2px(requireContext(), 2f)
+        val marginValue = ScreenUtils.dip2px(requireContext(), 4f)
+        val paddingValue = ScreenUtils.dip2px(requireContext(), 6f)
         mBinding.root.keys_box.removeAllViews()
 
         hotKeys.forEach {
@@ -146,7 +147,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 textSize = 14f
                 setBackgroundResource(R.drawable.label_outline)
                 layoutParams = lp
-                setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
+                setPadding(paddingValue, verticalValue, paddingValue, verticalValue)
                 setOnClickListener {
                     mBinding.root.search_content.setText(name)
                     searchArticles(name)

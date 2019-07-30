@@ -1,8 +1,6 @@
 package com.kuky.demo.wan.android.ui.main
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -115,7 +113,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 R.id.favourite_website -> toFavourite(1)
 
-                R.id.todo_list -> mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
+                R.id.todo_list -> launchTodoList()
 
                 R.id.about -> showAboutUs()
 
@@ -136,17 +134,20 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
-    @SuppressLint("WrongConstant")
     private fun toFavourite(position: Int) {
         CollectionFragment.viewCollections(
             mNavController,
             R.id.action_mainFragment_to_collectionFragment,
             position
         )
-        mBinding.root.drawer.closeDrawer(Gravity.START)
+        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
-    @SuppressLint("WrongConstant")
+    private fun launchTodoList() {
+        mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
+        mBinding.root.drawer.closeDrawer(GravityCompat.START)
+    }
+
     private fun showAboutUs() {
         AboutUsDialog().setHandler { url ->
             WebsiteDetailFragment.viewDetail(
@@ -154,18 +155,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 R.id.action_mainFragment_to_websiteDetailFragment,
                 url
             )
-            mBinding.root.drawer.closeDrawer(Gravity.START)
+            mBinding.root.drawer.closeDrawer(GravityCompat.START)
         }.show(childFragmentManager, "about")
     }
 
-    @SuppressLint("WrongConstant")
     private fun starForUs() {
         WebsiteDetailFragment.viewDetail(
             mNavController,
             R.id.action_mainFragment_to_websiteDetailFragment,
             "https://github.com/kukyxs/CoroutinesWanAndroid"
         )
-        mBinding.root.drawer.closeDrawer(Gravity.START)
+        mBinding.root.drawer.closeDrawer(GravityCompat.START)
     }
 
     /**
