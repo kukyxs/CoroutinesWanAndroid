@@ -63,6 +63,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             true
         }
 
+        mBinding.needOverScroll = false
         mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
             mHistoryAdapter.getItemData(position)?.let {
@@ -114,6 +115,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         mBinding.enable = true
         mBinding.refreshing = true
+        mBinding.needOverScroll = true
 
         mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
             mResultAdapter.submitList(it)

@@ -35,6 +35,8 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("id")
 
+        mBinding.wxChapter = arguments?.getString("title") ?: ""
+
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
             fetchWxChapterList(id)
@@ -50,6 +52,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                 )
             }
         }
+
         fetchWxChapterList(id)
     }
 

@@ -71,18 +71,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             true
         }
 
-        fetchCache()
-
-        // 必要延时有利于提升体验
-        mHandler.postDelayed({ fetchHomeArticleList() }, 300)
+        fetchHomeArticleList()
     }
 
-    private fun fetchCache() {
-        mViewModel.fetchHomeArticleCache()
-        mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
-            mAdapter.submitList(it)
-        })
-    }
+//    private fun fetchCache() {
+//        mViewModel.fetchHomeArticleCache()
+//        mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
+//            mAdapter.submitList(it)
+//        })
+//    }
 
     private fun fetchHomeArticleList() {
         mViewModel.fetchHomeArticle()

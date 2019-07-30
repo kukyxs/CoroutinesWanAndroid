@@ -2,6 +2,7 @@
     <string name="app_name">玩Android</string>
 
     <string name="collection">收藏</string>
+    <string name="collections">我的收藏</string>
     <string name="collected_articles">文章收藏</string>
     <string name="collected_websites">网址收藏</string>
     <string name="info_about">关于</string>
@@ -12,6 +13,8 @@
     <string name="star">支持一下</string>
     <string name="login_out">退出登录</string>
     <string name="search_hint">输入搜索关键词</string>
+    <string name="hot_search_keys">热门搜索</string>
+    <string name="search_history">搜索历史</string>
     <string name="click_to_login">点此登录</string>
     <string name="username_hint">输入用户名</string>
     <string name="password_hint">输入密码</string>

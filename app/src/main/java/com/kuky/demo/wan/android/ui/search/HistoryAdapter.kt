@@ -23,7 +23,8 @@ class HistoryAdapter(list: MutableList<String>? = null) :
         holder.binding.listener = View.OnClickListener {
             SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
             mData?.remove(data)
-            notifyItemRemoved(position)
+            // TODO("notifyItemRemoved 位置计算有误，先使用 notifyDataSetChanged 代替")
+            notifyDataSetChanged()
         }
     }
 

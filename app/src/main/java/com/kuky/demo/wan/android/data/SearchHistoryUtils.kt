@@ -11,6 +11,9 @@ import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 object SearchHistoryUtils {
     private const val SHARE_KEY_HISTORY = "wan.search.history"
 
+    fun hasHistory(context: Context) =
+        SharePreferencesUtils.getString(context, SHARE_KEY_HISTORY).isNotEmpty()
+
     /**
      * 添加搜索记录
      */

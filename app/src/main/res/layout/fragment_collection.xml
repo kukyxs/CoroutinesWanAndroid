@@ -21,11 +21,21 @@
 
         <include layout="@layout/include_status_bar" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/collections"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/collection_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
             app:tabIndicatorColor="@color/colorAccent"
             app:tabIndicatorFullWidth="false"
             app:tabIndicatorHeight="1dp"
@@ -38,6 +48,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
             android:adapter="@{adapter}"
+            android:overScrollMode="never"
             bind:currentItem="@{current}"
             bind:smoothScroll="@{false}" />
     </LinearLayout>

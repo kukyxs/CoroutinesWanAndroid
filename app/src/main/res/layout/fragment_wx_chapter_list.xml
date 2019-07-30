@@ -25,6 +25,10 @@
         <variable
             name="refreshListener"
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
+            name="wxChapter"
+            type="String" />
     </data>
 
     <LinearLayout
@@ -33,6 +37,18 @@
         android:orientation="vertical">
 
         <include layout="@layout/include_status_bar" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@{wxChapter}"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="鸿洋" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe"

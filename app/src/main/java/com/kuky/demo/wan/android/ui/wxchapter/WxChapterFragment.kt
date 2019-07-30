@@ -42,6 +42,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                     Bundle().apply
                     {
                         putInt("id", it.id)
+                        putString("title", it.name)
                     })
             }
         }
