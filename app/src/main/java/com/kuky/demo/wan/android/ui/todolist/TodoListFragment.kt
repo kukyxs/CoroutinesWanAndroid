@@ -2,9 +2,19 @@ package com.kuky.demo.wan.android.ui.todolist
 
 import android.os.Bundle
 import android.view.View
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
+import com.kuky.demo.wan.android.entity.Choice
+import com.kuky.demo.wan.android.entity.TodoChoiceGroup
+import com.kuky.demo.wan.android.utils.AssetsLoader
+import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 
@@ -22,12 +32,30 @@ import kotlinx.android.synthetic.main.fragment_todo_list.view.*
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
+    private val mChoiceAdapter: TodoChoiceAdapter by lazy {
+        TodoChoiceAdapter(
+            Gson().fromJson(
+                AssetsLoader.getTextFromAssets(requireContext(), "todo_choices.json"),
+                object : TypeToken<List<TodoChoiceGroup>>() {}.type
+            ) ?: arrayListOf()
+        )
+    }
+
+    private val mChoiceLayoutManager: FlexboxLayoutManager by lazy {
+        FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        view.menu.let {
-            it.layoutParams = it.layoutParams.apply {
-                height = ScreenUtils.getScreenHeight(requireContext()) * 2 / 3
+        mBinding.choiceAdapter = mChoiceAdapter
+        mBinding.choiceLayoutManager = mChoiceLayoutManager
+        mBinding.choiceItemClick = OnItemClickListener { position, _ ->
+            mChoiceAdapter.getItemData(position)?.let {
+                if (it is Choice) {
+                    mChoiceAdapter.updateSelectedIndex(position)
+                    LogUtils.error(mChoiceAdapter.getApiParams())
+                }
             }
         }
     }

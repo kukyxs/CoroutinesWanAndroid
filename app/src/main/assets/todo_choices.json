@@ -1,6 +1,7 @@
 [
   {
     "group_name": "完成状态",
+    "param_key": "status",
     "choices": [
       {
         "choice_name": "全部",
@@ -18,6 +19,7 @@
   },
   {
     "group_name": "类型分组",
+    "param_key": "type",
     "choices": [
       {
         "choice_name": "全部",
@@ -39,6 +41,7 @@
   },
   {
     "group_name": "优先级别",
+    "param_key": "priority",
     "choices": [
       {
         "choice_name": "全部",
@@ -60,6 +63,7 @@
   },
   {
     "group_name": "排序方式",
+    "param_key": "orderby",
     "choices": [
       {
         "choice_name": "完成日期顺序",

@@ -7,7 +7,8 @@ package com.kuky.demo.wan.android.entity
 
 data class TodoChoiceGroup(
     val choices: List<Choice>,
-    val group_name: String
+    val group_name: String,
+    val param_key: String
 ) : ITodoChoice
 
 data class Choice(
