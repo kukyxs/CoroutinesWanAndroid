@@ -22,7 +22,11 @@ import kotlinx.coroutines.*
 
 class KnowledgeSystemRepository {
     suspend fun loadSystemType() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.knowledgeSystem().data
+        try {
+            RetrofitManager.apiService.knowledgeSystem().data
+        } catch (throwable: Throwable) {
+            null
+        }
     }
 
     suspend fun loadArticle4System(page: Int, cid: Int): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {

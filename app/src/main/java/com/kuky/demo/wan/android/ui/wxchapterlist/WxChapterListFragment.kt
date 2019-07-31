@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -61,7 +60,10 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         mViewMode.fetchResult(id ?: 0)
         mViewMode.chapters?.observe(this, Observer {
             mAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it.isEmpty()
+            }, 500)
         })
     }
 }

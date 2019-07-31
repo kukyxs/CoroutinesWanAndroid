@@ -29,6 +29,14 @@
         <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -90,6 +98,16 @@
                         tools:text="Android Studio相关" />
                 </LinearLayout>
 
+                <include
+                    layout="@layout/include_data_null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    bind:isNull="@{dataNull}" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/project_list"
                     android:layout_width="match_parent"
@@ -99,6 +117,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:scrollbars="vertical"
+                    android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"

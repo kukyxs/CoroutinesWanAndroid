@@ -36,6 +36,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            // 防止第一次进去没拿到体系分类，需先获取下体系分类
+            if (mCid == 0) {
+                mViewModel.fetchType()
+            }
             fetchType(mCid)
         }
 
@@ -51,8 +55,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             }
         }
         mViewModel.fetchType()
-        mViewModel.mType.observe(this, Observer {
-            updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
+        mViewModel.mType.observe(this, Observer { data ->
+            data?.let {
+                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
+            }
+            data ?: let { mBinding.dataNull = true }
         })
     }
 
@@ -64,7 +71,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(this, Observer {
             mAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500L)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it.isEmpty()
+            }, 500L)
         })
     }
 

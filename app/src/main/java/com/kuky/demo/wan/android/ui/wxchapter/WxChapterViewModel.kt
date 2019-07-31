@@ -12,9 +12,9 @@ import com.kuky.demo.wan.android.entity.WxChapterData
  */
 
 class WxChapterViewModel(private val repository: WxChapterRepository) : ViewModel() {
-    val mData = MutableLiveData<MutableList<WxChapterData>>()
+    val mData = MutableLiveData<MutableList<WxChapterData>?>()
 
     fun getWxChapter() = viewModelScope.safeLaunch {
-        mData.value = repository.getWxChapter().data
+        mData.value = repository.getWxChapter()
     }
 }

@@ -30,4 +30,5 @@
     <string name="as_top">置顶</string>
     <string name="long_save">长按保存并关注</string>
     <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
+    <string name="is_null">空空如也~~</string>
 </resources>

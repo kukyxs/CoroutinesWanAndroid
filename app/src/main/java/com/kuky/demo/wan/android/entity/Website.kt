@@ -5,7 +5,7 @@ package com.kuky.demo.wan.android.entity
  * @description
  */
 data class WebsiteEntity(
-    val `data`: List<WebsiteData>,
+    val `data`: List<WebsiteData>?,
     val errorCode: Int,
     val errorMsg: String
 )

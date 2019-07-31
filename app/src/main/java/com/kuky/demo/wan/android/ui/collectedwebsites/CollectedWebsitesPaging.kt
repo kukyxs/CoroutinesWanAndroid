@@ -20,8 +20,13 @@ import kotlin.coroutines.suspendCoroutine
 class CollectedWebsitesRepository {
     private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
 
-    suspend fun getCollectedWebsites() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.collectWebsiteList(getCookie())
+    suspend fun getCollectedWebsites(): List<WebsiteData>? = withContext(Dispatchers.IO) {
+        try {
+            RetrofitManager.apiService.collectWebsiteList(getCookie()).data
+        } catch (throwable: Throwable) {
+            // 网络请求异常后，一定要回调 null
+            null
+        }
     }
 
     suspend fun addWebsite(name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
@@ -56,12 +61,12 @@ class CollectedWebsitesAdapter :
      */
     fun update(newData: MutableList<WebsiteData>?) {
         val result = DiffUtil.calculateDiff(CollectedDiffUtil(newData, getAdapterData()), true)
-        result.dispatchUpdatesTo(this)
         if (mData == null) {
             mData = mutableListOf()
         }
         mData?.clear()
-        mData?.addAll(newData ?: arrayListOf())
+        mData?.addAll(newData ?: mutableListOf())
+        result.dispatchUpdatesTo(this)
     }
 }
 

@@ -59,6 +59,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                     yesButton {
                         mViewModel.deleteWebsite(data.id, {
                             requireContext().toast("删除成功")
+                            mAdapter.removeItem(position)
                         }, {
                             requireContext().toast(it)
                         })
@@ -81,7 +82,10 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mBinding.refreshing = true
         mViewModel.mWebsitesData.observe(this, Observer {
             mAdapter.update(it as MutableList<WebsiteData>?)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500L)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it?.isEmpty() ?: true
+            }, 500L)
         })
     }
 }

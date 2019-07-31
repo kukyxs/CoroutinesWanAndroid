@@ -29,27 +29,47 @@
         <variable
             name="adapter"
             type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         bind:refreshColor="@{refreshColor}"
         bind:refreshListener="@{refreshListener}"
         bind:refreshState="@{refreshing}">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/collected_article_list"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adapter="@{adapter}"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            bind:hasFixedSize="@{true}"
-            bind:pageItemClick="@{listener}"
-            bind:pageItemLongClick="@{longListener}"
-            tools:itemCount="20"
-            tools:listitem="@layout/recycler_collected_article" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/collected_article_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adapter="@{adapter}"
+                android:scrollbars="vertical"
+                android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:hasFixedSize="@{true}"
+                bind:pageItemClick="@{listener}"
+                bind:pageItemLongClick="@{longListener}"
+                tools:itemCount="20"
+                tools:listitem="@layout/recycler_collected_article" />
+
+            <include
+                layout="@layout/include_data_null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                bind:isNull="@{dataNull}" />
+        </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

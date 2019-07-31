@@ -29,6 +29,14 @@
         <variable
             name="wxChapter"
             type="String" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
     </data>
 
     <LinearLayout
@@ -58,17 +66,38 @@
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/chapter_list"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adapter="@{adapter}"
-                android:scrollbars="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                bind:hasFixedSize="@{true}"
-                bind:pageItemClick="@{listener}"
-                tools:itemCount="20"
-                tools:listitem="@layout/recycler_wx_chapter_list" />
+                android:layout_height="match_parent">
+
+                <include
+                    android:id="@+id/include"
+                    layout="@layout/include_data_null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/chapter_list"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/chapter_list"
+                    bind:isNull="@{dataNull}" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/chapter_list"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:adapter="@{adapter}"
+                    android:scrollbars="vertical"
+                    android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    bind:hasFixedSize="@{true}"
+                    bind:pageItemClick="@{listener}"
+                    tools:itemCount="20"
+                    tools:listitem="@layout/recycler_wx_chapter_list" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

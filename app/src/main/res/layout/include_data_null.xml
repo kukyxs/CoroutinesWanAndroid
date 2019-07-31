@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="isNull"
+            type="Boolean" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableTop="@drawable/data_null"
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:text="@string/is_null"
+        android:textSize="16sp"
+        android:visibility="@{isNull ? view.VISIBLE : view.GONE}">
+
+    </TextView>
+</layout>

@@ -71,6 +71,20 @@ abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableLi
      * @param holder
      */
     abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)
+
+    /**
+     * 移除指定的item
+     */
+    fun removeItem(position: Int) {
+        if (position in 0 until itemCount)
+            mData?.let {
+                it.removeAt(position)
+                notifyItemRemoved(position)
+                if (position != itemCount) {
+                    notifyItemRangeChanged(position, itemCount - position)
+                }
+            }
+    }
 }
 
 

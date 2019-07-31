@@ -54,7 +54,10 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
         mBinding.refreshing = true
         mViewModel.mData.observe(this, Observer {
             mAdapter.update(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it?.isEmpty() ?: true
+            }, 500)
         })
     }
 }

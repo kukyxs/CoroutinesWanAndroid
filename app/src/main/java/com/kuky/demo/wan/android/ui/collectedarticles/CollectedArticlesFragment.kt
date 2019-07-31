@@ -71,7 +71,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(requireActivity(), Observer {
             mAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500L)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                // 延时来获取数据
+                mBinding.dataNull = it.isEmpty()
+            }, 500L)
         })
     }
 }

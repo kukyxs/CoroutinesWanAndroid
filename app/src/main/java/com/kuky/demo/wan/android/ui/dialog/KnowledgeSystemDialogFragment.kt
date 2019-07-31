@@ -71,11 +71,13 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
                 mViewModel.secSelectedPosition.value = position
             }
         }
-        mViewModel.mType.observe(this, Observer {
-            mFirstAdapter.setNewData(it as MutableList<SystemData>)
-            mFirstData = it[mViewModel.firstSelectedPosition.value ?: 0]
-            mViewModel.children.value =
-                it[mViewModel.firstSelectedPosition.value ?: 0].children as MutableList<SystemCategory>
+        mViewModel.mType.observe(this, Observer { data ->
+            data?.let {
+                mFirstAdapter.setNewData(it as MutableList<SystemData>)
+                mFirstData = it[mViewModel.firstSelectedPosition.value ?: 0]
+                mViewModel.children.value =
+                    it[mViewModel.firstSelectedPosition.value ?: 0].children as MutableList<SystemCategory>
+            }
         })
 
         mViewModel.firstSelectedPosition.observe(this, Observer<Int> {

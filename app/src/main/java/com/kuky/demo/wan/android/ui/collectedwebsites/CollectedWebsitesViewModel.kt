@@ -13,11 +13,11 @@ import com.kuky.demo.wan.android.entity.WebsiteData
  * @description
  */
 class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) : ViewModel() {
-    val mWebsitesData = MutableLiveData<List<WebsiteData>>()
+    val mWebsitesData = MutableLiveData<List<WebsiteData>?>()
 
     fun fetchWebSitesData() {
         viewModelScope.safeLaunch {
-            mWebsitesData.value = repo.getCollectedWebsites().data
+            mWebsitesData.value = repo.getCollectedWebsites()
         }
     }
 
@@ -43,7 +43,6 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
             val result = repo.deleteWebsite(id)
             if (result.errorCode == 0) {
                 onSuccess()
-                fetchWebSitesData()
             } else onFailed(result.errorMsg)
         }
     }

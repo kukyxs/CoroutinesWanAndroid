@@ -21,6 +21,14 @@
         <variable
             name="refreshListener"
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -36,10 +44,19 @@
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
+
+                <include
+                    layout="@layout/include_data_null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    bind:isNull="@{dataNull}" />
 
                 <TextView
                     android:id="@+id/wx_chapter_type"
@@ -52,19 +69,27 @@
                     android:padding="12dp"
                     android:singleLine="true"
                     android:text="@string/wx_chapter"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="@color/colorAccent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rcv_chapter"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:scrollbars="vertical"
+                    android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
                     bind:hasFixedSize="@{true}"
                     bind:listItemClick="@{listener}"
                     tools:listitem="@layout/recycler_wx_chapter" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.cardview.widget.CardView>
 </layout>

@@ -33,10 +33,17 @@
         <variable
             name="fragment"
             type="com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         bind:refreshColor="@{refreshColor}"
@@ -52,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adapter="@{adapter}"
+                android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:hasFixedSize="@{true}"
                 bind:listItemClick="@{listener}"
@@ -68,6 +76,13 @@
                 android:onClick="@{fragment::addCollectedWebsites}"
                 android:src="@drawable/ic_add_white_24dp"
                 app:fabSize="mini" />
+
+            <include
+                layout="@layout/include_data_null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                bind:isNull="@{dataNull}" />
 
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
