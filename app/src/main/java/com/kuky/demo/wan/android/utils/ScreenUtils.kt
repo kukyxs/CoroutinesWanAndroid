@@ -14,46 +14,29 @@ import android.view.ViewGroup
 object ScreenUtils {
 
     @JvmStatic
-    fun getScreenWidth(context: Context): Int {
-        return context.resources.displayMetrics.widthPixels
-    }
+    fun getScreenWidth(context: Context) = context.resources.displayMetrics.widthPixels
 
     @JvmStatic
-    fun getScreenHeight(context: Context): Int {
-        return context.resources.displayMetrics.heightPixels
-    }
+    fun getScreenHeight(context: Context) = context.resources.displayMetrics.heightPixels
 
     @JvmStatic
-    fun getScreenDensity(context: Context): Float {
-        return context.resources.displayMetrics.density
-    }
+    fun getScreenDensity(context: Context) = context.resources.displayMetrics.density
 
     @JvmStatic
-    fun dip2px(context: Context, dpValue: Float): Int {
-        val scale = getScreenDensity(context)
-        return (dpValue * scale + 0.5f).toInt()
-    }
+    fun dip2px(context: Context, dpValue: Float) = dpValue * getScreenDensity(context) + 0.5f
 
     @JvmStatic
-    fun sp2px(context: Context, spValue: Float): Int {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, spValue, context.resources.displayMetrics).toInt()
-    }
+    fun sp2px(context: Context, spValue: Float) =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, spValue, context.resources.displayMetrics)
 
     @JvmStatic
-    fun px2dip(context: Context, pxValue: Float): Int {
-        val scale = getScreenDensity(context)
-        return (pxValue / scale + 0.5f).toInt()
-    }
+    fun px2dip(context: Context, pxValue: Float) = pxValue / getScreenDensity(context) + 0.5f
 
     @JvmStatic
-    fun px2sp(context: Context, pxValue: Float): Float {
-        return (pxValue / context.resources.displayMetrics.scaledDensity)
-    }
+    fun px2sp(context: Context, pxValue: Float) = (pxValue / context.resources.displayMetrics.scaledDensity)
 
     @JvmStatic
-    fun getDpixel(context: Context, value: Int): Int {
-        return (getScreenDensity(context) * value).toInt()
-    }
+    fun getDpixel(context: Context, value: Int) = getScreenDensity(context) * value
 
     @JvmStatic
     fun getStatusBarHeight(context: Context): Int {

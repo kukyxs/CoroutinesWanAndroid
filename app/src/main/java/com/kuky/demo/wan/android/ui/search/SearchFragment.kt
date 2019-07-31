@@ -127,9 +127,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
      * 添加热词
      */
     private fun addLabel(hotKeys: List<HotKeyData>) {
-        val verticalValue = ScreenUtils.dip2px(requireContext(), 2f)
-        val marginValue = ScreenUtils.dip2px(requireContext(), 4f)
-        val paddingValue = ScreenUtils.dip2px(requireContext(), 6f)
+        val verticalValue = ScreenUtils.dip2px(requireContext(), 2f).toInt()
+        val marginValue = ScreenUtils.dip2px(requireContext(), 4f).toInt()
+        val paddingValue = ScreenUtils.dip2px(requireContext(), 6f).toInt()
         mBinding.root.keys_box.removeAllViews()
 
         hotKeys.forEach {

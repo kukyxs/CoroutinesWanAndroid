@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.system
 
+import androidx.databinding.ViewDataBinding
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -78,17 +79,17 @@ class KnowledgeSystemDataSourceFactory(private val repository: KnowledgeSystemRe
 
 class KnowledgeSystemTypeAdapter(
     mData: MutableList<SystemData>? = null
-) : BaseRecyclerAdapter<RecyclerKnowledgeSystemBinding, SystemData>(mData) {
+) : BaseRecyclerAdapter<SystemData>(mData) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_knowledge_system
 
     override fun setVariable(
-        data: SystemData,
-        position: Int,
-        holder: BaseViewHolder<RecyclerKnowledgeSystemBinding>
+        data: SystemData, position: Int, holder: BaseViewHolder<ViewDataBinding>
     ) {
-        holder.binding.name = mData?.get(position)?.name
-        holder.binding.selected = mSelectionPosition == position
+        (holder.binding as RecyclerKnowledgeSystemBinding).let {
+            it.name = mData?.get(position)?.name
+            it.selected = mSelectionPosition == position
+        }
     }
 
     fun setNewData(newData: MutableList<SystemData>?) {
@@ -105,17 +106,17 @@ class KnowledgeSystemTypeAdapter(
 
 class KnowledgeSystemSecTypeAdapter(
     mData: MutableList<SystemCategory>? = null
-) : BaseRecyclerAdapter<RecyclerKnowledgeSystemBinding, SystemCategory>(mData) {
+) : BaseRecyclerAdapter<SystemCategory>(mData) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_knowledge_system
 
     override fun setVariable(
-        data: SystemCategory,
-        position: Int,
-        holder: BaseViewHolder<RecyclerKnowledgeSystemBinding>
+        data: SystemCategory, position: Int, holder: BaseViewHolder<ViewDataBinding>
     ) {
-        holder.binding.name = mData?.get(position)?.name
-        holder.binding.selected = mSelectionPosition == position
+        (holder.binding as RecyclerKnowledgeSystemBinding).let {
+            it.name = mData?.get(position)?.name
+            it.selected = mSelectionPosition == position
+        }
     }
 
     fun setNewData(newData: MutableList<SystemCategory>?) {

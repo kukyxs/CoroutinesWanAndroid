@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.search
 
 import android.text.TextUtils
 import android.view.View
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
@@ -13,18 +14,19 @@ import com.kuky.demo.wan.android.databinding.RecyclerHistoryBinding
  * @author kuky.
  * @description
  */
-class HistoryAdapter(list: MutableList<String>? = null) :
-    BaseRecyclerAdapter<RecyclerHistoryBinding, String>(list) {
+class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<String>(list) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_history
 
-    override fun setVariable(data: String, position: Int, holder: BaseViewHolder<RecyclerHistoryBinding>) {
-        holder.binding.history = data
-        holder.binding.listener = View.OnClickListener {
-            SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
-            mData?.remove(data)
-            // TODO("notifyItemRemoved 位置计算有误，先使用 notifyDataSetChanged 代替")
-            notifyDataSetChanged()
+    override fun setVariable(data: String, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
+        (holder.binding as RecyclerHistoryBinding).let {
+            it.history = data
+            it.listener = View.OnClickListener {
+                SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
+                mData?.remove(data)
+                // TODO("notifyItemRemoved 位置计算有误，先使用 notifyDataSetChanged 代替")
+                notifyDataSetChanged()
+            }
         }
     }
 

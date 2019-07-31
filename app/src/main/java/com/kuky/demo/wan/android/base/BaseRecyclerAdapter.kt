@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
  * @author Taonce.
  * @description recycler adapter 基类
  */
-abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableList<T>?) :
-    RecyclerView.Adapter<BaseViewHolder<VB>>() {
+abstract class BaseRecyclerAdapter<T>(var mData: MutableList<T>?) :
+    RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>() {
 
     protected var mSelectionPosition = -1
     private var itemListener: OnItemClickListener? = null
@@ -26,13 +26,13 @@ abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableLi
         this.itemLongListener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<ViewDataBinding> {
         return BaseViewHolder(
             DataBindingUtil.inflate(LayoutInflater.from(parent.context), getLayoutId(viewType), parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<ViewDataBinding>, position: Int) {
         val data = getItemData(position) ?: return
         setVariable(data, position, holder)
         holder.binding.executePendingBindings()
@@ -70,7 +70,7 @@ abstract class BaseRecyclerAdapter<VB : ViewDataBinding, T>(var mData: MutableLi
      * @param position 数据的位置
      * @param holder
      */
-    abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)
+    abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<ViewDataBinding>)
 
     /**
      * 移除指定的item

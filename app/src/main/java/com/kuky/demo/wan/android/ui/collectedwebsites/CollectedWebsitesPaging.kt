@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.collectedwebsites
 
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
@@ -44,17 +45,13 @@ class CollectedWebsitesRepository {
     }
 }
 
-class CollectedWebsitesAdapter :
-    BaseRecyclerAdapter<RecyclerCollectedWebsitesBinding, WebsiteData>(null) {
-    override fun getLayoutId(viewType: Int) = R.layout.recycler_collected_websites
+class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
 
-    override fun setVariable(
-        data: WebsiteData,
-        position: Int,
-        holder: BaseViewHolder<RecyclerCollectedWebsitesBinding>
-    ) {
-        holder.binding.data = data
+    override fun setVariable(data: WebsiteData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
+        (holder.binding as RecyclerCollectedWebsitesBinding).data = data
     }
+
+    override fun getLayoutId(viewType: Int) = R.layout.recycler_collected_websites
 
     /**
      * 利用diffutil更新数据

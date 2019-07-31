@@ -5,6 +5,8 @@ import android.view.View
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
+import com.kuky.demo.wan.android.utils.ScreenUtils
+import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 
 /**
  * @author kuky.
@@ -23,6 +25,10 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-
+        view.menu.let {
+            it.layoutParams = it.layoutParams.apply {
+                height = ScreenUtils.getScreenHeight(requireContext()) * 2 / 3
+            }
+        }
     }
 }

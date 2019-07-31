@@ -8,6 +8,7 @@
     </data>
 
     <com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout
+        android:id="@+id/setting_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:minShownHeight="50dp">
@@ -20,11 +21,14 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/menu"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="Menu"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
     </com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout>
 </layout>

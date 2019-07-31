@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.wxchapter
 
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
@@ -26,17 +27,11 @@ class WxChapterRepository {
     }
 }
 
-class WxChapterAdapter(
-    chapterList: MutableList<WxChapterData>?
-) : BaseRecyclerAdapter<RecyclerWxChapterBinding, WxChapterData>(chapterList) {
+class WxChapterAdapter(chapterList: MutableList<WxChapterData>?) : BaseRecyclerAdapter<WxChapterData>(chapterList) {
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_wx_chapter
 
-    override fun setVariable(
-        data: WxChapterData,
-        position: Int,
-        holder: BaseViewHolder<RecyclerWxChapterBinding>
-    ) {
-        holder.binding.data = data
+    override fun setVariable(data: WxChapterData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
+        (holder.binding as RecyclerWxChapterBinding).data = data
     }
 
     fun update(data: MutableList<WxChapterData>?) {

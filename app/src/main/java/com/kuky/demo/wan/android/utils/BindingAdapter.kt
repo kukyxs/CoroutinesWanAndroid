@@ -132,7 +132,7 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickLis
 fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
     val adapter = recyclerView.adapter
 
-    if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
+    if (adapter == null || adapter !is BaseRecyclerAdapter<*>) return
 
     adapter.setOnItemListener(listener)
 }
@@ -145,7 +145,7 @@ fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListe
 fun bindRecyclerItemLOngClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
     val adapter = recyclerView.adapter
 
-    if (adapter == null || adapter !is BaseRecyclerAdapter<*, *>) return
+    if (adapter == null || adapter !is BaseRecyclerAdapter<*>) return
 
     adapter.setOnItemLongListener(listener)
 }

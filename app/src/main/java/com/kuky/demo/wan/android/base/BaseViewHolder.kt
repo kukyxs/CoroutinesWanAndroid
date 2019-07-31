@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.base
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
-
 /**
  * @author kuky.
  * @description RecyclerView Adapter View Holder 基类

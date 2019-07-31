@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.hotproject
 
+import androidx.databinding.ViewDataBinding
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -115,7 +116,7 @@ class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeP
 }
 
 class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = null) :
-    BaseRecyclerAdapter<RecyclerProjectCategoryBinding, ProjectCategoryData>(categories) {
+    BaseRecyclerAdapter<ProjectCategoryData>(categories) {
 
     // 通过 diffutil 更新数据
     fun setCategories(categories: MutableList<ProjectCategoryData>?) {
@@ -129,13 +130,11 @@ class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = nul
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_project_category
 
-    override fun setVariable(
-        data: ProjectCategoryData,
-        position: Int,
-        holder: BaseViewHolder<RecyclerProjectCategoryBinding>
-    ) {
-        holder.binding.category = data
-        holder.binding.selected = mSelectionPosition == position
+    override fun setVariable(data: ProjectCategoryData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
+        (holder.binding as RecyclerProjectCategoryBinding).let {
+            it.category = data
+            it.selected = mSelectionPosition == position
+        }
     }
 }
 

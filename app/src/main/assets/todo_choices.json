@@ -1,0 +1,82 @@
+[
+  {
+    "group_name": "完成状态",
+    "choices": [
+      {
+        "choice_name": "全部",
+        "type": -1
+      },
+      {
+        "choice_name": "未完成",
+        "type": 0
+      },
+      {
+        "choice_name": "已完成",
+        "type": 1
+      }
+    ]
+  },
+  {
+    "group_name": "类型分组",
+    "choices": [
+      {
+        "choice_name": "全部",
+        "type": -1
+      },
+      {
+        "choice_name": "工作",
+        "type": 0
+      },
+      {
+        "choice_name": "生活",
+        "type": 1
+      },
+      {
+        "choice_name": "娱乐",
+        "type": 2
+      }
+    ]
+  },
+  {
+    "group_name": "优先级别",
+    "choices": [
+      {
+        "choice_name": "全部",
+        "type": -1
+      },
+      {
+        "choice_name": "重要",
+        "type": 0
+      },
+      {
+        "choice_name": "一般",
+        "type": 1
+      },
+      {
+        "choice_name": "普通",
+        "type": 2
+      }
+    ]
+  },
+  {
+    "group_name": "排序方式",
+    "choices": [
+      {
+        "choice_name": "完成日期顺序",
+        "type": 1
+      },
+      {
+        "choice_name": "完成日期逆序",
+        "type": 2
+      },
+      {
+        "choice_name": "创建日期顺序",
+        "type": 3
+      },
+      {
+        "choice_name": "创建日期逆序",
+        "type": 4
+      }
+    ]
+  }
+]
