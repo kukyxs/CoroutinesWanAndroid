@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="backgroundRes"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="colorRes"
+            type="Integer" />
+
+        <variable
+            name="subTodo"
+            type="com.kuky.demo.wan.android.entity.Choice" />
+    </data>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@{backgroundRes}"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp"
+        android:singleLine="true"
+        android:text="@{subTodo.choice_name}"
+        android:textColor="@{colorRes}"
+        tools:background="@drawable/choice_unselected"
+        tools:text="未完成"
+        tools:textColor="@android:color/black">
+
+    </TextView>
+</layout>
