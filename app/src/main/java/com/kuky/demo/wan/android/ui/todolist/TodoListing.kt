@@ -1,8 +1,6 @@
 package com.kuky.demo.wan.android.ui.todolist
 
-import android.util.SparseIntArray
 import androidx.core.content.ContextCompat
-import androidx.core.util.forEach
 import androidx.databinding.ViewDataBinding
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
@@ -12,7 +10,6 @@ import com.kuky.demo.wan.android.databinding.RecyclerSubTodoChoiceBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.ITodoChoice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
-import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.

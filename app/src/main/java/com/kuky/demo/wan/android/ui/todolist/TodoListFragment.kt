@@ -15,8 +15,6 @@ import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.utils.AssetsLoader
 import com.kuky.demo.wan.android.utils.LogUtils
-import com.kuky.demo.wan.android.utils.ScreenUtils
-import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 
 /**
  * @author kuky.

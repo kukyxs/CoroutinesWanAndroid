@@ -8,7 +8,6 @@ import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.ArticleDetail
-import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.
