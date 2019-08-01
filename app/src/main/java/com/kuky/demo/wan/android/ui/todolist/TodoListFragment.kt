@@ -10,9 +10,11 @@ import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
+import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
 import com.kuky.demo.wan.android.utils.LogUtils
 
@@ -46,6 +48,11 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.holder = this@TodoListFragment
+
+        mBinding.todoItemClick = OnItemClickListener { position, v -> }
+        mBinding.todoItemLongClick = OnItemLongClickListener { position, v -> true }
+
         mBinding.choiceAdapter = mChoiceAdapter
         mBinding.choiceLayoutManager = mChoiceLayoutManager
         mBinding.choiceItemClick = OnItemClickListener { position, _ ->
@@ -56,5 +63,9 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 }
             }
         }
+    }
+
+    fun addTodo(view: View) {
+        TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, null)
     }
 }

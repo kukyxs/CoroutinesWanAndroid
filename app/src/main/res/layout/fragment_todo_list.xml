@@ -7,6 +7,22 @@
     <data>
 
         <variable
+            name="holder"
+            type="com.kuky.demo.wan.android.ui.todolist.TodoListFragment" />
+
+        <variable
+            name="todoAdapter"
+            type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
+
+        <variable
+            name="todoItemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="todoItemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
             name="choiceAdapter"
             type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
 
@@ -23,14 +39,53 @@
         android:id="@+id/setting_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/white"
         app:minShownHeight="50dp">
 
-        <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Content"
-            android:textSize="20sp" />
+            android:layout_marginBottom="50dp"
+            android:orientation="vertical">
+
+            <include layout="@layout/include_status_bar" />
+
+            <TextView
+                android:id="@+id/todo_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/barHeight"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/todo_list"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:adapter="@{todoAdapter}"
+                android:scrollbars="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/todo_title"
+                bind:listItemClick="@{todoItemClick}"
+                bind:listItemLongClick="@{todoItemLongClick}" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
+                android:onClick="@{holder::addTodo}"
+                android:src="@drawable/ic_add_white_24dp"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
