@@ -35,7 +35,7 @@ interface ApiService {
 
     // 置顶文章
     @GET("/article/top/json")
-    suspend fun topArticle(): TopArticleEntity
+    suspend fun topArticle(@Header("Cookie") cookie: String): TopArticleEntity
 
     // ==============================>
     // 体系
@@ -47,7 +47,7 @@ interface ApiService {
      * 返回数据同首页文章列表
      */
     @GET("/article/list/{page}/json")
-    suspend fun articleInCategory(@Path("page") page: Int, @Query("cid") cid: Int): WxChapterList
+    suspend fun articleInCategory(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): WxChapterList
 
     // 项目分类
     @GET("/project/tree/json")
@@ -57,7 +57,7 @@ interface ApiService {
      * 返回项目分类下的所有项目列表，cid 查看 [ProjectCategoryData] #id
      */
     @GET("/project/list/{page}/json")
-    suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int): ProjectDetailEntity
+    suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): ProjectDetailEntity
 
     // ================================>
     // 登录

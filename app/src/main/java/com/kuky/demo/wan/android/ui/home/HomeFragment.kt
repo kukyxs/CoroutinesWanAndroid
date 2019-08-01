@@ -41,6 +41,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
+    // 用来修改article的collect字段，并且submitList()
+    private lateinit var mArticleList: PagedList<ArticleDetail>
 
     override fun getLayoutId(): Int = R.layout.fragment_home
 
@@ -64,15 +66,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert("是否收藏「${article.title}」") {
+                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                     yesButton {
-                        mCollectionViewModel.collectArticle(article.id, {
+                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                            mArticleList[position]?.collect = true
+                            mAdapter.submitList(mArticleList)
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
                         })
                     }
-                    noButton { }
+                    if (!article.collect) noButton { }
                 }.show()
             }
             true
@@ -92,6 +96,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         mViewModel.fetchHomeArticle()
         mBinding.refreshing = true
         mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
+            mArticleList = it
             mAdapter.submitList(it)
             mHandler.postDelayed({ mBinding.refreshing = false }, 500)
         })

@@ -38,7 +38,7 @@ class HomeArticleRepository {
 
     // 加载首页置顶文章
     suspend fun loadTops(): List<ArticleDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.topArticle().data
+        RetrofitManager.apiService.topArticle(PreferencesHelper.fetchCookie(WanApplication.instance)).data
     }
 }
 

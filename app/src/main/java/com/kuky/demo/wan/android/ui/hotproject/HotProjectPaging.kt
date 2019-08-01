@@ -13,6 +13,7 @@ import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -30,7 +31,7 @@ class HotProjectRepository {
 
     // 加载分类下的项目列表
     suspend fun loadProjects(page: Int, pid: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.projectList(page, pid).data.datas
+        RetrofitManager.apiService.projectList(page, pid, PreferencesHelper.fetchCookie(WanApplication.instance)).data.datas
     }
 }
 

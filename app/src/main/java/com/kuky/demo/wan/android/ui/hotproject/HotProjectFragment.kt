@@ -45,6 +45,8 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private val mAdapter: HomeProjectAdapter by lazy { HomeProjectAdapter() }
+    // 用来修改article的collect字段，并且submitList()
+    private lateinit var mProjectList: PagedList<ProjectDetailData>
 
     override fun getLayoutId(): Int = R.layout.fragment_hot_project
 
@@ -70,15 +72,18 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert("是否收藏「${article.title}」") {
+                // 根据是否收藏显示不同信息
+                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                     yesButton {
-                        mCollectionViewModel.collectArticle(article.id, {
+                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                            mProjectList[position]?.collect = true
+                            mAdapter.submitList(mProjectList)
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
                         })
                     }
-                    noButton { }
+                    if (!article.collect) noButton { }
                 }.show()
             }
             true
@@ -100,6 +105,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mViewModel.fetchDiffCategoryProjects(id)
         mBinding.refreshing = true
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
+            mProjectList = it
             mAdapter.submitList(it)
             mHandler.postDelayed({
                 mBinding.refreshing = false

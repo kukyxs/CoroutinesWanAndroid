@@ -5,9 +5,11 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
+import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
 import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
@@ -31,7 +33,7 @@ class KnowledgeSystemRepository {
     }
 
     suspend fun loadArticle4System(page: Int, cid: Int): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.articleInCategory(page, cid).data.datas
+        RetrofitManager.apiService.articleInCategory(page, cid, PreferencesHelper.fetchCookie(WanApplication.instance)).data.datas
     }
 }
 

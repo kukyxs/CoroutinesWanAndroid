@@ -5,12 +5,14 @@ import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
+import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.ui.collection.CollectionFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -42,6 +44,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             .get(CollectionViewModel::class.java)
     }
     private var mCid: Int = 0 // 体系id
+    // 用来修改article的collect字段，并且submitList()
+    private lateinit var mProjectList: PagedList<WxChapterListDatas>
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
@@ -68,21 +72,25 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
         mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert("是否收藏「${article.title}」") {
+                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                     yesButton {
-                        mCollectionViewModel.collectArticle(article.id, {
+                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                            mProjectList[position]?.collect = true
+                            mAdapter.submitList(mProjectList)
+                            mAdapter.notifyDataSetChanged()
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
                         })
                     }
-                    noButton { }
+                    if (!article.collect) noButton { }
                 }.show()
             }
             true
         }
         mViewModel.fetchType()
-        mViewModel.mType.observe(this, Observer { data ->
+        mViewModel.mType.observe(this, Observer
+        { data ->
             data?.let {
                 updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
             }
@@ -97,6 +105,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mViewModel.fetchArticles(cid)
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(this, Observer {
+            mProjectList = it
             mAdapter.submitList(it)
             mHandler.postDelayed({
                 mBinding.refreshing = false
