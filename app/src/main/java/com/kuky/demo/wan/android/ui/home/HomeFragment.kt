@@ -13,6 +13,9 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
+import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionRepository
+import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -33,6 +36,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private val mViewModel: HomeArticleViewModel by lazy {
         ViewModelProviders.of(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
             .get(HomeArticleViewModel::class.java)
+    }
+    private val mCollectionViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
+            .get(CollectionViewModel::class.java)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_home
@@ -59,7 +66,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             mAdapter.getItemData(position)?.let { article ->
                 requireContext().alert("是否收藏「${article.title}」") {
                     yesButton {
-                        mViewModel.collectArticle(article.id, {
+                        mCollectionViewModel.collectArticle(article.id, {
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)

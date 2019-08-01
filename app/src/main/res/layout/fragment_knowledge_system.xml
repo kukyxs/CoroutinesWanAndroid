@@ -27,6 +27,10 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
+            name="itemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment" />
 
@@ -125,6 +129,7 @@
                     app:layout_constraintTop_toBottomOf="@id/system_type"
                     bind:hasFixedSize="@{true}"
                     bind:pageItemClick="@{itemClick}"
+                    bind:pageItemLongClick="@{itemLongClick}"
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_wx_chapter_list" />
             </androidx.constraintlayout.widget.ConstraintLayout>

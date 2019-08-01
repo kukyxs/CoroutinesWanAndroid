@@ -15,6 +15,9 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
+import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionRepository
+import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import kotlinx.android.synthetic.main.fragment_hot_project.view.*
@@ -35,6 +38,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private val mViewModel: HotProjectViewModel by lazy {
         ViewModelProviders.of(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
             .get(HotProjectViewModel::class.java)
+    }
+    private val mCollectionViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
+            .get(CollectionViewModel::class.java)
     }
 
     private val mAdapter: HomeProjectAdapter by lazy { HomeProjectAdapter() }
@@ -65,7 +72,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             mAdapter.getItemData(position)?.let { article ->
                 requireContext().alert("是否收藏「${article.title}」") {
                     yesButton {
-                        mViewModel.collectProject(article.id, {
+                        mCollectionViewModel.collectArticle(article.id, {
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
@@ -94,7 +101,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mBinding.refreshing = true
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
             mAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it.isEmpty()
+            }, 500)
         })
     }
 

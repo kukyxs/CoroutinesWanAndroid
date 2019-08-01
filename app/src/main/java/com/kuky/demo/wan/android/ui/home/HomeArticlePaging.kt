@@ -7,14 +7,14 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BasePagedListAdapter
+import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
@@ -39,17 +39,6 @@ class HomeArticleRepository {
     // 加载首页置顶文章
     suspend fun loadTops(): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.topArticle().data
-    }
-
-    // 收藏文章
-    suspend fun collectArticle(id: Int): ResultBack = withContext(Dispatchers.IO) {
-        val result = RetrofitManager.apiService
-            .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
-
-        suspendCoroutine<ResultBack> { continuation ->
-            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
-            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
-        }
     }
 }
 

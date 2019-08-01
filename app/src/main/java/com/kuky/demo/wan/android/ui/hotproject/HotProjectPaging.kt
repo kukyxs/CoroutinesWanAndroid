@@ -32,17 +32,6 @@ class HotProjectRepository {
     suspend fun loadProjects(page: Int, pid: Int): List<ProjectDetailData>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.projectList(page, pid).data.datas
     }
-
-    // 收藏项目
-    suspend fun collectProject(id: Int) = withContext(Dispatchers.IO) {
-        val result = RetrofitManager.apiService
-            .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
-
-        suspendCoroutine<ResultBack> { continuation ->
-            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
-            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
-        }
-    }
 }
 
 /**

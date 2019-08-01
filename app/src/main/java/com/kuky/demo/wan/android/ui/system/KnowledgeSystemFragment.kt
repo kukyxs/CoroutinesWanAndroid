@@ -9,11 +9,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
+import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionRepository
+import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.KnowledgeSystemDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter
 import kotlinx.android.synthetic.main.fragment_knowledge_system.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -28,6 +36,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     private val mViewModel by lazy {
         ViewModelProviders.of(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
             .get(KnowledgeSystemViewModel::class.java)
+    }
+    private val mCollectionViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
+            .get(CollectionViewModel::class.java)
     }
     private var mCid: Int = 0 // 体系id
 
@@ -53,6 +65,21 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     it.link
                 )
             }
+        }
+        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
+            mAdapter.getItemData(position)?.let { article ->
+                requireContext().alert("是否收藏「${article.title}」") {
+                    yesButton {
+                        mCollectionViewModel.collectArticle(article.id, {
+                            requireContext().toast("收藏成功")
+                        }, { message ->
+                            requireContext().toast(message)
+                        })
+                    }
+                    noButton { }
+                }.show()
+            }
+            true
         }
         mViewModel.fetchType()
         mViewModel.mType.observe(this, Observer { data ->

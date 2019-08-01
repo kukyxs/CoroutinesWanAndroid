@@ -41,14 +41,4 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
                 .build()
         ).build()
     }
-
-    fun collectProject(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            val result = repository.collectProject(id)
-            if (result.code == CODE_SUCCEED)
-                success()
-            else
-                fail(result.message)
-        }
-    }
 }

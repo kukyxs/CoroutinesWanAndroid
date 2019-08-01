@@ -37,16 +37,4 @@ class HomeArticleViewModel(private val repository: HomeArticleRepository) : View
                 .build()
         ).build()
     }
-
-    fun collectArticle(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            val result = repository.collectArticle(id)
-
-            if (result.code == CODE_SUCCEED) {
-                success()
-            } else {
-                fail(result.message)
-            }
-        }
-    }
 }

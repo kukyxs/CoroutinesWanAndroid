@@ -38,6 +38,10 @@
             name="listener"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
+        <variable
+            name="dataNull"
+            type="Boolean" />
+
         <import type="android.view.View" />
     </data>
 
@@ -105,20 +109,33 @@
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_result"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
-                android:adapter="@{adapter}"
-                android:orientation="vertical"
-                android:overScrollMode="@{needOverScroll ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER}"
-                android:padding="8dp"
-                android:scrollbars="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                bind:listItemClick="@{listener}"
-                bind:pageItemClick="@{listener}"
-                tools:listitem="@layout/recycler_home_article" />
+                android:layout_height="match_parent">
+
+                <include
+                    layout="@layout/include_data_null"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    bind:isNull="@{dataNull}" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/search_result"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:adapter="@{adapter}"
+                    android:orientation="vertical"
+                    android:overScrollMode="@{needOverScroll ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER}"
+                    android:padding="8dp"
+                    android:scrollbars="vertical"
+                    android:visibility="@{dataNull ? View.GONE : View.VISIBLE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    bind:listItemClick="@{listener}"
+                    bind:pageItemClick="@{listener}"
+                    tools:listitem="@layout/recycler_home_article" />
+            </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

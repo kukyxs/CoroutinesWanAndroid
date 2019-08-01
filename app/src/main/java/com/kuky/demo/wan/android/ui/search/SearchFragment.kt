@@ -119,7 +119,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
             mResultAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            mHandler.postDelayed({
+                mBinding.refreshing = false
+                mBinding.dataNull = it.isEmpty()
+            }, 500)
         })
     }
 

@@ -33,6 +33,12 @@
         <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment" />
+
+        <variable
+            name="dataNull"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -47,15 +53,28 @@
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
+
+                <include
+                    layout="@layout/include_data_null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/project_fl"
+                    bind:isNull="@{dataNull}" />
 
                 <FrameLayout
-                    android:layout_width="match_parent"
+                    android:id="@+id/project_fl"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/home_title_bg">
+                    android:background="@drawable/home_title_bg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/project_type"
@@ -74,19 +93,24 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/project_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     android:adapter="@{adapter}"
                     android:orientation="vertical"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:scrollbars="vertical"
+                    android:visibility="@{dataNull ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/project_fl"
                     bind:pageItemClick="@{itemClick}"
                     bind:pageItemLongClick="@{itemLongClick}"
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_home_project" />
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.cardview.widget.CardView>
 </layout>
