@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.customview.widget.ViewDragHelper
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.utils.LogUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -20,7 +19,7 @@ class BottomDrawerLayout : FrameLayout {
     private val mContent: View by lazy { getChildAt(0) }
     private val mBottomMenu: View by lazy { getChildAt(1) }
     private val mDragHelper: ViewDragHelper by lazy {
-        ViewDragHelper.create(this, object : ViewDragHelper.Callback() {
+        ViewDragHelper.create(this, 1.0f, object : ViewDragHelper.Callback() {
             override fun tryCaptureView(child: View, pointerId: Int): Boolean = child == mBottomMenu
 
             override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
@@ -32,30 +31,36 @@ class BottomDrawerLayout : FrameLayout {
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int =
                 max(height - child.height, top)
 
-            override fun onEdgeTouched(edgeFlags: Int, pointerId: Int) {
-                super.onEdgeTouched(edgeFlags, pointerId)
-                LogUtils.error("onEdgeTouched")
-            }
-
-            override fun onEdgeLock(edgeFlags: Int): Boolean {
-                LogUtils.error("onEdgeLock")
-                return super.onEdgeLock(edgeFlags)
-            }
-
             override fun onEdgeDragStarted(edgeFlags: Int, pointerId: Int) {
                 super.onEdgeDragStarted(edgeFlags, pointerId)
                 mDragHelper.captureChildView(mBottomMenu, pointerId)
             }
 
             override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
-                mDragHelper.settleCapturedViewAt(
-                    0,
-                    if (yvel <= 0) height - releasedChild.height else height - mShownHeight.toInt()
-                )
+                val top = if (yvel < 0 ||
+                    (yvel == 0f && (height - releasedChild.top >= releasedChild.height / 2))
+                ) height - releasedChild.height else height - mShownHeight.toInt()
+
+                mDragHelper.settleCapturedViewAt(0, top)
                 invalidate()
+            }
+
+            override fun onViewDragStateChanged(state: Int) {
+                super.onViewDragStateChanged(state)
+
+                // 当静止后，判断是否为打开状态
+                if (state == ViewDragHelper.STATE_IDLE) {
+                    if (mBottomMenu.top == height - mBottomMenu.height) {
+                        mIsOpened = true
+                    } else if (mBottomMenu.top == height - mShownHeight.toInt()) {
+                        mIsOpened = false
+                    }
+                }
             }
         })
     }
+
+    private var mIsOpened = false
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -82,20 +87,16 @@ class BottomDrawerLayout : FrameLayout {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+
         mBottomMenu.let {
-            it.layout(
-                0, height - mShownHeight.toInt(),
-                it.measuredWidth, height - mShownHeight.toInt() + it.measuredHeight
-            )
+            val menuTop = if (mIsOpened) height - it.height else height - mShownHeight.toInt()
+            val menuBottom = menuTop + it.measuredHeight
+
+            it.layout(0, menuTop, it.measuredWidth, menuBottom)
         }
 
         mContent.let {
             it.layout(0, 0, it.measuredWidth, it.measuredHeight)
         }
-    }
-
-    fun setMinShownHeight(height: Float) {
-        this.mShownHeight = height
-        postInvalidate()
     }
 }
