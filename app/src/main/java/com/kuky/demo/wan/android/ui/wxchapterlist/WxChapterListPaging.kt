@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerWxChapterListBinding
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 import kotlinx.coroutines.*
 
 /**

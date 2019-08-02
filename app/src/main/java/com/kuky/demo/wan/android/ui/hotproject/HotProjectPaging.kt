@@ -6,17 +6,17 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BasePagedListAdapter
+import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
+import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
 import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 import kotlinx.coroutines.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
