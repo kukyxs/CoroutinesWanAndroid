@@ -137,7 +137,8 @@ interface ApiService {
     @GET("/wxarticle/list/{wxid}/{page}/json")
     suspend fun wxChapterList(
         @Path("wxid") wxid: Int,
-        @Path("page") page: Int
+        @Path("page") page: Int,
+        @Header("Cookie") cookie: String
     ): WxChapterList
 
     // 公众号历史数据，k 传空字符则全部记录

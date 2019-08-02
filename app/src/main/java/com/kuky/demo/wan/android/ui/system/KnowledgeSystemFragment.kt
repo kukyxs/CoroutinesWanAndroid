@@ -43,7 +43,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
-    private var mCid: Int = 0 // 体系id
+    // 体系id
+    private var mCid: Int = 0
     // 用来修改article的collect字段，并且submitList()
     private lateinit var mProjectList: PagedList<WxChapterListDatas>
 
@@ -77,7 +78,6 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
                             mProjectList[position]?.collect = true
                             mAdapter.submitList(mProjectList)
-                            mAdapter.notifyDataSetChanged()
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
@@ -89,8 +89,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             true
         }
         mViewModel.fetchType()
-        mViewModel.mType.observe(this, Observer
-        { data ->
+        mViewModel.mType.observe(this, Observer { data ->
             data?.let {
                 updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
             }

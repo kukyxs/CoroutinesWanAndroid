@@ -11,6 +11,10 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
+            name="longClickListener"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
             name="adapter"
             type="com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter" />
 
@@ -95,6 +99,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     bind:hasFixedSize="@{true}"
                     bind:pageItemClick="@{listener}"
+                    bind:pageItemLongClick="@{longClickListener}"
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_wx_chapter_list" />
             </androidx.constraintlayout.widget.ConstraintLayout>

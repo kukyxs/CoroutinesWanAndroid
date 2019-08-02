@@ -10,6 +10,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
+import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 
 /**
  * @author kuky.
@@ -38,12 +39,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
         mBinding.rcvChapter.adapter = mAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let {
-                mNavController.navigate(R.id.action_mainFragment_to_wxChapterListFragment,
-                    Bundle().apply
-                    {
-                        putInt("id", it.id)
-                        putString("title", it.name)
-                    })
+                WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
             }
         }
         fetchWxChapter()
