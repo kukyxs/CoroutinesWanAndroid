@@ -3,10 +3,11 @@
     android:color="#FFEEEEEE">
 
     <item>
-        <shape>
-            <solid android:color="@android:color/white" />
 
-            <corners android:radius="4dp" />
+        <shape>
+            <solid android:color="@color/colorPrimary" />
+
+            <corners android:radius="8dp" />
         </shape>
     </item>
 

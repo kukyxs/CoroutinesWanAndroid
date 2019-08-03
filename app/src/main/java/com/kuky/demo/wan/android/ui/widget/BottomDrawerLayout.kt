@@ -71,8 +71,26 @@ class BottomDrawerLayout : FrameLayout {
         }
     }
 
+    /**
+     * 解决 RecyclerView 和 ViewDragHelper 滑动冲突
+     */
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        return mDragHelper.shouldInterceptTouchEvent(ev!!)
+        var canDrag = false
+
+        ev?.let {
+            if (it.action == MotionEvent.ACTION_DOWN) {
+                val x = it.x.toInt()
+                val y = it.y.toInt()
+
+                canDrag = x in mBottomMenu.left..mBottomMenu.right
+                        && y in mBottomMenu.top..(mBottomMenu.top + mShownHeight.toInt())
+            }
+        }
+
+        return if (canDrag) {
+            mDragHelper.processTouchEvent(ev!!)
+            super.onInterceptTouchEvent(ev)
+        } else mDragHelper.shouldInterceptTouchEvent(ev!!)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

@@ -164,8 +164,8 @@ interface ApiService {
     @GET("/lg/todo/v2/list/{page}/json")
     suspend fun fetchTodoList(
         @Path("page") page: Int, @Header("Cookie") cookie: String,
-        @QueryMap param: HashMap<String, Any>
-    ): ResponseBody
+        @QueryMap param: HashMap<String, Int>
+    ): TodoEntity
 
     /**
      * 新增一条待办

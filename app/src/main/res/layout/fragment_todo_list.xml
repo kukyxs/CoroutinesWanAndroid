@@ -7,12 +7,28 @@
     <data>
 
         <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.todolist.TodoListFragment" />
 
         <variable
             name="todoAdapter"
-            type="com.kuky.demo.wan.android.base.BaseRecyclerAdapter" />
+            type="com.kuky.demo.wan.android.base.BasePagedListAdapter" />
+
+        <variable
+            name="todoLayoutManager"
+            type="androidx.recyclerview.widget.RecyclerView.LayoutManager" />
 
         <variable
             name="todoItemClick"
@@ -64,15 +80,29 @@
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:adapter="@{todoAdapter}"
-                android:scrollbars="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/todo_title"
-                bind:listItemClick="@{todoItemClick}"
-                bind:listItemLongClick="@{todoItemLongClick}" />
+                bind:refreshColor="@{refreshColor}"
+                bind:refreshListener="@{refreshListener}"
+                bind:refreshState="@{refreshing}">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adapter="@{todoAdapter}"
+                    android:nestedScrollingEnabled="false"
+                    android:padding="4dp"
+                    android:scrollbars="vertical"
+                    app:layoutManager="@{todoLayoutManager}"
+                    bind:pageItemClick="@{todoItemClick}"
+                    bind:pageItemLongClick="@{todoItemLongClick}"
+                    tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:listitem="@layout/recycler_todo_item"
+                    tools:spanCount="2" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"

@@ -26,16 +26,20 @@
         "type": -1
       },
       {
-        "choice_name": "工作",
+        "choice_name": "只用这一个",
         "type": 0
       },
       {
-        "choice_name": "生活",
+        "choice_name": "工作",
         "type": 1
       },
       {
-        "choice_name": "娱乐",
+        "choice_name": "学习",
         "type": 2
+      },
+      {
+        "choice_name": "生活",
+        "type": 3
       }
     ]
   },
@@ -66,20 +70,20 @@
     "param_key": "orderby",
     "choices": [
       {
-        "choice_name": "完成日期顺序",
-        "type": 1
-      },
-      {
-        "choice_name": "完成日期逆序",
-        "type": 2
-      },
-      {
         "choice_name": "创建日期顺序",
         "type": 3
       },
       {
         "choice_name": "创建日期逆序",
         "type": 4
+      },
+      {
+        "choice_name": "完成日期顺序",
+        "type": 1
+      },
+      {
+        "choice_name": "完成日期逆序",
+        "type": 2
       }
     ]
   }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="todo"
+            type="com.kuky.demo.wan.android.entity.TodoInfo" />
+
+        <variable
+            name="priorityBg"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="todoTypeStr"
+            type="String" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/priority_shown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/todo_title"
+                android:layout_alignBottom="@id/todo_title"
+                android:layout_alignParentEnd="true"
+                android:background="@{priorityBg}"
+                android:gravity="center"
+                android:padding="2dp"
+                android:text="@{todoTypeStr}"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                tools:background="@drawable/type_general"
+                tools:ignore="SmallSp"
+                tools:text="只有这一个" />
+
+            <TextView
+                android:id="@+id/todo_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_toStartOf="@id/priority_shown"
+                android:text="@{todo.title}"
+                android:textColor="@android:color/black"
+                android:textSize="15sp"
+                tools:text="待办..." />
+
+            <TextView
+                android:id="@+id/todo_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/todo_title"
+                android:layout_marginTop="8dp"
+                android:text="@{todo.content}"
+                android:textColor="@android:color/black"
+                android:textSize="13sp"
+                tools:text="待办内容 待办内容 待办内容 待办内容 待办内容 待办内容 待办内容" />
+
+            <TextView
+                android:id="@+id/edit_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/todo_content"
+                android:layout_marginTop="8dp"
+                android:text='@{"编辑时间: " + todo.dateStr}'
+                android:textSize="12sp"
+                tools:text="编辑时间：2019-08-03" />
+
+            <TextView
+                android:id="@+id/completed_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/edit_date"
+                android:layout_marginTop="4dp"
+                android:text='@{todo.completeDate == null ? "" : ("完成时间:\t" + todo.completeDateStr)}'
+                android:textSize="12sp"
+                android:visibility="@{todo.completeDate == null ? View.GONE : View.VISIBLE}"
+                tools:text="完成时间：2019-08-04" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

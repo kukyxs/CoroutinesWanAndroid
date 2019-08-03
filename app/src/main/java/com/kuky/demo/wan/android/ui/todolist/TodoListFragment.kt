@@ -1,7 +1,13 @@
 package com.kuky.demo.wan.android.ui.todolist
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -14,9 +20,9 @@ import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
+import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
-import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.
@@ -31,6 +37,14 @@ import com.kuky.demo.wan.android.utils.LogUtils
  * ```
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
+    companion object {
+        private val mHandler = Handler()
+    }
+
+    private val mViewModel: TodoListViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), TodoListViewModelFactory(TodoRepository()))
+            .get(TodoListViewModel::class.java)
+    }
 
     private val mChoiceAdapter: TodoChoiceAdapter by lazy {
         TodoChoiceAdapter(
@@ -41,16 +55,37 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         )
     }
 
+    private val mTodoAdapter: TodoPagingAdapter by lazy {
+        TodoPagingAdapter()
+    }
+
     private val mChoiceLayoutManager: FlexboxLayoutManager by lazy {
         FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
     }
+
+    private val mTodoLayoutManager: StaggeredGridLayoutManager by lazy {
+        StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+    }
+
+    private var mParams: HashMap<String, Int>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.holder = this@TodoListFragment
 
-        mBinding.todoItemClick = OnItemClickListener { position, v -> }
+        mBinding.refreshColor = R.color.colorAccent
+        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            fetchTodoList()
+        }
+
+        mBinding.todoAdapter = mTodoAdapter
+        mBinding.todoLayoutManager = mTodoLayoutManager
+        mBinding.todoItemClick = OnItemClickListener { position, v ->
+            mTodoAdapter.getItemData(position)?.let {
+                TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, it)
+            }
+        }
         mBinding.todoItemLongClick = OnItemLongClickListener { position, v -> true }
 
         mBinding.choiceAdapter = mChoiceAdapter
@@ -59,10 +94,26 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
             mChoiceAdapter.getItemData(position)?.let {
                 if (it is Choice) {
                     mChoiceAdapter.updateSelectedIndex(position)
-                    LogUtils.error(mChoiceAdapter.getApiParams())
+                    fetchTodoList()
                 }
             }
         }
+
+        fetchTodoList()
+    }
+
+    private fun fetchTodoList() {
+        val param = mChoiceAdapter.getApiParams()
+
+        if (param == mParams) return
+
+        mParams = param
+        mViewModel.fetchTodoList(param)
+        mBinding.refreshing = true
+        mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
+            mTodoAdapter.submitList(it)
+            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+        })
     }
 
     fun addTodo(view: View) {

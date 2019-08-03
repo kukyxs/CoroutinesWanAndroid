@@ -31,4 +31,7 @@
     <string name="long_save">长按保存并关注</string>
     <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
     <string name="is_null">空空如也~~</string>
+    <string name="delete">删除</string>
+    <string name="todo_title_hint">在这输入标题</string>
+    <string name="todo_description_hint">在这输入详情</string>
 </resources>
