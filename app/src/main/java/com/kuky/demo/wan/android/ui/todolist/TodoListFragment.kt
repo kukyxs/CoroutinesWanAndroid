@@ -23,6 +23,7 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
+import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -143,6 +144,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     }
 
     fun addTodo(view: View) {
+        mBinding.root.setting_drawer.animClosed()
         TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, null)
     }
 }

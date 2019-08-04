@@ -81,6 +81,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
+                android:id="@+id/create_todo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
@@ -118,27 +119,37 @@
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <FrameLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white">
+            android:elevation="12dp"
+            app:cardCornerRadius="16dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/colorAccent" />
-
-            <androidx.recyclerview.widget.RecyclerView
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:adapter="@{choiceAdapter}"
-                android:overScrollMode="never"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="20dp"
-                app:layoutManager="@{choiceLayoutManager}"
-                bind:listItemClick="@{choiceItemClick}" />
-        </FrameLayout>
+                android:background="@android:color/white">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/todo_menu_bg"
+                    android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_menu_grey_36dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:adapter="@{choiceAdapter}"
+                    android:overScrollMode="never"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="20dp"
+                    app:layoutManager="@{choiceLayoutManager}"
+                    bind:listItemClick="@{choiceItemClick}" />
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
     </com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout>
 </layout>

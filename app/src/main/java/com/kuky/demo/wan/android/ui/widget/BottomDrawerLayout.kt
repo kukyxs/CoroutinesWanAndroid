@@ -103,6 +103,16 @@ class BottomDrawerLayout : FrameLayout {
         if (mDragHelper.continueSettling(true)) invalidate()
     }
 
+    fun animClosed() {
+        mDragHelper.smoothSlideViewTo(mBottomMenu, 0, height - mShownHeight.toInt())
+        invalidate()
+    }
+
+    fun animOpen() {
+        mDragHelper.smoothSlideViewTo(mBottomMenu, 0, height - mBottomMenu.height)
+        invalidate()
+    }
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
 

@@ -37,7 +37,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/todo_title"
-                android:layout_alignBottom="@id/todo_title"
                 android:layout_alignParentEnd="true"
                 android:background="@{priorityBg}"
                 android:gravity="center"
@@ -71,11 +70,22 @@
                 android:textSize="13sp"
                 tools:text="待办内容 待办内容 待办内容 待办内容 待办内容 待办内容 待办内容" />
 
-            <TextView
-                android:id="@+id/edit_date"
+            <ImageView
+                android:id="@+id/todo_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/todo_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="4dp"
+                android:contentDescription="@null"
+                android:src="@{todo.status == 0 ? @drawable/ic_todo : @drawable/ic_done }"
+                tools:src="@drawable/ic_done" />
+
+            <TextView
+                android:id="@+id/plan_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/todo_status"
                 android:layout_marginTop="8dp"
                 android:text='@{"计划完成: " + todo.dateStr}'
                 android:textSize="12sp"
@@ -85,7 +95,7 @@
                 android:id="@+id/completed_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/edit_date"
+                android:layout_below="@id/plan_date"
                 android:layout_marginTop="4dp"
                 android:text='@{todo.completeDate == null ? "" : ("实际完成: " + todo.completeDateStr)}'
                 android:textSize="12sp"
