@@ -77,9 +77,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/todo_content"
                 android:layout_marginTop="8dp"
-                android:text='@{"编辑时间: " + todo.dateStr}'
+                android:text='@{"计划完成: " + todo.dateStr}'
                 android:textSize="12sp"
-                tools:text="编辑时间：2019-08-03" />
+                tools:text="计划完成：2019-08-03" />
 
             <TextView
                 android:id="@+id/completed_date"
@@ -87,10 +87,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/edit_date"
                 android:layout_marginTop="4dp"
-                android:text='@{todo.completeDate == null ? "" : ("完成时间:\t" + todo.completeDateStr)}'
+                android:text='@{todo.completeDate == null ? "" : ("实际完成: " + todo.completeDateStr)}'
                 android:textSize="12sp"
                 android:visibility="@{todo.completeDate == null ? View.GONE : View.VISIBLE}"
-                tools:text="完成时间：2019-08-04" />
+                tools:text="实际完成：2019-08-04" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </layout>

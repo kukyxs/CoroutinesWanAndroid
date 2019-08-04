@@ -180,7 +180,7 @@ interface ApiService {
      */
     @POST("/lg/todo/add/json")
     @FormUrlEncoded
-    suspend fun addTodo(@FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String): ResponseBody
+    suspend fun addTodo(@FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String): BasicResultData
 
     /**
      * 更新一条待办
@@ -199,7 +199,7 @@ interface ApiService {
     suspend fun updateTodo(
         @Path("id") id: Int, @Header("Cookie") cookie: String,
         @FieldMap param: HashMap<String, Any>
-    ): ResponseBody
+    ): BasicResultData
 
     /**
      * 仅更新待办状态
@@ -212,9 +212,9 @@ interface ApiService {
     suspend fun updateTodoState(
         @Path("id") id: Int, @Field("status") status: Int,
         @Header("Cookie") cookie: String
-    ): ResponseBody
+    ): BasicResultData
 
     // 删除一条待办
     @POST("/lg/todo/delete/{id}/json")
-    suspend fun deleteTodo(@Path("id") id: Int, @Header("Cookie") cookie: String): ResponseBody
+    suspend fun deleteTodo(@Path("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
 }

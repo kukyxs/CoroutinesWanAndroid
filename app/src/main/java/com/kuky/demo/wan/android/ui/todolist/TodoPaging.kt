@@ -7,10 +7,7 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerParentTodoChoiceBinding
 import com.kuky.demo.wan.android.databinding.RecyclerSubTodoChoiceBinding
@@ -21,6 +18,8 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
@@ -35,7 +34,15 @@ class TodoRepository {
     }
 
     suspend fun updateTodoState(id: Int, state: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.updateTodoState(id, state, PreferencesHelper.fetchCookie(WanApplication.instance))
+        val result = RetrofitManager.apiService.updateTodoState(
+            id, state,
+            PreferencesHelper.fetchCookie(WanApplication.instance)
+        )
+
+        suspendCoroutine<ResultBack> { continuation ->
+            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
+            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+        }
     }
 }
 
@@ -86,7 +93,7 @@ class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding
         holder.binding.todo = data
 
         holder.binding.todoTypeStr = when (data.type) {
-            0 -> "只有这一个"
+            0 -> "只用这一个"
             1 -> "工作"
             2 -> "学习"
             3 -> "生活"

@@ -13,7 +13,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
-import com.kuky.demo.wan.android.utils.LogUtils
+import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
 import kotlinx.android.synthetic.main.fragment_todo_edit.view.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
@@ -30,6 +30,14 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             .get(TodoEditViewModel::class.java)
     }
 
+    private val mUpdateListFlag: UpdateListViewModel by lazy {
+        getSharedViewModel(UpdateListViewModel::class.java)
+    }
+
+    private val mCalendar: Calendar by lazy {
+        Calendar.getInstance()
+    }
+
     private var mTodo: TodoInfo? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_todo_edit
@@ -37,28 +45,62 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         arguments?.let {
             it.getSerializable("todo")?.let { p ->
-                mTodo = p as TodoInfo
+                mTodo = (p as TodoInfo).apply {
+                    mViewModel.todoType.value = this.type
+                    mViewModel.todoPriority.value = this.priority
+                    mViewModel.todoDate.value = this.dateStr
+                }
             }
         }
 
         mBinding.holder = this@TodoEditFragment
+        mBinding.todo = mTodo
         mBinding.title = if (mTodo == null) "新增待办" else "编辑待办"
         mBinding.btnText = if (mTodo == null) "创建" else "修改"
-        mBinding.todo = mTodo
+        mBinding.newDate = formatDate(
+            mCalendar.get(Calendar.YEAR),
+            mCalendar.get(Calendar.MONTH) + 1,
+            mCalendar.get(Calendar.DAY_OF_MONTH)
+        )
+        mBinding.todoTypeStr = if (mTodo == null) "只用这一个"
+        else when (mTodo?.type) {
+            0 -> "只用这一个"
+            1 -> "工作"
+            2 -> "学习"
+            3 -> "生活"
+            else -> ""
+        }
+        mBinding.todoPriorityStr = if (mTodo == null) "重要"
+        else when (mTodo?.priority) {
+            0 -> "重要"
+            1 -> "一般"
+            2 -> "普通"
+            else -> ""
+        }
+        mBinding.todoPriorityColor = ContextCompat.getColor(
+            requireContext(), if (mTodo == null) android.R.color.holo_red_dark
+            else when (mTodo?.priority) {
+                0 -> android.R.color.holo_red_dark
+                1 -> android.R.color.holo_orange_dark
+                2 -> android.R.color.holo_green_dark
+                else -> android.R.color.white
+            }
+        )
     }
 
     @SuppressLint("SetTextI18n")
     fun datePick(view: View) {
-        val calendar = Calendar.getInstance()
         DatePickerDialog(
             requireContext(),
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                LogUtils.error("$year-${month + 1}-$dayOfMonth")
-                (view as TextView).text = "$year-${month + 1}-$dayOfMonth"
+                formatDate(year, month + 1, dayOfMonth).let {
+                    (view as TextView).text = it
+                    mViewModel.todoDate.value = it
+                }
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            mCalendar.get(Calendar.YEAR),
+            mCalendar.get(Calendar.MONTH),
+            mCalendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
 
@@ -66,6 +108,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         val types = mutableListOf("只用这一个", "工作", "学习", "生活")
         requireContext().selector("待办类别", types) { _, i ->
             (view as TextView).text = types[i]
+            mViewModel.todoType.value = i
         }
     }
 
@@ -81,6 +124,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             (view as TextView).let {
                 it.text = priorityList[i]
                 it.setTextColor(ContextCompat.getColor(requireContext(), colors[i]))
+                mViewModel.todoPriority.value = i
             }
         }
     }
@@ -88,7 +132,6 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     fun updateOrAddTodo(view: View) {
         val title = mBinding.root.todo_title.text.toString()
         val content = mBinding.root.todo_description.text.toString()
-        val date = mBinding.root.todo_date.text.toString()
 
         if (title.isBlank()) {
             requireContext().toast("标题不可为空")
@@ -104,15 +147,40 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
         param["title"] = title
         param["content"] = content
-        param["date"] = date
-        param["type"] = 0
-        param["priority"] = 0
+        param["date"] = mViewModel.todoDate.value ?: ""
+        param["type"] = mViewModel.todoType.value ?: 0
+        param["priority"] = mViewModel.todoPriority.value ?: 0
 
-        mViewModel.addTodo(param)
+        if (mTodo == null) {
+            mViewModel.addTodo(param, {
+                mUpdateListFlag.needUpdate.value = true
+                requireContext().toast("添加待办成功")
+                mNavController.navigateUp()
+            }, { message -> requireContext().toast(message) })
+        } else {
+            mViewModel.updateTodo(mTodo?.id ?: 0, param, {
+                mUpdateListFlag.needUpdate.value = true
+                requireContext().toast("更新待办成功")
+                mNavController.navigateUp()
+            }, { message -> requireContext().toast(message) })
+        }
+    }
+
+    fun deleteTodo(view: View) {
+        mViewModel.deleteTodo(mTodo?.id ?: 0, {
+            mUpdateListFlag.needUpdate.value = true
+            requireContext().toast("删除成功")
+            mNavController.navigateUp()
+        }, { message ->
+            requireContext().toast(message)
+        })
     }
 
     companion object {
         fun addOrEditTodo(controller: NavController, @IdRes id: Int, todo: TodoInfo?) =
             controller.navigate(id, Bundle().apply { putSerializable("todo", todo) })
+
+        fun formatDate(year: Int, month: Int, day: Int): String =
+            "$year-${month.let { if (it < 10) "0$it" else "$it" }}-${day.let { if (it < 10) "0$it" else it }}"
     }
 }

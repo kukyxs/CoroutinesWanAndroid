@@ -9,7 +9,7 @@
     <string name="about_us">关于我们</string>
     <string name="version_info">版本信息</string>
     <string name="todo_title">TODO</string>
-    <string name="todo_list">待办事项</string>
+    <string name="todo_list">我的待办</string>
     <string name="star">支持一下</string>
     <string name="login_out">退出登录</string>
     <string name="search_hint">输入搜索关键词</string>

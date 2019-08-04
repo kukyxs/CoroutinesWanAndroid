@@ -17,8 +17,20 @@
             type="String" />
 
         <variable
-            name="defaultDate"
+            name="newDate"
             type="String" />
+
+        <variable
+            name="todoTypeStr"
+            type="String" />
+
+        <variable
+            name="todoPriorityStr"
+            type="String" />
+
+        <variable
+            name="todoPriorityColor"
+            type="Integer" />
 
         <variable
             name="todo"
@@ -105,6 +117,7 @@
                 android:onClick="@{holder::datePick}"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
+                android:text="@{todo == null ? newDate : todo.dateStr}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 tools:text="2019-08-02" />
@@ -123,9 +136,10 @@
                 android:onClick="@{holder::typePick}"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
+                android:text="@{todoTypeStr}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                tools:text="工作" />
+                tools:text="只用这一个" />
 
             <TextView
                 android:id="@+id/todo_priority"
@@ -140,9 +154,11 @@
                 android:onClick="@{holder::priorityPick}"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
-                android:textColor="@android:color/holo_red_dark"
+                android:text="@{todoPriorityStr}"
+                android:textColor="@{todoPriorityColor}"
                 android:textSize="16sp"
-                tools:text="重要" />
+                tools:text="重要"
+                tools:textColor="@android:color/holo_red_dark" />
         </LinearLayout>
 
         <TextView
@@ -172,6 +188,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
+            android:onClick="@{holder::deleteTodo}"
             android:padding="12dp"
             android:text="@string/delete"
             android:textColor="@android:color/white"

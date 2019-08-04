@@ -45,8 +45,10 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
     abstract fun initFragment(view: View, savedInstanceState: Bundle?)
 
     fun <T : ViewModel> getViewModel(clazz: Class<T>): T =
-        activity?.run { ViewModelProviders.of(this).get(clazz) }
-            ?: throw RuntimeException("Maybe have not bind any activity")
+        requireActivity().run { ViewModelProviders.of(this).get(clazz) }
+
+    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T =
+        requireActivity().run { ViewModelProviders.of(requireActivity()).get(clazz) }
 
     /**
      * 权限申请，依赖的 activity 需继承 [BaseActivity]

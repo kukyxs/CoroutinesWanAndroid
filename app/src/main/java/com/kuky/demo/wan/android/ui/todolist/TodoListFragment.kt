@@ -23,6 +23,10 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -30,11 +34,12 @@ import com.kuky.demo.wan.android.utils.AssetsLoader
  * ```
  *      {
  *      status 状态: [0-未完成, 1-完成, 默认全部],
- *      type 创建类型: [1-工作, 2-生活, 3-娱乐, 默认全部],
- *      priority 优先级: [1-High, 2-Normal, 3-Low, 默认全部],
+ *      type 创建类型: [1-工作, 2-学习, 3-生活, 默认全部],
+ *      priority 优先级: [1-重要, 2-一般, 3-普通, 默认全部],
  *      orderby 排序: [1-完成日期顺序, 2-完成日期逆序, 3-创建日期顺序, 4-创建日期逆序(默认)]
  *      }
  * ```
+ * 查询参数通过 [TodoChoiceAdapter] #getApiParam 获取即可
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     companion object {
@@ -44,6 +49,10 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     private val mViewModel: TodoListViewModel by lazy {
         ViewModelProviders.of(requireActivity(), TodoListViewModelFactory(TodoRepository()))
             .get(TodoListViewModel::class.java)
+    }
+
+    private val mUpdateFlag: UpdateListViewModel by lazy {
+        getSharedViewModel(UpdateListViewModel::class.java)
     }
 
     private val mChoiceAdapter: TodoChoiceAdapter by lazy {
@@ -76,7 +85,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchTodoList()
+            fetchTodoList(true)
         }
 
         mBinding.todoAdapter = mTodoAdapter
@@ -86,7 +95,20 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, it)
             }
         }
-        mBinding.todoItemLongClick = OnItemLongClickListener { position, v -> true }
+        mBinding.todoItemLongClick = OnItemLongClickListener { position, _ ->
+            mTodoAdapter.getItemData(position)?.let { todo ->
+                requireContext().alert("是否设置当前待办完成状态为${if (todo.status == 0) "完成" else "未完成"}") {
+                    yesButton {
+                        mViewModel.updateTodoState(todo.id, if (todo.status == 0) 1 else 0, {
+                            requireContext().toast("修改成功")
+                            mUpdateFlag.needUpdate.value = true
+                        }, { message -> requireContext().toast(message) })
+                    }
+                    noButton { }
+                }.show()
+            }
+            true
+        }
 
         mBinding.choiceAdapter = mChoiceAdapter
         mBinding.choiceLayoutManager = mChoiceLayoutManager
@@ -99,13 +121,17 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
             }
         }
 
+        mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
+            if (it) fetchTodoList(true)
+        })
+
         fetchTodoList()
     }
 
-    private fun fetchTodoList() {
+    private fun fetchTodoList(isRefresh: Boolean = false) {
         val param = mChoiceAdapter.getApiParams()
 
-        if (param == mParams) return
+        if (param == mParams && !isRefresh) return
 
         mParams = param
         mViewModel.fetchTodoList(param)
