@@ -20,6 +20,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.utils.TextFormatUtils
 import kotlinx.android.synthetic.main.fragment_hot_project.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -101,7 +102,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private fun fetchProjects(id: Int, title: String) {
-        mBinding.root.project_type.text = title
+        mBinding.root.project_type.text = TextFormatUtils.renderHtmlText(title)
         mViewModel.fetchDiffCategoryProjects(id)
         mBinding.refreshing = true
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {

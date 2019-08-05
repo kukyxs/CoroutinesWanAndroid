@@ -93,18 +93,18 @@ class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding
         holder.binding.todo = data
 
         holder.binding.todoTypeStr = when (data.type) {
-            0 -> "只用这一个"
-            1 -> "工作"
-            2 -> "学习"
-            3 -> "生活"
+            1 -> "只用这一个"
+            2 -> "工作"
+            3 -> "学习"
+            4 -> "生活"
             else -> ""
         }
 
         holder.binding.priorityBg = ContextCompat.getDrawable(
             holder.binding.root.context, when (data.priority) {
-                0 -> R.drawable.type_important
-                1 -> R.drawable.type_general
-                2 -> R.drawable.type_normal
+                1 -> R.drawable.type_important
+                2 -> R.drawable.type_general
+                3 -> R.drawable.type_normal
                 else -> R.drawable.search_bg
             }
         )

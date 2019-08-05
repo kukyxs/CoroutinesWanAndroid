@@ -22,8 +22,8 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
     init {
         val calendar = Calendar.getInstance()
 
-        todoType.value = 0
-        todoPriority.value = 0
+        todoType.value = 1
+        todoPriority.value = 1
         todoDate.value = TodoEditFragment.formatDate(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH) + 1,

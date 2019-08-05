@@ -10,17 +10,30 @@
 
     </data>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <include layout="@layout/include_status_bar" />
 
+        <TextView
+            android:id="@+id/detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/barHeight"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/article_detail"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
         <WebView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/barHeight"
+            android:layout_below="@id/detail_title"
             android:overScrollMode="never"
             bind:url="@{url}" />
 
@@ -28,8 +41,8 @@
             android:id="@+id/loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/halfBarHeight"
             android:alpha="0.4" />
-    </FrameLayout>
+    </RelativeLayout>
 </layout>

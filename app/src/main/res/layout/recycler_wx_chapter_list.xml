@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools">
 
     <data>
@@ -28,10 +29,10 @@
                 android:id="@+id/chapter_article_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{data.title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                bind:renderHtml="@{data.title}"
                 tool:text="是什么让我们阅读RxJava源码如此艰难？" />
 
             <TextView

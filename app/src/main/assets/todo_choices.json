@@ -27,19 +27,19 @@
       },
       {
         "choice_name": "只用这一个",
-        "type": 0
-      },
-      {
-        "choice_name": "工作",
         "type": 1
       },
       {
-        "choice_name": "学习",
+        "choice_name": "工作",
         "type": 2
       },
       {
-        "choice_name": "生活",
+        "choice_name": "学习",
         "type": 3
+      },
+      {
+        "choice_name": "生活",
+        "type": 4
       }
     ]
   },
@@ -53,15 +53,15 @@
       },
       {
         "choice_name": "重要",
-        "type": 0
-      },
-      {
-        "choice_name": "一般",
         "type": 1
       },
       {
-        "choice_name": "普通",
+        "choice_name": "一般",
         "type": 2
+      },
+      {
+        "choice_name": "普通",
+        "type": 3
       }
     ]
   },

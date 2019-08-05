@@ -34,4 +34,5 @@
     <string name="delete">删除</string>
     <string name="todo_title_hint">在这输入标题</string>
     <string name="todo_description_hint">在这输入详情</string>
+    <string name="article_detail">文章详情</string>
 </resources>

@@ -64,25 +64,25 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         )
         mBinding.todoTypeStr = if (mTodo == null) "只用这一个"
         else when (mTodo?.type) {
-            0 -> "只用这一个"
-            1 -> "工作"
-            2 -> "学习"
-            3 -> "生活"
+            1 -> "只用这一个"
+            2 -> "工作"
+            3 -> "学习"
+            4 -> "生活"
             else -> ""
         }
         mBinding.todoPriorityStr = if (mTodo == null) "重要"
         else when (mTodo?.priority) {
-            0 -> "重要"
-            1 -> "一般"
-            2 -> "普通"
+            1 -> "重要"
+            2 -> "一般"
+            3 -> "普通"
             else -> ""
         }
         mBinding.todoPriorityColor = ContextCompat.getColor(
             requireContext(), if (mTodo == null) android.R.color.holo_red_dark
             else when (mTodo?.priority) {
-                0 -> android.R.color.holo_red_dark
-                1 -> android.R.color.holo_orange_dark
-                2 -> android.R.color.holo_green_dark
+                1 -> android.R.color.holo_red_dark
+                2 -> android.R.color.holo_orange_dark
+                3 -> android.R.color.holo_green_dark
                 else -> android.R.color.white
             }
         )
@@ -108,7 +108,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         val types = mutableListOf("只用这一个", "工作", "学习", "生活")
         requireContext().selector("待办类别", types) { _, i ->
             (view as TextView).text = types[i]
-            mViewModel.todoType.value = i
+            mViewModel.todoType.value = i + 1
         }
     }
 
@@ -124,7 +124,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             (view as TextView).let {
                 it.text = priorityList[i]
                 it.setTextColor(ContextCompat.getColor(requireContext(), colors[i]))
-                mViewModel.todoPriority.value = i
+                mViewModel.todoPriority.value = i + 1
             }
         }
     }
@@ -148,8 +148,8 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         param["title"] = title
         param["content"] = content
         param["date"] = mViewModel.todoDate.value ?: ""
-        param["type"] = mViewModel.todoType.value ?: 0
-        param["priority"] = mViewModel.todoPriority.value ?: 0
+        param["type"] = mViewModel.todoType.value ?: 1
+        param["priority"] = mViewModel.todoPriority.value ?: 1
 
         if (mTodo == null) {
             mViewModel.addTodo(param, {
