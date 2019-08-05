@@ -1,4 +1,6 @@
-该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」进行编写，整体采用 MVVM, Android Jectpack, Retrofit, Kotlin 协程进行编写。
+### 大概介绍
+该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口，整体采用 MVVM, Android Jectpack, Retrofit, Kotlin 协程进行编写。
+该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成，目前已完成所有的开发功能，细节有待调整。
 
 ### 目前已完成功能
 - 首页最新博文
