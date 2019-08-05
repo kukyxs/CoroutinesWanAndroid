@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -19,8 +20,8 @@
         android:gravity="center"
         android:padding="8dp"
         android:singleLine="true"
-        android:text="@{name}"
         android:textColor="@{selected ? @color/colorAccent : @android:color/black }"
         android:textSize="14sp"
+        bind:renderHtml="@{name}"
         tools:text="开发环境" />
 </layout>

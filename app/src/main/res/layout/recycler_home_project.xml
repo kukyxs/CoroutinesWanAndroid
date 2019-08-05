@@ -64,8 +64,8 @@
                 android:lineSpacingExtra="4dp"
                 android:maxLines="3"
                 android:minLines="2"
-                android:text="@{project.desc}"
                 android:textSize="13sp"
+                bind:renderHtml="@{project.desc}"
                 tools:text="应用推出新功能需要给给用户提示指引一下.传入需要指引的View即可" />
 
             <TextView

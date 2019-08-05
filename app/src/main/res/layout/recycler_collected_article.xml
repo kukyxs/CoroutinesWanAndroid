@@ -62,7 +62,7 @@
                 android:lineSpacingExtra="4dp"
                 android:maxLines="3"
                 android:minLines="2"
-                android:text="@{data.desc}"
+                bind:renderHtml="@{data.desc}"
                 android:textSize="13sp"
                 tools:text="使用Kotlin语言开发的WanAndroid客户端，使用了AndroidX和RxJava、Retrofit、OkHttp等开元技术。" />
 

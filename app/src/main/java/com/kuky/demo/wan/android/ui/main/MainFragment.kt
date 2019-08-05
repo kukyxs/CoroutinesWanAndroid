@@ -119,8 +119,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 R.id.go_star -> starForUs()
 
-                R.id.version -> requireContext()
-                    .alert("当前版本为${ApplicationUtils.getAppVersionName(requireContext())}") {
+                R.id.helper -> requireContext()
+                    .alert(R.string.operate_helper) {
                         yesButton { dialog -> dialog.dismiss() }
                     }.show()
 
