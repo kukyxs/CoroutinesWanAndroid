@@ -97,9 +97,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/plan_date"
                 android:layout_marginTop="4dp"
-                android:text='@{todo.completeDate == null ? "" : ("实际完成: " + todo.completeDateStr)}'
+                android:text='@{todo.status == 0 ? "" : ("实际完成: " + todo.completeDateStr)}'
                 android:textSize="12sp"
-                android:visibility="@{todo.completeDate == null ? View.GONE : View.VISIBLE}"
+                android:visibility="@{todo.status == 0 ? View.GONE : View.VISIBLE}"
                 tools:text="实际完成：2019-08-04" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
