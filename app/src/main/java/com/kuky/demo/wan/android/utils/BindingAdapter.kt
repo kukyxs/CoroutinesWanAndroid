@@ -182,6 +182,11 @@ fun bindScrollTo(recyclerView: RecyclerView, position: Int, offset: Int) {
     }
 }
 
+@BindingAdapter("bind:scrollListener")
+fun bindRecyclerScrollListener(recyclerView: RecyclerView, l: RecyclerView.OnScrollListener) {
+    recyclerView.addOnScrollListener(l)
+}
+
 /**
  * 绑定 SwipeRefreshLayout 颜色，刷新状态，监听事件
  */

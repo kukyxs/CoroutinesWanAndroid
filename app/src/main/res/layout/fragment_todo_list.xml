@@ -15,6 +15,10 @@
             type="Boolean" />
 
         <variable
+            name="enabled"
+            type="Boolean" />
+
+        <variable
             name="refreshListener"
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
 
@@ -29,6 +33,10 @@
         <variable
             name="todoLayoutManager"
             type="androidx.recyclerview.widget.RecyclerView.LayoutManager" />
+
+        <variable
+            name="scrollListener"
+            type="androidx.recyclerview.widget.RecyclerView.OnScrollListener" />
 
         <variable
             name="todoItemClick"
@@ -100,6 +108,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/todo_title"
                 bind:refreshColor="@{refreshColor}"
+                bind:refreshEnable="@{enabled}"
                 bind:refreshListener="@{refreshListener}"
                 bind:refreshState="@{refreshing}">
 
@@ -113,6 +122,7 @@
                     app:layoutManager="@{todoLayoutManager}"
                     bind:pageItemClick="@{todoItemClick}"
                     bind:pageItemLongClick="@{todoItemLongClick}"
+                    bind:scrollListener="@{scrollListener}"
                     tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     tools:listitem="@layout/recycler_todo_item"
                     tools:spanCount="2" />

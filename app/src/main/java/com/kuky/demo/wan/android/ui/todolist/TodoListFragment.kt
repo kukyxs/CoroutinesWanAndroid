@@ -6,6 +6,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexDirection
@@ -116,6 +117,15 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 }.show()
             }
             true
+        }
+        mBinding.scrollListener = object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val firstCompletedVisibleItems = IntArray(2)
+                mTodoLayoutManager.findFirstCompletelyVisibleItemPositions(firstCompletedVisibleItems)
+                mBinding.enabled = firstCompletedVisibleItems.contains(0)
+            }
         }
 
         mBinding.choiceAdapter = mChoiceAdapter
