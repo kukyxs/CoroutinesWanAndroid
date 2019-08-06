@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.utils.TimeUtils
 import java.util.*
 
 /**
@@ -26,7 +27,7 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
 
         todoType.value = 1
         todoPriority.value = 1
-        todoDate.value = TodoEditFragment.formatDate(
+        todoDate.value = TimeUtils.formatDate(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH) + 1,
             calendar.get(Calendar.DAY_OF_MONTH)

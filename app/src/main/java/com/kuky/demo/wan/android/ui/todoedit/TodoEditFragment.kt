@@ -15,6 +15,7 @@ import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
 import com.kuky.demo.wan.android.utils.LogUtils
+import com.kuky.demo.wan.android.utils.TimeUtils
 import kotlinx.android.synthetic.main.fragment_todo_edit.view.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
@@ -59,7 +60,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         mBinding.todo = mTodo
         mBinding.title = if (mTodo == null) "新增待办" else "编辑待办"
         mBinding.btnText = if (mTodo == null) "创建" else "修改"
-        mBinding.newDate = formatDate(
+        mBinding.newDate = TimeUtils.formatDate(
             mCalendar.get(Calendar.YEAR),
             mCalendar.get(Calendar.MONTH) + 1,
             mCalendar.get(Calendar.DAY_OF_MONTH)
@@ -95,7 +96,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         DatePickerDialog(
             requireContext(),
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                formatDate(year, month + 1, dayOfMonth).let {
+                TimeUtils.formatDate(year, month + 1, dayOfMonth).let {
                     (view as TextView).text = it
                     mViewModel.todoDate.value = it
                 }
@@ -184,8 +185,5 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     companion object {
         fun addOrEditTodo(controller: NavController, @IdRes id: Int, todo: TodoInfo?) =
             controller.navigate(id, Bundle().apply { putSerializable("todo", todo) })
-
-        fun formatDate(year: Int, month: Int, day: Int): String =
-            "$year-${month.let { if (it < 10) "0$it" else "$it" }}-${day.let { if (it < 10) "0$it" else it }}"
     }
 }
