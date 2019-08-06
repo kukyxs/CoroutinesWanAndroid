@@ -35,7 +35,7 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
                 }
 
         mBinding.tSpan =
-            SpannableString("Taonce：微信公众号 Taonce 博主，专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。")
+            SpannableString("Taonce：Android码农一枚，喜欢Android、Kotlin，日常撸码、撸电影、撸游戏~~")
                 .apply {
                     setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
