@@ -93,10 +93,10 @@ class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding
         holder.binding.todo = data
 
         holder.binding.todoTypeStr = when (data.type) {
-            1 -> "只用这一个"
-            2 -> "工作"
-            3 -> "学习"
-            4 -> "生活"
+            0 -> "只用这一个"
+            1 -> "工作"
+            2 -> "学习"
+            3 -> "生活"
             else -> ""
         }
 

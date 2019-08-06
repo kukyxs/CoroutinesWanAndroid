@@ -14,6 +14,7 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
+import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.android.synthetic.main.fragment_todo_edit.view.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
@@ -49,6 +50,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                     mViewModel.todoType.value = this.type
                     mViewModel.todoPriority.value = this.priority
                     mViewModel.todoDate.value = this.dateStr
+                    mViewModel.todoState.value = this.status
                 }
             }
         }
@@ -64,10 +66,10 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         )
         mBinding.todoTypeStr = if (mTodo == null) "只用这一个"
         else when (mTodo?.type) {
-            1 -> "只用这一个"
-            2 -> "工作"
-            3 -> "学习"
-            4 -> "生活"
+            0 -> "只用这一个"
+            1 -> "工作"
+            2 -> "学习"
+            3 -> "生活"
             else -> ""
         }
         mBinding.todoPriorityStr = if (mTodo == null) "重要"
@@ -108,7 +110,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         val types = mutableListOf("只用这一个", "工作", "学习", "生活")
         requireContext().selector("待办类别", types) { _, i ->
             (view as TextView).text = types[i]
-            mViewModel.todoType.value = i + 1
+            mViewModel.todoType.value = i
         }
     }
 
@@ -150,6 +152,9 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         param["date"] = mViewModel.todoDate.value ?: ""
         param["type"] = mViewModel.todoType.value ?: 1
         param["priority"] = mViewModel.todoPriority.value ?: 1
+        param["status"] = mViewModel.todoState.value ?: 0
+
+        LogUtils.error(param)
 
         if (mTodo == null) {
             mViewModel.addTodo(param, {

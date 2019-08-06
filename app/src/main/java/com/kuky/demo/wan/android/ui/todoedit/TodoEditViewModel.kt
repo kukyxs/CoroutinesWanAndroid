@@ -19,6 +19,8 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
 
     val todoDate = MutableLiveData<String>()
 
+    val todoState = MutableLiveData<Int>()
+
     init {
         val calendar = Calendar.getInstance()
 
@@ -29,6 +31,7 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
             calendar.get(Calendar.MONTH) + 1,
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+        todoState.value = 0
     }
 
     fun addTodo(param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {

@@ -27,19 +27,19 @@
       },
       {
         "choice_name": "只用这一个",
-        "type": 1
+        "type": 0
       },
       {
         "choice_name": "工作",
-        "type": 2
+        "type": 1
       },
       {
         "choice_name": "学习",
-        "type": 3
+        "type": 2
       },
       {
         "choice_name": "生活",
-        "type": 4
+        "type": 3
       }
     ]
   },
