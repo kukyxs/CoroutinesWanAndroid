@@ -26,10 +26,6 @@
         "type": -1
       },
       {
-        "choice_name": "只用这一个",
-        "type": 0
-      },
-      {
         "choice_name": "工作",
         "type": 1
       },

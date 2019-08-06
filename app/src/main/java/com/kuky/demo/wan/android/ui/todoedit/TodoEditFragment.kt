@@ -65,7 +65,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             mCalendar.get(Calendar.MONTH) + 1,
             mCalendar.get(Calendar.DAY_OF_MONTH)
         )
-        mBinding.todoTypeStr = if (mTodo == null) "只用这一个"
+        mBinding.todoTypeStr = if (mTodo == null) "工作"
         else when (mTodo?.type) {
             0 -> "只用这一个"
             1 -> "工作"
@@ -108,10 +108,10 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     }
 
     fun typePick(view: View) {
-        val types = mutableListOf("只用这一个", "工作", "学习", "生活")
+        val types = mutableListOf("工作", "学习", "生活")
         requireContext().selector("待办类别", types) { _, i ->
             (view as TextView).text = types[i]
-            mViewModel.todoType.value = i
+            mViewModel.todoType.value = i + 1
         }
     }
 
