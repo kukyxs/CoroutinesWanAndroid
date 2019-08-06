@@ -23,6 +23,7 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
+import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -93,6 +94,12 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         mBinding.todoLayoutManager = mTodoLayoutManager
         mBinding.todoItemClick = OnItemClickListener { position, v ->
             mTodoAdapter.getItemData(position)?.let {
+                if (it.status == 1) {
+                    requireContext().alert("当前 Todo 已完成，无法更新内容，请长按修改 Todo 状态后再进行更新") {
+                        yesButton { }
+                    }.show()
+                    return@let
+                }
                 TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, it)
             }
         }
@@ -131,6 +138,8 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
     private fun fetchTodoList(isRefresh: Boolean = false) {
         val param = mChoiceAdapter.getApiParams()
+
+        LogUtils.error(param)
 
         if (param == mParams && !isRefresh) return
 
