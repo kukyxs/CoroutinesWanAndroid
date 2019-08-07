@@ -149,8 +149,6 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     private fun fetchTodoList(isRefresh: Boolean = false) {
         val param = mChoiceAdapter.getApiParams()
 
-        LogUtils.error(param)
-
         if (param == mParams && !isRefresh) return
 
         mParams = param
