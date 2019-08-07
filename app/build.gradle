@@ -18,6 +18,7 @@ final flexbox_version = "1.1.0"
 final glide_version = "4.9.0"
 final banner_version = "1.4.10"
 final fab_version = "1.6.4"
+final text_path_version = "0.2.1"
 
 android {
     compileSdkVersion 28
@@ -85,4 +86,5 @@ dependencies {
 
     implementation "com.youth.banner:banner:$banner_version"
     implementation "com.github.clans:fab:$fab_version"
+    implementation "com.yanzhikai:TextPathView:$text_path_version"
 }
