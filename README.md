@@ -22,6 +22,8 @@
 - [Glide](https://github.com/bumptech/glide)
 - [Banner](https://github.com/youth5201314/banner)
 - [FlexboxLayout](https://github.com/google/flexbox-layout)
+- [TextPathView](https://github.com/totond/TextPathView)
+- [FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 
 ### 支持一下
 如果该项目对你有帮助，请在右上角帮我们 **star** 一下。如果有什么问题，可以直接提 **issue**
