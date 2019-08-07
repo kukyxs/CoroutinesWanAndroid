@@ -38,6 +38,7 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
     override fun onDestroy() {
         super.onDestroy()
         cancel()
+        mBinding.unbind()
     }
 
     abstract fun getLayoutId(): Int

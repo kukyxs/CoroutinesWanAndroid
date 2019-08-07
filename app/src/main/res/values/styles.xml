@@ -11,6 +11,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="DialogPushInOutAnimation">
         <item name="android:windowEnterAnimation">@anim/dialog_push_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_push_out</item>

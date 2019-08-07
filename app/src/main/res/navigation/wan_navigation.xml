@@ -3,13 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/wan_navigation"
-    app:startDestination="@id/splashFragment">
-
-    <fragment
-        android:id="@+id/splashFragment"
-        android:name="com.kuky.demo.wan.android.ui.splash.SplashFragment"
-        android:label="SplashFragment"
-        tools:layout="@layout/fragment_splash" />
+    app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/mainFragment"

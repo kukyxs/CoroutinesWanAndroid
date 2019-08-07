@@ -56,6 +56,7 @@ abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(), Coro
     override fun onDestroy() {
         super.onDestroy()
         cancel()
+        mBinding.unbind()
     }
 
     abstract fun getLayoutId(): Int

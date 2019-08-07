@@ -38,6 +38,7 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
         super.onDestroy()
         ActivityStackManager.removeActivity(this)
         cancel()
+        mBinding.unbind()
     }
 
     /** 透明状态栏 */
