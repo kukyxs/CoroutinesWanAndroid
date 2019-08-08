@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">玩Android</string>
+    <string name="splash_hint">Enjoy The World of Android</string>
     <string name="collection">收藏</string>
     <string name="collections">我的收藏</string>
     <string name="collected_articles">文章收藏</string>
