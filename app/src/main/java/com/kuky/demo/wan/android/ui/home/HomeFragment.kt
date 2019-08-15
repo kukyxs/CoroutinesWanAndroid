@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -34,11 +34,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
     private val mViewModel: HomeArticleViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
+        ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
             .get(HomeArticleViewModel::class.java)
     }
     private val mCollectionViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
     // 用来修改article的collect字段，并且submitList()

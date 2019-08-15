@@ -2,7 +2,7 @@ package com.kuky.demo.wan.android.ui.dialog
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.databinding.DialogRegisterBinding
@@ -19,8 +19,7 @@ import org.jetbrains.anko.toast
 class RegisterDialogFragment : BaseDialogFragment<DialogRegisterBinding>() {
 
     private val mViewModel: MainViewModel by lazy {
-        ViewModelProviders
-            .of(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
     }
 

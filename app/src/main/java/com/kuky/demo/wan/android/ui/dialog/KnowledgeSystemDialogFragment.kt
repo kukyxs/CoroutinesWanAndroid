@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
@@ -24,7 +24,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
     private val mFirstAdapter by lazy { KnowledgeSystemTypeAdapter() }
     private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
     private val mViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
+        ViewModelProvider(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
             .get(KnowledgeSystemViewModel::class.java)
     }
     private var mFirstData: SystemData? = null

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -37,11 +37,11 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private val mViewModel: HotProjectViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
+        ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
             .get(HotProjectViewModel::class.java)
     }
     private val mCollectionViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
 

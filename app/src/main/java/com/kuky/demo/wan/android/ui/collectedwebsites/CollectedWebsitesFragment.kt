@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -29,7 +29,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
     }
 
     private val mViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
+        ViewModelProvider(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
     }
     private val mAdapter by lazy { CollectedWebsitesAdapter() }

@@ -253,6 +253,7 @@ fun bindMovementMethod(textView: TextView, method: MovementMethod) {
     textView.movementMethod = method
 }
 
+@Suppress("DEPRECATION")
 @BindingAdapter("bind:renderHtml")
 fun bindRenderHtml(textView: TextView, description: String) {
     textView.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)

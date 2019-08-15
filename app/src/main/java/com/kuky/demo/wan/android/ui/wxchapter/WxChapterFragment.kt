@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -22,7 +22,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
     }
 
     private val mViewModel by lazy {
-        ViewModelProviders.of(this, WxChapterFactory(WxChapterRepository()))
+        ViewModelProvider(this, WxChapterFactory(WxChapterRepository()))
             .get(WxChapterViewModel::class.java)
     }
     private val mAdapter by lazy { WxChapterAdapter(null) }

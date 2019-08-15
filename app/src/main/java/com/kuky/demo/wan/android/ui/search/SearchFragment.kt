@@ -8,7 +8,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
@@ -42,8 +42,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
 
     private val mViewModel: SearchViewModel by lazy {
-        ViewModelProviders
-            .of(this, SearchModelFactory(SearchRepository()))
+        ViewModelProvider(this, SearchModelFactory(SearchRepository()))
             .get(SearchViewModel::class.java)
     }
 

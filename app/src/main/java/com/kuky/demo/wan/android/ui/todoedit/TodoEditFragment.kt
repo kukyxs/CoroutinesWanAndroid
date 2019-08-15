@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -28,7 +28,7 @@ import java.util.*
 class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
     private val mViewModel: TodoEditViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), TodoEditViewModelFactory(TodoEditRepository()))
+        ViewModelProvider(requireActivity(), TodoEditViewModelFactory(TodoEditRepository()))
             .get(TodoEditViewModel::class.java)
     }
 

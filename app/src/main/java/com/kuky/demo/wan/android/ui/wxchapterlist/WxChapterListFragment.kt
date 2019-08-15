@@ -6,7 +6,7 @@ import android.os.Handler
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -54,14 +54,12 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     private val mAdapter by lazy { WxChapterListAdapter() }
     private val mViewMode by lazy {
-        ViewModelProviders.of(
-            requireActivity(), WxChapterListModelFactory(WxChapterListRepository())
-        ).get(WxChapterListViewModel::class.java)
+        ViewModelProvider(requireActivity(), WxChapterListModelFactory(WxChapterListRepository()))
+            .get(WxChapterListViewModel::class.java)
     }
     private val mCollectionViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(), CollectionFactory(CollectionRepository())
-        ).get(CollectionViewModel::class.java)
+        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
+            .get(CollectionViewModel::class.java)
     }
     private lateinit var mArticleList: PagedList<WxChapterListDatas>
 

@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
@@ -28,7 +28,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
     private val mAdapter: ProjectCategoryAdapter by lazy { ProjectCategoryAdapter() }
 
     private val mViewModel: HotProjectViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
+        ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
             .get(HotProjectViewModel::class.java)
     }
 

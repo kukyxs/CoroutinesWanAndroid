@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
@@ -48,8 +48,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private val mViewModel: MainViewModel by lazy {
-        ViewModelProviders
-            .of(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
     }
 

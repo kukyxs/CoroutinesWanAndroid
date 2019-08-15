@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
@@ -21,7 +21,7 @@ import org.jetbrains.anko.toast
  */
 class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsiteBinding>() {
     private val mViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
+        ViewModelProvider(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
     }
 

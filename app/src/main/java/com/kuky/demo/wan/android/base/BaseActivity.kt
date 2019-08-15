@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -59,7 +59,7 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
     protected open fun needTransparentStatus(): Boolean = false
 
     /** 获取 ViewModel */
-    fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProviders.of(this).get(clazz)
+    fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProvider(this).get(clazz)
 
     /** 权限申请 */
     fun onRuntimePermissionsAsk(permissions: Array<String>, listener: PermissionListener) {

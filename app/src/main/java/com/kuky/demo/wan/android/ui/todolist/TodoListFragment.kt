@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -24,7 +24,6 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
-import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -50,7 +49,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     }
 
     private val mViewModel: TodoListViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), TodoListViewModelFactory(TodoRepository()))
+        ViewModelProvider(requireActivity(), TodoListViewModelFactory(TodoRepository()))
             .get(TodoListViewModel::class.java)
     }
 

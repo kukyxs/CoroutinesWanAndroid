@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import kotlinx.coroutines.CoroutineScope
@@ -45,11 +45,9 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
 
     abstract fun initFragment(view: View, savedInstanceState: Bundle?)
 
-    fun <T : ViewModel> getViewModel(clazz: Class<T>): T =
-        requireActivity().run { ViewModelProviders.of(this).get(clazz) }
+    fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProvider(this).get(clazz)
 
-    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T =
-        requireActivity().run { ViewModelProviders.of(requireActivity()).get(clazz) }
+    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T = ViewModelProvider(requireActivity()).get(clazz)
 
     /**
      * 权限申请，依赖的 activity 需继承 [BaseActivity]
