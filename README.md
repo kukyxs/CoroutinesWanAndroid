@@ -22,7 +22,6 @@
 - [Glide](https://github.com/bumptech/glide)
 - [Banner](https://github.com/youth5201314/banner)
 - [FlexboxLayout](https://github.com/google/flexbox-layout)
-- [TextPathView](https://github.com/totond/TextPathView)
 - [FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 - [anko](https://github.com/Kotlin/anko)
 

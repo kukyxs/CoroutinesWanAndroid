@@ -28,7 +28,7 @@ class CustomNavHostFragment : NavHostFragment() {
     // https://stackoverflow.com/questions/50485988/is-there-a-way-to-keep-fragment-alive-when-using-bottomnavigationview-with-new-n/51684125
     // https://www.jianshu.com/p/ebd2f6d7a349
     @Navigator.Name("fragment")
-    open class CustomNavigator(var mContext: Context, var mFragmentManager: FragmentManager, var mContainerId: Int) :
+    open class CustomNavigator(private var mContext: Context, private var mFragmentManager: FragmentManager, private var mContainerId: Int) :
         FragmentNavigator(mContext, mFragmentManager, mContainerId) {
 
         override fun navigate(
@@ -46,7 +46,6 @@ class CustomNavHostFragment : NavHostFragment() {
                 val mIsPendingBackStackOperationField =
                     FragmentNavigator::class.java.getDeclaredField("mIsPendingBackStackOperation")
                 mIsPendingBackStackOperationField.isAccessible = true
-                var mIsPendingBackStackOperation: Boolean = mIsPendingBackStackOperationField.get(this) as Boolean
 
                 if (mFragmentManager.isStateSaved) {
                     //Log.i("TAG", "Ignoring navigate() call: FragmentManager has already" + " saved its state")
@@ -98,7 +97,7 @@ class CustomNavHostFragment : NavHostFragment() {
 
                 val isSingleTopReplacement = (navOptions != null && !initialNavigation
                         && navOptions.shouldLaunchSingleTop()
-                        && mBackStack.peekLast().toInt() == destId)
+                        && mBackStack.peekLast()?.toInt() == destId)
 
                 val isAdded = when {
                     initialNavigation -> true
@@ -110,18 +109,16 @@ class CustomNavHostFragment : NavHostFragment() {
                             // remove it from the back stack and put our replacement
                             // on the back stack in its place
                             mFragmentManager.popBackStack(
-                                generateMyBackStackName(mBackStack.size, mBackStack.peekLast()),
+                                generateMyBackStackName(mBackStack.size, mBackStack.peekLast() ?: 0),
                                 FragmentManager.POP_BACK_STACK_INCLUSIVE
                             )
                             ft.addToBackStack(generateMyBackStackName(mBackStack.size, destId))
-                            mIsPendingBackStackOperation = true
                             mIsPendingBackStackOperationField.set(this, true)
                         }
                         false
                     }
                     else -> {
                         ft.addToBackStack(generateMyBackStackName(mBackStack.size + 1, destId))
-                        mIsPendingBackStackOperation = true
                         mIsPendingBackStackOperationField.set(this, true)
                         true
                     }

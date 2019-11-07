@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">玩Android</string>
-    <string name="splash_hint">Enjoy The World of Android</string>
     <string name="collection">收藏</string>
     <string name="collections">我的收藏</string>
     <string name="collected_articles">文章收藏</string>
@@ -14,7 +13,6 @@
     <string name="login_out">退出登录</string>
     <string name="search_hint">输入搜索关键词</string>
     <string name="hot_search_keys">热门搜索</string>
-    <string name="search_history">搜索历史</string>
     <string name="click_to_login">点此登录</string>
     <string name="username_hint">输入用户名</string>
     <string name="password_hint">输入密码</string>
@@ -27,7 +25,6 @@
     <string name="collected_website_link">请输入网址链接</string>
     <string name="cancel">取消</string>
     <string name="ensure">确定</string>
-    <string name="as_top">置顶</string>
     <string name="long_save">长按保存并关注</string>
     <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
     <string name="is_null">空空如也~~</string>

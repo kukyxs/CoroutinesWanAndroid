@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentPagerAdapter
  * @description ViewPager + Fragment Adapter 基类
  */
 class BaseFragmentPagerAdapter(fm: FragmentManager, fragments: ArrayList<out Fragment>, titles: Array<String>? = null) :
-    FragmentPagerAdapter(fm) {
+    FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     private var mFragments = fragments
     private var mTitles = titles

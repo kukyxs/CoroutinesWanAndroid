@@ -7,17 +7,12 @@
 
     </data>
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_fragment"
+        android:name="com.kuky.demo.wan.android.base.CustomNavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity">
-
-        <fragment
-            android:id="@+id/nav_fragment"
-            android:name="com.kuky.demo.wan.android.base.CustomNavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/wan_navigation" />
-    </FrameLayout>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/wan_navigation"
+        tools:context=".ui.MainActivity" />
 </layout>

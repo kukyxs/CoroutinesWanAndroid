@@ -41,8 +41,9 @@ object ImageSaveUtils {
         return file
     }
 
+    @Suppress("DEPRECATION")
     private fun notifySystemGallery(context: Context, file: File) {
-        if (!file.exists()) throw IllegalStateException("file ${file.absolutePath} not exist")
+        check(file.exists()) { "file ${file.absolutePath} not exist" }
 
         try {
             MediaStore.Images.Media.insertImage(context.contentResolver, file.absolutePath, file.name, null)

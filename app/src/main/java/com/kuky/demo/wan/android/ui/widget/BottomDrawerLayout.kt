@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -93,6 +94,7 @@ class BottomDrawerLayout : FrameLayout {
         } else mDragHelper.shouldInterceptTouchEvent(ev!!)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         mDragHelper.processTouchEvent(event!!)
         return true

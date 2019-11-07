@@ -69,7 +69,7 @@ object ApplicationUtils {
             context.startActivity(Intent(Intent.ACTION_MAIN).apply {
                 addCategory(Intent.CATEGORY_LAUNCHER)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                component = context.packageManager.getLaunchIntentForPackage(packageName).component
+                component = context.packageManager.getLaunchIntentForPackage(packageName)?.component
             })
             true
         } catch (e: Exception) {

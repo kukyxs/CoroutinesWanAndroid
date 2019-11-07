@@ -23,9 +23,9 @@ class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<St
             it.history = data
             it.listener = View.OnClickListener {
                 SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
+                val last = mData?.size ?: 0
                 mData?.remove(data)
-                // TODO("notifyItemRemoved 位置计算有误，先使用 notifyDataSetChanged 代替")
-                notifyDataSetChanged()
+                notifyItemRangeChanged(0, last)
             }
         }
     }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -17,17 +15,5 @@
             android:contentDescription="@null"
             android:scaleType="fitXY"
             android:src="@drawable/splash" />
-
-        <yanzhikai.textpath.AsyncTextPathView
-            android:id="@+id/enjoy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="40dp"
-            app:duration="3000"
-            app:pathStrokeColor="@android:color/white"
-            app:text="@string/splash_hint"
-            app:textInCenter="true"
-            app:textSize="20sp" />
     </FrameLayout>
 </layout>

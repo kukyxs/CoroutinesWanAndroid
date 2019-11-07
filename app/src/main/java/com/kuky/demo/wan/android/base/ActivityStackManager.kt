@@ -8,12 +8,10 @@ import android.app.Activity
  */
 object ActivityStackManager {
 
-    private val activities = ArrayList<Activity>()
+    private val activities = mutableListOf<Activity>()
 
     @JvmStatic
-    fun addActivity(activity: Activity) {
-        activities.add(activity)
-    }
+    fun addActivity(activity: Activity) = activities.add(activity)
 
     @JvmStatic
     fun removeActivity(activity: Activity) {
@@ -24,11 +22,10 @@ object ActivityStackManager {
     }
 
     @JvmStatic
-    fun getTopActivity(): Activity? = if (activities.isEmpty()) null else activities[activities.size - 1]
+    fun getTopActivity(): Activity? =
+        if (activities.isEmpty()) null else activities[activities.size - 1]
 
     @JvmStatic
-    fun finishAll() {
-        for (a in activities)
-            if (!a.isFinishing) a.finish()
-    }
+    fun finishAll() =
+        activities.filter { it.isFinishing }.forEach { it.finish() }
 }

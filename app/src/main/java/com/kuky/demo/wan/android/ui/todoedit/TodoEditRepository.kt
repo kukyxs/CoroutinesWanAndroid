@@ -39,6 +39,7 @@ class TodoEditRepository {
         handleResult(result)
     }
 
+    @Suppress("RemoveExplicitTypeArguments")
     private suspend fun handleResult(result: BasicResultData): ResultBack {
         return suspendCoroutine<ResultBack> { continuation ->
             if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
