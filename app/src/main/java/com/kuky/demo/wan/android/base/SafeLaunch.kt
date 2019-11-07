@@ -8,11 +8,22 @@ import kotlin.coroutines.CoroutineContext
  * @author kuky.
  * @description 解决协程处理网络请求不能处理异常
  */
-private val loggingExceptionHandler: CoroutineExceptionHandler =
-    CoroutineExceptionHandler { _, throwable ->
-        LogUtils.error(throwable.message)
-    }
+typealias CoroutineThrowableHandler = (Throwable) -> Unit
 
-private val handlerContext: CoroutineContext = loggingExceptionHandler + GlobalScope.coroutineContext
+private fun coroutineExceptionHandler(
+    throwableHandler: CoroutineThrowableHandler? = null
+): CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    LogUtils.info(throwable.toString())
+    throwableHandler?.invoke(throwable)
+}
 
-fun CoroutineScope.safeLaunch(block: suspend () -> Unit): Job = launch(handlerContext) { block() }
+private fun coroutineExceptionContext(
+    throwableHandler: CoroutineThrowableHandler? = null
+): CoroutineContext = coroutineExceptionHandler(throwableHandler) + GlobalScope.coroutineContext
+
+fun CoroutineScope.safeLaunch(
+    throwableHandler: CoroutineThrowableHandler? = null,
+    block: suspend () -> Unit
+): Job = launch(coroutineExceptionContext(throwableHandler)) {
+    block()
+}
