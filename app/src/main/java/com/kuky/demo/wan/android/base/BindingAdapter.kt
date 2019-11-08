@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.utils
+package com.kuky.demo.wan.android.base
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -20,11 +20,9 @@ import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
 import com.kuky.demo.wan.android.entity.BannerData
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.ui.widget.StatusError
 import com.youth.banner.Banner
 import com.youth.banner.BannerConfig
 import com.youth.banner.listener.OnBannerListener
@@ -259,4 +257,12 @@ fun bindRenderHtml(textView: TextView, description: String) {
     textView.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
         Html.fromHtml(description, HtmlCompat.FROM_HTML_MODE_COMPACT)
     else Html.fromHtml(description)
+}
+
+/**
+ * 错误处理绑定
+ */
+@BindingAdapter("bind:reload")
+fun bindReloadHandler(statusError: StatusError, handler: ErrorReload) {
+    statusError.errorReload = handler
 }

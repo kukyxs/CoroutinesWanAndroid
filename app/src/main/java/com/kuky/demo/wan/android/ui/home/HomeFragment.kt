@@ -8,15 +8,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.ui.collection.CollectionFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -41,8 +40,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
-    // 用来修改article的collect字段，并且submitList()
-    private lateinit var mArticleList: PagedList<ArticleDetail>
 
     override fun getLayoutId(): Int = R.layout.fragment_home
 
@@ -69,8 +66,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                     yesButton {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mArticleList[position]?.collect = true
-                            mAdapter.submitList(mArticleList)
+                            mViewModel.articles?.value?.get(position)?.collect = true
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
@@ -82,21 +78,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             true
         }
 
+        mBinding.errorReload = ErrorReload { fetchHomeArticleList() }
+
         fetchHomeArticleList()
     }
 
-//    private fun fetchCache() {
-//        mViewModel.fetchHomeArticleCache()
-//        mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
-//            mAdapter.submitList(it)
-//        })
-//    }
-
     private fun fetchHomeArticleList() {
-        mViewModel.fetchHomeArticle()
+        mViewModel.fetchHomeArticle { code, _ ->
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~")
+            }
+
+            mHandler.postDelayed({ mBinding.refreshing = false }, 1000)
+        }
+
         mBinding.refreshing = true
+        mBinding.errorStatus = false
         mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
-            mArticleList = it
             mAdapter.submitList(it)
             mHandler.postDelayed({ mBinding.refreshing = false }, 500)
         })

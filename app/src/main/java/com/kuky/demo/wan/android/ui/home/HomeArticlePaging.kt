@@ -4,12 +4,9 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
@@ -21,12 +18,6 @@ import kotlinx.coroutines.*
  * @description
  */
 class HomeArticleRepository {
-    fun getHomeArticleCache(): List<ArticleDetail>? {
-        return Gson().fromJson(
-            PreferencesHelper.fetchHomeArticleCache(WanApplication.instance),
-            object : TypeToken<List<ArticleDetail>>() {}.type
-        )
-    }
 
     suspend fun loadPageData(page: Int): List<ArticleDetail>? = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService.homeArticles(page).data.datas
@@ -45,11 +36,15 @@ class HomeArticleRepository {
 /**
  * 网络数据加载
  */
-class HomeArticleDataSource(private val repository: HomeArticleRepository) :
-    PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by MainScope() {
+class HomeArticleDataSource(
+    private val repository: HomeArticleRepository,
+    private val handler: PagingThrowableHandler
+) : PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
+        }, {
             val result = ArrayList<ArticleDetail>()
             val tops = repository.loadTops()
             val data = repository.loadPageData(0)
@@ -58,25 +53,29 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
             result.addAll(data ?: arrayListOf())
 
             callback.onResult(result, null, 1)
-        }
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
+        }, {
             val data = repository.loadPageData(params.key)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }
+        })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
+        }, {
             val data = repository.loadPageData(params.key)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        }
+        })
     }
 
     override fun invalidate() {
@@ -85,33 +84,12 @@ class HomeArticleDataSource(private val repository: HomeArticleRepository) :
     }
 }
 
-class HomeArticleDataSourceFactory(private val repository: HomeArticleRepository) :
-    DataSource.Factory<Int, ArticleDetail>() {
+class HomeArticleDataSourceFactory(
+    private val repository: HomeArticleRepository,
+    private val handler: PagingThrowableHandler
+) : DataSource.Factory<Int, ArticleDetail>() {
 
-    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository)
-}
-
-/**
- * 本地数据加载
- */
-class HomeArticleCacheDataSource(private val repository: HomeArticleRepository) :
-    PageKeyedDataSource<Int, ArticleDetail>() {
-
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) =
-        callback.onResult(repository.getHomeArticleCache() ?: arrayListOf(), null, null)
-
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
-
-    }
-
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
-
-    }
-}
-
-class HomeArticleCacheDataSourceFactory(private val repository: HomeArticleRepository) :
-    DataSource.Factory<Int, ArticleDetail>() {
-    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleCacheDataSource(repository)
+    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository, handler)
 }
 
 /**
@@ -121,7 +99,6 @@ class HomeArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerHomeArtic
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_home_article
 
-    @Suppress("DEPRECATION")
     override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
         holder.binding.detail = data
         holder.binding.description = data.title

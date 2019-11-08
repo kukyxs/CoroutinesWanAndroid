@@ -57,6 +57,6 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
     ) = if (activity != null && activity is BaseActivity<*>) {
         (activity as BaseActivity<*>).onRuntimePermissionsAsk(permissions, listener)
     } else {
-        throw RuntimeException("Binned activity is not [BaseActivity], and check it")
+        throw RuntimeException("Attached activity is not [com.kuky.demo.wan.android.base.BaseActivity], check it")
     }
 }
