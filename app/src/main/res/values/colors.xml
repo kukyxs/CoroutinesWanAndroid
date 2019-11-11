@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="line_half_gray_color">#77AAAAAA</color>
+    <color name="half_red">#AAFF0000</color>
 </resources>

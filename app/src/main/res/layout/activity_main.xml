@@ -5,14 +5,39 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="netAvailable"
+            type="Boolean" />
     </data>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_fragment"
-        android:name="com.kuky.demo.wan.android.base.CustomNavHostFragment"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/wan_navigation"
-        tools:context=".ui.MainActivity" />
+        android:orientation="vertical">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_fragment"
+            android:name="com.kuky.demo.wan.android.base.CustomNavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/wan_navigation"
+            tools:context=".ui.MainActivity" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/netStateBarMargin"
+            android:background="@color/half_red"
+            android:drawableStart="@drawable/ic_error_18dp"
+            android:drawablePadding="12dp"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            android:text="@string/net_disconnected"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:visibility="@{netAvailable ? View.GONE : View.VISIBLE}" />
+    </FrameLayout>
 </layout>

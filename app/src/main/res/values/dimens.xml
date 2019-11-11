@@ -3,4 +3,5 @@
     <dimen name="barHeight">32dp</dimen>
     <dimen name="halfBarHeight">16dp</dimen>
     <dimen name="arrowDownSize">20dp</dimen>
+    <dimen name="netStateBarMargin">80dp</dimen>
 </resources>
