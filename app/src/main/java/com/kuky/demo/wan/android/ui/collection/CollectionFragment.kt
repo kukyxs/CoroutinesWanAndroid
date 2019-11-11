@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
+import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
@@ -34,6 +35,14 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
         mBinding.adapter = mAdapter
         mBinding.current = arguments?.getInt("position", 0) ?: 0
         mBinding.collectionIndicator.setupWithViewPager(mBinding.collectionVp)
+
+        mBinding.gesture = DoubleClickListener(null, {
+            when (mBinding.collectionVp.currentItem) {
+                0 -> (childFragmentManager.fragments[0] as? CollectedArticlesFragment)?.scrollToTop()
+
+                1 -> (childFragmentManager.fragments[1] as? CollectedWebsitesFragment)?.scrollToTop()
+            }
+        })
     }
 
     companion object {

@@ -13,7 +13,9 @@ import com.kuky.demo.wan.android.base.safeLaunch
  */
 class CollectionViewModel(private val repo: CollectionRepository) : ViewModel() {
     fun collectArticle(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("网络出错啦~请检查您的网络")
+        }, {
             val result = repo.collectArticle(id)
 
             if (result.code == CODE_SUCCEED) {
@@ -21,6 +23,6 @@ class CollectionViewModel(private val repo: CollectionRepository) : ViewModel() 
             } else {
                 fail(result.message)
             }
-        }
+        })
     }
 }

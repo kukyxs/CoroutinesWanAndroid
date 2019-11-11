@@ -8,14 +8,16 @@ import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
-import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
+import com.kuky.demo.wan.android.ui.main.MainModelFactory
+import com.kuky.demo.wan.android.ui.main.MainRepository
+import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.TextFormatUtils
@@ -29,14 +31,22 @@ import org.jetbrains.anko.yesButton
  * @description 首页项目模块界面
  */
 class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
+    private var mId = 0
+    private var mTitle = ""
 
     private val mViewModel: HotProjectViewModel by lazy {
         ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
             .get(HotProjectViewModel::class.java)
     }
+
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
+    }
+
+    private val mLoginViewModel by lazy {
+        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+            .get(MainViewModel::class.java)
     }
 
     private var errorOnCategories = false
@@ -48,7 +58,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            newRequestProjects()
+            fetchProjects(mId, mTitle)
         }
 
         mBinding.adapter = mAdapter
@@ -84,7 +94,8 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mBinding.gesture = DoubleClickListener({
             ProjectCategoryDialog().apply {
                 onSelectedListener = { dialog, category ->
-                    PreferencesHelper.saveProjectCategory(requireContext(), category)
+                    mId = category.id
+                    mTitle = category.name
                     fetchProjects(category.id, category.name)
                     dialog.dismiss()
                 }
@@ -93,7 +104,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         mBinding.errorReload = ErrorReload {
             if (errorOnCategories) fetchCategories()
-            else newRequestProjects()
+            else fetchProjects(mId, mTitle)
         }
 
         fetchCategories()
@@ -101,8 +112,20 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
             list[0].let {
                 // 保存当前选项，用于刷新
-                PreferencesHelper.saveProjectCategory(requireContext(), it)
+                mId = it.id
+                mTitle = it.name
                 fetchProjects(it.id, it.name)
+            }
+        })
+
+        // 登录状态切换
+        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (!it) {
+                mViewModel.projects?.value?.forEach { arc ->
+                    arc.collect = false
+                }
+            } else {
+                fetchProjects(mId, mTitle)
             }
         })
     }
@@ -116,11 +139,6 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         }
     }
 
-    // 刷新数据
-    private fun newRequestProjects() =
-        PreferencesHelper.fetchProjectCategory(requireContext()).let {
-            fetchProjects(it["id"] as Int, it["title"] as String)
-        }
 
     // 获取分类下列表
     private fun fetchProjects(id: Int, title: String) {

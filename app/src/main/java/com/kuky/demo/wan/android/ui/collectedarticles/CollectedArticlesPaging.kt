@@ -5,9 +5,7 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedArticleBinding
 import com.kuky.demo.wan.android.entity.UserCollectDetail
@@ -34,33 +32,41 @@ class CollectedArticlesRepository {
     }
 }
 
-class CollectedArticlesDataSources(private val repo: CollectedArticlesRepository) :
-    PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by MainScope() {
+class CollectedArticlesDataSources(
+    private val repo: CollectedArticlesRepository,
+    private val handler: PagingThrowableHandler
+) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by MainScope() {
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserCollectDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
+        }, {
             val data = repo.getCollectedArticleDatas(0)
             data?.let {
                 callback.onResult(it, null, 1)
             }
-        }
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
+        }, {
             val data = repo.getCollectedArticleDatas(params.key)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }
+        })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
+        }, {
             val data = repo.getCollectedArticleDatas(params.key)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        }
+        })
     }
 
     override fun invalidate() {
@@ -69,9 +75,11 @@ class CollectedArticlesDataSources(private val repo: CollectedArticlesRepository
     }
 }
 
-class CollectedArticlesDataSourceFactory(private val repo: CollectedArticlesRepository) :
-    DataSource.Factory<Int, UserCollectDetail>() {
-    override fun create(): DataSource<Int, UserCollectDetail> = CollectedArticlesDataSources(repo)
+class CollectedArticlesDataSourceFactory(
+    private val repo: CollectedArticlesRepository,
+    private val handler: PagingThrowableHandler
+) : DataSource.Factory<Int, UserCollectDetail>() {
+    override fun create(): DataSource<Int, UserCollectDetail> = CollectedArticlesDataSources(repo, handler)
 }
 
 class CollectedArticlesAdapter :

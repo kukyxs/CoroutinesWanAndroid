@@ -30,7 +30,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     // 未找到较好的解决方案，目前使用回调进行处理，有较好的方案请提 issue
     fun login(username: String, password: String, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("登录过程出错啦~请检查网络")
+        }, {
             val result = repository.login(username, password)
 
             if (result.code == CODE_SUCCEED) {
@@ -40,14 +42,16 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 fail(result.message)
                 hasLogin.value = false
             }
-        }
+        })
     }
 
     fun register(
         username: String, password: String, repass: String,
         success: () -> Unit, fail: (String) -> Unit
     ) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("注册过程出错啦~请检查网络")
+        }, {
             val result = repository.register(username, password, repass)
             if (result.code == CODE_SUCCEED) {
                 success()
@@ -56,12 +60,14 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 fail(result.message)
                 hasLogin.value = false
             }
-        }
+        })
     }
 
-    fun loginout() {
-        viewModelScope.safeLaunch {
+    fun loginout(fail: (String) -> Unit) {
+        viewModelScope.safeLaunch({
+            fail("退出过程出错啦~请检查网络")
+        }, {
             hasLogin.value = !repository.loginout()
-        }
+        })
     }
 }

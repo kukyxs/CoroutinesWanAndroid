@@ -6,14 +6,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
-import com.kuky.demo.wan.android.base.delayLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -26,7 +24,7 @@ import org.jetbrains.anko.yesButton
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
+        ViewModelProvider(requireActivity(), CollectedWebsitesModelFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
     }
     private val mAdapter by lazy { CollectedWebsitesAdapter() }
@@ -66,22 +64,29 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }
             true
         }
+
+        mBinding.errorReload = ErrorReload { fetchWebSitesData() }
+
+        mBinding.gesture = DoubleClickListener({
+            CollectedWebsiteDialogFragment().show(childFragmentManager, "collectedWebsite")
+        }, null)
+
         fetchWebSitesData()
     }
 
-
-    fun addCollectedWebsites(view: View) {
-        CollectedWebsiteDialogFragment().show(childFragmentManager, "collectedWebsite")
-    }
+    fun scrollToTop() = mBinding.websiteList.scrollToTop()
 
     private fun fetchWebSitesData() {
-        mViewModel.fetchWebSitesData()
+        mViewModel.fetchWebSitesData {
+            mBinding.errorStatus = true
+        }
+
+        mBinding.errorStatus = false
         mBinding.refreshing = true
         mViewModel.mWebsitesData.observe(this, Observer {
             mAdapter.update(it as MutableList<WebsiteData>?)
             delayLaunch(1000) {
                 mBinding.refreshing = false
-                mBinding.dataNull = it?.isEmpty() ?: true
             }
         })
     }

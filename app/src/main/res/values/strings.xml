@@ -13,6 +13,7 @@
     <string name="login_out">退出登录</string>
     <string name="search_hint">输入搜索关键词</string>
     <string name="hot_search_keys">热门搜索</string>
+    <string name="history_search_keys">历史搜索</string>
     <string name="click_to_login">点此登录</string>
     <string name="username_hint">输入用户名</string>
     <string name="password_hint">输入密码</string>
@@ -27,7 +28,6 @@
     <string name="ensure">确定</string>
     <string name="long_save">长按保存并关注</string>
     <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
-    <string name="is_null">空空如也~~</string>
     <string name="delete">删除</string>
     <string name="todo_title_hint">在这输入标题</string>
     <string name="todo_description_hint">在这输入详情</string>

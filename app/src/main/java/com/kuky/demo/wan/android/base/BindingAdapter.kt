@@ -270,6 +270,6 @@ fun bindRenderHtml(textView: TextView, description: String) {
  * 错误处理绑定
  */
 @BindingAdapter("bind:reload")
-fun bindReloadHandler(statusError: StatusError, handler: ErrorReload) {
+fun bindReloadHandler(statusError: StatusError, handler: ErrorReload?) {
     statusError.errorReload = handler
 }

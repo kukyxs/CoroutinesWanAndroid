@@ -12,24 +12,31 @@ import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.delayLaunch
-import com.kuky.demo.wan.android.data.PreferencesHelper
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
+import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionRepository
+import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.ScreenUtils
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
  * @description
  */
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
-    private var mResultMode = false
+    private var resultMode = false
+    private var errorOnLabel = false
+    private var mKey = ""
 
     private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
@@ -40,13 +47,18 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             .get(SearchViewModel::class.java)
     }
 
+    private val mCollectionViewModel by lazy {
+        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+            .get(CollectionViewModel::class.java)
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_search
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.enable = false
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            searchArticles(PreferencesHelper.fetchSearchKeyword(requireContext()))
+            searchArticles(mKey)
         }
 
         mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
@@ -56,6 +68,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             true
         }
 
+        mBinding.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
         mBinding.needOverScroll = false
         mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
@@ -73,19 +86,28 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             addLabel(it)
         })
 
-        mViewModel.fetchHistory()
+        mBinding.errorReload = ErrorReload {
+            if (errorOnLabel) loadKeys()
+            else searchArticles(mKey)
+        }
 
-        mViewModel.fetchKeys()
+        loadKeys()
     }
+
+    private fun loadKeys() =
+        mViewModel.fetchKeys {
+            errorOnLabel = true
+            mBinding.errorStatus = true
+        }
 
     /**
      * 搜索
      */
     private fun searchArticles(keyword: String) {
-        PreferencesHelper.saveSearchKeyword(requireContext(), keyword)
+        if (mKey != keyword) mKey = keyword
 
-        if (!mResultMode) {
-            mResultMode = true
+        if (!resultMode) {
+            resultMode = true
 
             mBinding.adapter = mResultAdapter
             mBinding.listener = OnItemClickListener { position, _ ->
@@ -97,6 +119,25 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                     )
                 }
             }
+            mBinding.longListener = OnItemLongClickListener { position, _ ->
+                mResultAdapter.getItemData(position)?.let { article ->
+                    requireContext().alert(
+                        if (article.collect) "「${article.title.renderHtml()}」已收藏"
+                        else " 是否收藏 「${article.title.renderHtml()}」"
+                    ) {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewModel.result?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
         }
 
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
@@ -104,9 +145,16 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
-        mViewModel.fetchResult(keyword)
+        mViewModel.fetchResult(keyword) { code, _ ->
+            errorOnLabel = false
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
+            }
+        }
 
         mBinding.enable = true
+        mBinding.errorStatus = false
         mBinding.refreshing = true
         mBinding.needOverScroll = true
 
@@ -114,7 +162,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             mResultAdapter.submitList(it)
             delayLaunch(1000) {
                 mBinding.refreshing = false
-                mBinding.dataNull = it.isEmpty()
             }
         })
     }
@@ -123,8 +170,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
      * 添加热词
      */
     private fun addLabel(hotKeys: List<HotKeyData>) {
-        val verticalValue = ScreenUtils.dip2px(requireContext(), 2f).toInt()
-        val marginValue = ScreenUtils.dip2px(requireContext(), 4f).toInt()
+        val marginValue = ScreenUtils.dip2px(requireContext(), 8f).toInt()
         val paddingValue = ScreenUtils.dip2px(requireContext(), 6f).toInt()
         mBinding.keysBox.removeAllViews()
 
@@ -134,10 +180,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 FlexboxLayout.LayoutParams.WRAP_CONTENT,
                 FlexboxLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                leftMargin = marginValue
                 rightMargin = marginValue
                 topMargin = marginValue
-                bottomMargin = marginValue
             }
 
             val label = TextView(requireActivity()).apply {
@@ -145,7 +189,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 textSize = 14f
                 setBackgroundResource(R.drawable.label_outline)
                 layoutParams = lp
-                setPadding(paddingValue, verticalValue, paddingValue, verticalValue)
+                setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
                 setOnClickListener {
                     mBinding.searchContent.setText(name)
                     searchArticles(name)

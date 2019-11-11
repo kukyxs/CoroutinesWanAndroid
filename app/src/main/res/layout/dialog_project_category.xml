@@ -30,11 +30,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adapter="@{adapter}"
         android:background="@drawable/dialog_bg"
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        bind:adapter="@{adapter}"
         bind:divider="@{divider}"
         bind:listItemClick="@{listener}"
         bind:offset="@{offset}"

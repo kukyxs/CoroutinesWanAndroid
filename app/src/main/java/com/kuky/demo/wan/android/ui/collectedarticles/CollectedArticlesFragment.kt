@@ -6,12 +6,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
-import com.kuky.demo.wan.android.base.delayLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
@@ -24,9 +22,10 @@ import org.jetbrains.anko.toast
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectedArticlesFactory(CollectedArticlesRepository()))
+        ViewModelProvider(requireActivity(), CollectedArticlesModelFactory(CollectedArticlesRepository()))
             .get(CollectedArticlesViewModel::class.java)
     }
+
     private val mAdapter by lazy { CollectedArticlesAdapter() }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
@@ -51,27 +50,37 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             requireActivity().alert("是否删除本条收藏？") {
                 okButton {
                     mAdapter.getItemData(position)?.let { data ->
-                        mViewModel.deleteCollectedArticle(data.id, data.originId, { requireContext().toast("删除成功") }, {
-                            requireContext().toast(it)
-                        })
+                        mViewModel.deleteCollectedArticle(data.id, data.originId,
+                            { requireContext().toast("删除成功") }, { requireContext().toast(it) })
                     }
                 }
                 noButton { }
             }.show()
             true
         }
+
+        mBinding.errorReload = ErrorReload { fetchCollectedArticleDatas() }
+
         fetchCollectedArticleDatas()
     }
 
+    fun scrollToTop() = mBinding.collectedArticleList.scrollToTop()
+
     private fun fetchCollectedArticleDatas() {
-        mViewModel.fetchCollectedArticleDatas()
+        mViewModel.fetchCollectedArticleDatas { code, _ ->
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
+            }
+        }
+
+        mBinding.errorStatus = false
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(requireActivity(), Observer {
             mAdapter.submitList(it)
             delayLaunch(1000) {
                 mBinding.refreshing = false
-                // 延时来获取数据
-                mBinding.dataNull = it.isEmpty()
             }
         })
     }

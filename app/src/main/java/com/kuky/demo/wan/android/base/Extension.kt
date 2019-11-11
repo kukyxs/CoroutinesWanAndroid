@@ -1,5 +1,8 @@
 package com.kuky.demo.wan.android.base
 
+import android.os.Build
+import android.text.Html
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,7 +49,7 @@ fun RecyclerView.scrollToTop(sizeOneLine: Int = 2, threshold: Int = 10) {
 
         is StaggeredGridLayoutManager -> {
             manager.let {
-                val first = intArrayOf(sizeOneLine)
+                val first = IntArray(sizeOneLine)
                 it.findFirstCompletelyVisibleItemPositions(first)
                 if (first[0] == 0) return@let
 
@@ -59,3 +62,9 @@ fun RecyclerView.scrollToTop(sizeOneLine: Int = 2, threshold: Int = 10) {
         }
     }
 }
+
+@Suppress("DEPRECATION")
+fun String.renderHtml(): String =
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+        Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
+    else Html.fromHtml(this).toString()

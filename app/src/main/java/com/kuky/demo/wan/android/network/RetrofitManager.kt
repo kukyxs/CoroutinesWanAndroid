@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit
  * @description
  */
 object RetrofitManager {
-    private const val TAG = "RetrofitManager"
     private var BASE_URL = "https://www.wanandroid.com"
 
     val apiService: ApiService by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {

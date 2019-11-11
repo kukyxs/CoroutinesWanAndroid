@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.data
 
 import android.content.Context
-import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.utils.SharePreferencesUtils
 
 /**
@@ -12,9 +11,6 @@ object PreferencesHelper {
     private const val USER_KEY_ID = "wan.user.id"
     private const val USER_KEY_NAME = "wan.user.name"
     private const val USER_KEY_COOKIE = "wan.user.cookie"
-    private const val PROJECT_KEY_ID = "wan.project.id"
-    private const val PROJECT_KEY_TITLE = "wan.project.title"
-    private const val SEARCH_KEY_KEYWORD = "wan.search.keyword"
     private const val CACHE_KEY_BANNER = "wan.cache.banner"
     private const val CACHE_KEY_HOME_ARTICLES = "wan.cache.home.articles"
 
@@ -35,22 +31,6 @@ object PreferencesHelper {
 
     fun fetchCookie(context: Context) =
         SharePreferencesUtils.getString(context, USER_KEY_COOKIE)
-
-    fun saveProjectCategory(context: Context, category: ProjectCategoryData) {
-        SharePreferencesUtils.saveInteger(context, PROJECT_KEY_ID, category.id)
-        SharePreferencesUtils.saveString(context, PROJECT_KEY_TITLE, category.name)
-    }
-
-    fun fetchProjectCategory(context: Context) = mapOf(
-        "title" to SharePreferencesUtils.getString(context, PROJECT_KEY_TITLE),
-        "id" to SharePreferencesUtils.getInteger(context, PROJECT_KEY_ID)
-    )
-
-    fun saveSearchKeyword(context: Context, keyword: String) =
-        SharePreferencesUtils.saveString(context, SEARCH_KEY_KEYWORD, keyword)
-
-    fun fetchSearchKeyword(context: Context) =
-        SharePreferencesUtils.getString(context, SEARCH_KEY_KEYWORD)
 
     // =======================> LOCAL CACHES <=================================
 

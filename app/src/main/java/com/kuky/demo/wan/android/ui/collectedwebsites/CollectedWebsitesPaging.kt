@@ -22,12 +22,7 @@ class CollectedWebsitesRepository {
     private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
 
     suspend fun getCollectedWebsites(): List<WebsiteData>? = withContext(Dispatchers.IO) {
-        try {
-            RetrofitManager.apiService.collectWebsiteList(getCookie()).data
-        } catch (throwable: Throwable) {
-            // 网络请求异常后，一定要回调 null
-            null
-        }
+        RetrofitManager.apiService.collectWebsiteList(getCookie()).data
     }
 
     suspend fun addWebsite(name: String, link: String): ResultBack = withContext(Dispatchers.IO) {

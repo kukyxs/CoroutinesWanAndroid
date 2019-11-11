@@ -27,6 +27,7 @@ import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
 
 /**
@@ -128,7 +129,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 R.id.login_out -> requireContext()
                     .alert("是否退出登录") {
-                        yesButton { mViewModel.loginout() }
+                        yesButton {
+                            mViewModel.loginout { requireContext().toast(it) }
+                        }
                         noButton { }
                     }.show()
             }
@@ -170,15 +173,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         mBinding.drawer.closeDrawer(GravityCompat.START)
     }
 
-    /**
-     * click to login in Navigation HeaderLayout
-     */
     fun headerLogin(view: View) {
-        mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            if (!it) {
-                LoginDialogFragment().show(childFragmentManager, "login")
-            }
-        })
+        if (mViewModel.hasLogin.value == false) {
+            LoginDialogFragment().show(childFragmentManager, "login")
+        }
     }
 
     fun openSettings(view: View) {

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.CODE_SUCCEED
+import com.kuky.demo.wan.android.base.PagingThrowableHandler
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.TodoInfo
 
@@ -17,9 +18,9 @@ class TodoListViewModel(private val repository: TodoRepository) : ViewModel() {
 
     var todoList: LiveData<PagedList<TodoInfo>>? = null
 
-    fun fetchTodoList(param: HashMap<String, Int>) {
+    fun fetchTodoList(param: HashMap<String, Int>, handler: PagingThrowableHandler) {
         todoList = LivePagedListBuilder(
-            TodoDataSourceFactory(repository, param),
+            TodoDataSourceFactory(repository, param, handler),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

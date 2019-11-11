@@ -7,19 +7,15 @@ import androidx.annotation.IdRes
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
-import com.kuky.demo.wan.android.base.delayLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterListBinding
-import com.kuky.demo.wan.android.entity.WxChapterListDatas
-import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -37,17 +33,13 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
          * [name] 作者名称
          */
         fun navigate(
-            controller: NavController,
-            @IdRes id: Int,
-            articleId: Int,
-            name: String
-        ) {
-            controller.navigate(id,
-                Bundle().apply {
-                    putInt("articleId", articleId)
-                    putString("name", name)
-                })
-        }
+            controller: NavController, @IdRes id: Int,
+            articleId: Int, name: String
+        ) = controller.navigate(id,
+            Bundle().apply {
+                putInt("articleId", articleId)
+                putString("name", name)
+            })
     }
 
     private val mAdapter by lazy { WxChapterListAdapter() }
@@ -56,10 +48,9 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             .get(WxChapterListViewModel::class.java)
     }
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
-    private lateinit var mArticleList: PagedList<WxChapterListDatas>
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 
@@ -85,11 +76,13 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
         mBinding.longClickListener = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
+                requireContext().alert(
+                    if (article.collect) "「${article.title}」已收藏"
+                    else " 是否收藏 「${article.title}」"
+                ) {
                     yesButton {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mArticleList[position]?.collect = true
-                            mAdapter.submitList(mArticleList)
+                            mViewMode.chapters?.value?.get(position)?.collect = true
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
@@ -100,18 +93,34 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             }
             true
         }
+
+        mBinding.errorReload = ErrorReload {
+            fetchWxChapterList(id)
+        }
+
+        mBinding.gesture = DoubleClickListener(null, {
+            mBinding.chapterList.scrollToTop()
+        })
+
         fetchWxChapterList(id)
     }
 
     private fun fetchWxChapterList(id: Int?) {
+        mViewMode.fetchWxArticles(id ?: 0) { code, _ ->
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
+            }
+        }
+
         mBinding.refreshing = true
-        mViewMode.fetchResult(id ?: 0)
+        mBinding.errorStatus = false
+
         mViewMode.chapters?.observe(this, Observer {
-            mArticleList = it
             mAdapter.submitList(it)
             delayLaunch(1000) {
                 mBinding.refreshing = false
-                mBinding.dataNull = it.isEmpty()
             }
         })
     }

@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="refreshColor"
             type="Integer" />
@@ -35,55 +37,59 @@
             type="com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment" />
 
         <variable
-            name="dataNull"
+            name="errorStatus"
             type="Boolean" />
 
         <variable
-            name="view"
-            type="android.view.View" />
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        bind:refreshColor="@{refreshColor}"
-        bind:refreshListener="@{refreshListener}"
-        bind:refreshState="@{refreshing}">
+        android:layout_height="match_parent">
 
-        <FrameLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/website_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:adapter="@{adapter}"
-                android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
+                android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
                 bind:listItemClick="@{listener}"
                 bind:listItemLongClick="@{longListener}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_collected_websites" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
-                android:onClick="@{fragment::addCollectedWebsites}"
-                android:src="@drawable/ic_add_white_24dp"
-                app:fabSize="mini" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="30dp"
+            android:src="@drawable/ic_add_white_24dp"
+            app:fabSize="mini"
+            bind:gesture="@{gesture}" />
 
-            <include
-                layout="@layout/include_data_null"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                bind:isNull="@{dataNull}" />
-
-        </FrameLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <com.kuky.demo.wan.android.ui.widget.StatusError
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+            bind:reload="@{errorReload}" />
+    </FrameLayout>
 </layout>

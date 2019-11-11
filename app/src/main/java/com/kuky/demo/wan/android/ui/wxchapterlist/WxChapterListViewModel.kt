@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.kuky.demo.wan.android.base.PagingThrowableHandler
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 
 
@@ -15,9 +16,9 @@ class WxChapterListViewModel(private val repository: WxChapterListRepository) : 
 
     var chapters: LiveData<PagedList<WxChapterListDatas>>? = null
 
-    fun fetchResult(wxId: Int) {
+    fun fetchWxArticles(wxId: Int, handler: PagingThrowableHandler) {
         chapters = LivePagedListBuilder(
-            WxChapterListDataSourceFactory(repository, wxId),
+            WxChapterListDataSourceFactory(repository, wxId, handler),
             PagedList.Config.Builder().setPageSize(20)
                 .setEnablePlaceholders(false)
                 .setInitialLoadSizeHint(20)

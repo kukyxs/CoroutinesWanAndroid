@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="enable"
             type="Boolean" />
@@ -20,6 +22,10 @@
 
         <variable
             name="needOverScroll"
+            type="Boolean" />
+
+        <variable
+            name="hasHistory"
             type="Boolean" />
 
         <variable
@@ -39,10 +45,17 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
-            name="dataNull"
+            name="longListener"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
+            name="errorStatus"
             type="Boolean" />
 
-        <import type="android.view.View" />
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
     </data>
 
     <LinearLayout
@@ -83,59 +96,76 @@
                 tools:ignore="Autofill,LabelFor" />
         </FrameLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:paddingBottom="4dp"
-            android:text="@string/hot_search_keys"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/keys_box"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            app:flexWrap="wrap" />
+            android:layout_height="match_parent">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            bind:refreshColor="@{refreshColor}"
-            bind:refreshEnable="@{enable}"
-            bind:refreshListener="@{refreshListener}"
-            bind:refreshState="@{refreshing}">
-
-            <FrameLayout
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                bind:refreshColor="@{refreshColor}"
+                bind:refreshEnable="@{enable}"
+                bind:refreshListener="@{refreshListener}"
+                bind:refreshState="@{refreshing}">
 
-                <include
-                    layout="@layout/include_data_null"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    bind:isNull="@{dataNull}" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/search_result"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="4dp"
-                    android:adapter="@{adapter}"
                     android:orientation="vertical"
-                    android:overScrollMode="@{needOverScroll ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER}"
-                    android:padding="8dp"
-                    android:scrollbars="vertical"
-                    android:visibility="@{dataNull ? View.GONE : View.VISIBLE}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    bind:listItemClick="@{listener}"
-                    bind:pageItemClick="@{listener}"
-                    tools:listitem="@layout/recycler_home_article" />
-            </FrameLayout>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                    android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/hot_search_keys"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/keys_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="12dp"
+                        app:flexWrap="wrap" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/history_search_keys"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:visibility="@{(hasHistory &amp;&amp; !needOverScroll) ? View.VISIBLE : View.GONE}" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/search_result"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:overScrollMode="@{needOverScroll ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER}"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                        android:scrollbars="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        bind:adapter="@{adapter}"
+                        bind:listItemClick="@{listener}"
+                        bind:pageItemClick="@{listener}"
+                        bind:pageItemLongClick="@{longListener}"
+                        tools:listitem="@layout/recycler_home_article" />
+                </LinearLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.kuky.demo.wan.android.ui.widget.StatusError
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                bind:reload="@{errorReload}" />
+        </FrameLayout>
     </LinearLayout>
 </layout>

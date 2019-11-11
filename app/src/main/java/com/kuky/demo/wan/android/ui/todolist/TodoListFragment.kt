@@ -14,15 +14,13 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
-import com.kuky.demo.wan.android.base.delayLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.AssetsLoader
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -133,9 +131,15 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
             }
         }
 
+        mBinding.gesture = DoubleClickListener(null, {
+            mBinding.todoListPage.scrollToTop()
+        })
+
         mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
             if (it) fetchTodoList(true)
         })
+
+        mBinding.errorReload = ErrorReload { fetchTodoList(true) }
 
         fetchTodoList()
     }
@@ -146,7 +150,15 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         if (param == mParams && !isRefresh) return
 
         mParams = param
-        mViewModel.fetchTodoList(param)
+
+        mViewModel.fetchTodoList(param) { code, _ ->
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
+            }
+        }
+
+        mBinding.errorStatus = false
         mBinding.refreshing = true
         mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
             mTodoAdapter.submitList(it)

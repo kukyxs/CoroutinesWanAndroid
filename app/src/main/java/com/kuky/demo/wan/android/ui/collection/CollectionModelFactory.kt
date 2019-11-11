@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
  * Desc:
  */
 
-class CollectionFactory(private val repo: CollectionRepository) : ViewModelProvider.NewInstanceFactory() {
+class CollectionModelFactory(private val repo: CollectionRepository) : ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return CollectionViewModel(repo) as T

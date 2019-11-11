@@ -29,6 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!--suppress AndroidUnknownAttribute -->
         <ImageView
             android:id="@+id/wx_code"
             android:layout_width="wrap_content"

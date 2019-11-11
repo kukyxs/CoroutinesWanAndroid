@@ -16,7 +16,6 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.databinding.FragmentWesiteDetailBinding
-import kotlinx.android.synthetic.main.fragment_wesite_detail.view.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 
@@ -41,7 +40,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
                 javaScriptEnabled = true
                 javaScriptCanOpenWindowsAutomatically = true
                 allowFileAccess = true
-                layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+                layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
                 useWideViewPort = true
                 loadWithOverviewMode = true
                 setSupportMultipleWindows(true)

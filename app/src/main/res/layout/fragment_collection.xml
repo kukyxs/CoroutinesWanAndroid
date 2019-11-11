@@ -12,6 +12,10 @@
         <variable
             name="current"
             type="Integer" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
     <LinearLayout
@@ -30,7 +34,8 @@
             android:text="@string/collections"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            bind:gesture="@{gesture}" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/collection_indicator"
@@ -47,8 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
-            android:adapter="@{adapter}"
             android:overScrollMode="never"
+            bind:adapter="@{adapter}"
             bind:currentItem="@{current}"
             bind:smoothScroll="@{false}" />
     </LinearLayout>

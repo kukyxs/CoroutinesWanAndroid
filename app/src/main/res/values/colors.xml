@@ -6,4 +6,5 @@
 
     <color name="line_half_gray_color">#77AAAAAA</color>
     <color name="half_red">#AAFF0000</color>
+    <color name="label_color">#33BBBBBB</color>
 </resources>

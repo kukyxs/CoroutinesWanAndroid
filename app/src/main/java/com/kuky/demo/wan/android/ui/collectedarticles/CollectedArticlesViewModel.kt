@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.kuky.demo.wan.android.base.PagingThrowableHandler
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.UserCollectDetail
 
@@ -18,9 +19,9 @@ import com.kuky.demo.wan.android.entity.UserCollectDetail
 class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) : ViewModel() {
     var mArticles: LiveData<PagedList<UserCollectDetail>>? = null
 
-    fun fetchCollectedArticleDatas() {
+    fun fetchCollectedArticleDatas(handler: PagingThrowableHandler) {
         mArticles = LivePagedListBuilder(
-            CollectedArticlesDataSourceFactory(repo),
+            CollectedArticlesDataSourceFactory(repo, handler),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

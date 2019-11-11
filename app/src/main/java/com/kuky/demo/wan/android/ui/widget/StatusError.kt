@@ -23,9 +23,4 @@ class StatusError @JvmOverloads constructor(
         text = resources.getString(R.string.reload_data)
         setOnClickListener { errorReload?.reload() }
     }
-
-//    override fun onDraw(canvas: Canvas?) {
-//        CenterDrawableHelper.preDraw(this, canvas)
-//        super.onDraw(canvas)
-//    }
 }

@@ -3,12 +3,12 @@ package com.kuky.demo.wan.android.ui.dialog
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.PermissionListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.DialogWxBinding
 import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.ImageSaveUtils
@@ -20,10 +20,6 @@ import java.io.File
  * @description
  */
 class WxDialog : BaseDialogFragment<DialogWxBinding>() {
-
-    companion object {
-        private val mHandler = Handler()
-    }
 
     override fun getLayoutId(): Int = R.layout.dialog_wx
 
@@ -56,28 +52,27 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
         return true
     }
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun saveQrCode(file: File?) {
         file?.let {
-            if (!it.parentFile.exists()) {
-                it.parentFile.mkdirs()
+            if (it.parentFile?.exists() == false) {
+                it.parentFile?.mkdirs()
             }
 
-            if (it.exists()) {
-                it.delete()
-            }
+            if (it.exists()) it.delete()
 
-            val result = if (it.createNewFile())
-                ImageSaveUtils.cropView(mBinding.wxCode, it)
-            else false
+            val result =
+                if (it.createNewFile()) ImageSaveUtils.cropView(mBinding.wxCode, it)
+                else false
 
             if (result) {
                 requireContext().toast("保存图片成功，即将打开微信")
-                mHandler.postDelayed({
+                delayLaunch(1000) {
                     ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
                     dialog?.dismiss()
-                }, 1000)
+                }
             } else {
-                requireContext().toast("保存图片出错")
+                requireContext().toast("保存图片出错啦~")
             }
         }
     }

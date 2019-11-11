@@ -25,7 +25,6 @@ import kotlin.coroutines.suspendCoroutine
  * @author kuky.
  * @description
  */
-
 class TodoRepository {
     suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): List<TodoInfo>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService
@@ -46,32 +45,41 @@ class TodoRepository {
     }
 }
 
-class TodoDataSource(private val repository: TodoRepository, private val param: HashMap<String, Int>) :
-    PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by MainScope() {
+class TodoDataSource(
+    private val repository: TodoRepository,
+    private val param: HashMap<String, Int>,
+    private val handler: PagingThrowableHandler
+) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
+        }, {
             val result = repository.fetchTodoList(1, param)
             result?.let {
                 callback.onResult(it, null, 2)
             }
-        }
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
+        }, {
             repository.fetchTodoList(params.key, param)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }
+        })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
+        }, {
             repository.fetchTodoList(params.key, param)?.let {
                 callback.onResult(it, params.key - 1)
             }
-        }
+        })
     }
 
     override fun invalidate() {
@@ -80,9 +88,12 @@ class TodoDataSource(private val repository: TodoRepository, private val param: 
     }
 }
 
-class TodoDataSourceFactory(private val repository: TodoRepository, private val param: HashMap<String, Int>) :
-    DataSource.Factory<Int, TodoInfo>() {
-    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param)
+class TodoDataSourceFactory(
+    private val repository: TodoRepository,
+    private val param: HashMap<String, Int>,
+    private val handler: PagingThrowableHandler
+) : DataSource.Factory<Int, TodoInfo>() {
+    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param, handler)
 }
 
 class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {

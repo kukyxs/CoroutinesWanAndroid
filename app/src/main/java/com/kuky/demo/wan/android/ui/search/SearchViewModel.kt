@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
+import com.kuky.demo.wan.android.base.PagingThrowableHandler
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.entity.ArticleDetail
@@ -22,21 +24,18 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     val hotKeys = MutableLiveData<List<HotKeyData>>()
     var result: LiveData<PagedList<ArticleDetail>>? = null
 
-    fun fetchKeys() {
-        viewModelScope.safeLaunch {
+    fun fetchKeys(handler: CoroutineThrowableHandler) {
+        viewModelScope.safeLaunch({
+            handler.invoke(it)
+        }, {
             hotKeys.value = repository.hotKeys().data
-        }
-    }
-
-    fun fetchHistory() {
-        viewModelScope.safeLaunch {
             history.value = SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance)
-        }
+        })
     }
 
-    fun fetchResult(key: String) {
+    fun fetchResult(key: String, handler: PagingThrowableHandler) {
         result = LivePagedListBuilder(
-            SearchDataSourceFactory(repository, key),
+            SearchDataSourceFactory(repository, key, handler),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

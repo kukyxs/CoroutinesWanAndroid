@@ -127,7 +127,7 @@ interface ApiService {
     // 搜索文章
     @POST("/article/query/{page}/json")
     @FormUrlEncoded
-    suspend fun searchArticle(@Path("page") page: Int, @Field("k") keyword: String): HomeArticleEntity
+    suspend fun searchArticle(@Path("page") page: Int, @Field("k") keyword: String, @Header("Cookie") cookie: String): HomeArticleEntity
 
     // 公众号列表
     @GET("/wxarticle/chapters/json")

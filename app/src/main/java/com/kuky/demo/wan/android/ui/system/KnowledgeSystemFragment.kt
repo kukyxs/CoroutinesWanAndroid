@@ -8,10 +8,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
-import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.KnowledgeSystemDialogFragment
+import com.kuky.demo.wan.android.ui.main.MainModelFactory
+import com.kuky.demo.wan.android.ui.main.MainRepository
+import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter
@@ -34,8 +37,13 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
+    }
+
+    private val mLoginViewModel by lazy {
+        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+            .get(MainViewModel::class.java)
     }
 
     // 体系id
@@ -63,7 +71,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
         mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
+                requireContext().alert(
+                    if (article.collect) "「${article.title}」已收藏"
+                    else " 是否收藏 「${article.title}」"
+                ) {
                     yesButton {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
                             mViewModel.mArticles?.value?.get(position)?.collect = true
@@ -98,7 +109,20 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         fetchSystemTypes()
 
         mViewModel.mType.observe(this, Observer { data ->
-            data?.let { updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id) }
+            data?.let {
+                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
+            }
+        })
+
+        // 登录状态切换
+        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (!it) {
+                mViewModel.mArticles?.value?.forEach { arc ->
+                    arc.collect = false
+                }
+            } else {
+                fetchArticles(mCid)
+            }
         })
     }
 

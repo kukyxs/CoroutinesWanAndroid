@@ -57,7 +57,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@id/detail_title"
-            android:overScrollMode="never"
+            android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detail_title"
             bind:url="@{url}" />

@@ -36,26 +36,32 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
     }
 
     fun addTodo(param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("网络出错啦~请检查网络")
+        }, {
             repository.addTodo(param).let {
                 if (it.code == CODE_SUCCEED) success() else fail(it.message)
             }
-        }
+        })
     }
 
     fun updateTodo(id: Int, param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("网络出错啦~请检查网络")
+        }, {
             repository.updateTodo(id, param).let {
                 if (it.code == CODE_SUCCEED) success() else fail(it.message)
             }
-        }
+        })
     }
 
     fun deleteTodo(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
+            fail("网络出错啦~请检查网络")
+        }, {
             repository.deleteTodo(id).let {
                 if (it.code == CODE_SUCCEED) success() else fail(it.message)
             }
-        }
+        })
     }
 }

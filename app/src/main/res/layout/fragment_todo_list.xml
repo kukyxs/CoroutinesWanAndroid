@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="refreshColor"
             type="Integer" />
@@ -57,6 +59,18 @@
         <variable
             name="choiceItemClick"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="errorStatus"
+            type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
     <com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout
@@ -86,7 +100,8 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                bind:gesture="@{gesture}" />
 
             <ImageButton
                 android:id="@+id/create_todo"
@@ -105,6 +120,7 @@
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/todo_title"
                 bind:refreshColor="@{refreshColor}"
@@ -113,13 +129,15 @@
                 bind:refreshState="@{refreshing}">
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/todo_list_page"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:adapter="@{todoAdapter}"
                     android:nestedScrollingEnabled="false"
                     android:padding="4dp"
+                    android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                     android:scrollbars="vertical"
                     app:layoutManager="@{todoLayoutManager}"
+                    bind:adapter="@{todoAdapter}"
                     bind:pageItemClick="@{todoItemClick}"
                     bind:pageItemLongClick="@{todoItemLongClick}"
                     bind:scrollListener="@{scrollListener}"
@@ -127,39 +145,40 @@
                     tools:listitem="@layout/recycler_todo_item"
                     tools:spanCount="2" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.kuky.demo.wan.android.ui.widget.StatusError
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/todo_title"
+                bind:reload="@{errorReload}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="12dp"
-            app:cardCornerRadius="16dp">
+            android:background="@drawable/page_out_background">
 
-            <FrameLayout
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/todo_menu_bg"
+                android:contentDescription="@null"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu_grey_36dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/todo_menu_bg"
-                    android:contentDescription="@null"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_menu_grey_36dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
-                    android:adapter="@{choiceAdapter}"
-                    android:overScrollMode="never"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="20dp"
-                    app:layoutManager="@{choiceLayoutManager}"
-                    bind:listItemClick="@{choiceItemClick}" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
+                android:layout_marginTop="50dp"
+                android:overScrollMode="never"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="20dp"
+                app:layoutManager="@{choiceLayoutManager}"
+                bind:adapter="@{choiceAdapter}"
+                bind:listItemClick="@{choiceItemClick}" />
+        </FrameLayout>
     </com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout>
 </layout>

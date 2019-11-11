@@ -49,26 +49,30 @@ class MainRepository {
         val result = response.body()
 
         return suspendCoroutine { continuation ->
-            if (result == null) continuation.resumeWithException(RuntimeException("null response"))
+            when {
+                result == null -> continuation.resumeWithException(RuntimeException("null response"))
 
-            if (result!!.errorCode == 0) {
-                val cookies = StringBuilder()
+                result.errorCode == 0 -> {
+                    val cookies = StringBuilder()
 
-                response.headers()
-                    .filter { TextUtils.equals(it.first, "Set-Cookie") }
-                    .forEach { cookies.append(it.second).append(";") }
+                    response.headers()
+                        .filter { TextUtils.equals(it.first, "Set-Cookie") }
+                        .forEach { cookies.append(it.second).append(";") }
 
-                val strCookie =
-                    if (cookies.endsWith(";")) cookies.substring(0, cookies.length - 1)
-                    else cookies.toString()
+                    val strCookie =
+                        if (cookies.endsWith(";")) cookies.substring(0, cookies.length - 1)
+                        else cookies.toString()
 
-                PreferencesHelper.saveCookie(WanApplication.instance, strCookie)
-                PreferencesHelper.saveUserId(WanApplication.instance, result.data.id)
-                PreferencesHelper.saveUserName(
-                    WanApplication.instance, result.data.nickname
-                )
-                continuation.resume(ResultBack(CODE_SUCCEED, ""))
-            } else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+                    PreferencesHelper.saveCookie(WanApplication.instance, strCookie)
+                    PreferencesHelper.saveUserId(WanApplication.instance, result.data.id)
+                    PreferencesHelper.saveUserName(
+                        WanApplication.instance, result.data.nickname
+                    )
+                    continuation.resume(ResultBack(CODE_SUCCEED, ""))
+                }
+
+                else -> continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
+            }
         }
     }
 

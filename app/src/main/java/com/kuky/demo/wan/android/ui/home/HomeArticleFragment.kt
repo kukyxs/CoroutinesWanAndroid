@@ -10,9 +10,12 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
-import com.kuky.demo.wan.android.ui.collection.CollectionFactory
+import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
+import com.kuky.demo.wan.android.ui.main.MainModelFactory
+import com.kuky.demo.wan.android.ui.main.MainRepository
+import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
@@ -32,9 +35,15 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
             .get(HomeArticleViewModel::class.java)
     }
+
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
+    }
+
+    private val mLoginViewModel by lazy {
+        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+            .get(MainViewModel::class.java)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_home_article
@@ -59,7 +68,10 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
         mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
+                requireContext().alert(
+                    if (article.collect) "「${article.title}」已收藏"
+                    else " 是否收藏 「${article.title}」"
+                ) {
                     yesButton {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
                             mViewModel.articles?.value?.get(position)?.collect = true
@@ -84,6 +96,17 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
 
         fetchHomeArticleList()
+
+        // 根据登录状态做修改
+        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (!it) {
+                mViewModel.articles?.value?.forEach { arc ->
+                    arc.collect = false
+                }
+            } else {
+                fetchHomeArticleList()
+            }
+        })
     }
 
     private fun fetchHomeArticleList() {

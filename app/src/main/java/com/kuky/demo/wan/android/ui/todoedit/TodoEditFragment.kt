@@ -14,7 +14,6 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
-import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.utils.TimeUtils
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
@@ -153,8 +152,6 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         param["type"] = mViewModel.todoType.value ?: 1
         param["priority"] = mViewModel.todoPriority.value ?: 1
         param["status"] = mViewModel.todoState.value ?: 0
-
-        LogUtils.error(param)
 
         if (mTodo == null) {
             mViewModel.addTodo(param, {
