@@ -36,4 +36,7 @@
     <string name="reload_data">加载出错啦~点击重新加载</string>
     <string name="text_place_holder">--</string>
     <string name="net_disconnected">当前网络连接不可用</string>
+    <string name="copy_link">复制链接</string>
+    <string name="open_in_browser">浏览器打开</string>
+    <string name="share_links">分享链接</string>
 </resources>

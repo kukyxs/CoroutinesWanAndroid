@@ -1,6 +1,11 @@
 package com.kuky.demo.wan.android.ui.websitedetail
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.*
@@ -9,8 +14,11 @@ import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.databinding.FragmentWesiteDetailBinding
 import kotlinx.android.synthetic.main.fragment_wesite_detail.view.*
+import org.jetbrains.anko.selector
+import org.jetbrains.anko.toast
 
 /**
  * @author kuky.
@@ -18,32 +26,35 @@ import kotlinx.android.synthetic.main.fragment_wesite_detail.view.*
  */
 class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
+    private val url: String by lazy {
+        arguments?.getString("url") ?: ""
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_wesite_detail
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding.url = url
 
-        mBinding.url = arguments?.getString("url")
+        mBinding.content.let {
+            it.settings.apply {
+                javaScriptEnabled = true
+                javaScriptCanOpenWindowsAutomatically = true
+                allowFileAccess = true
+                layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+                useWideViewPort = true
+                loadWithOverviewMode = true
+                setSupportMultipleWindows(true)
+                setGeolocationEnabled(true)
+                setSupportZoom(true)
+                builtInZoomControls = true
+                displayZoomControls = false
+                setAppCacheEnabled(true)
+                domStorageEnabled = true
+                cacheMode = WebSettings.LOAD_NO_CACHE
+            }
 
-        mBinding.content.settings.apply {
-            javaScriptEnabled = true
-            javaScriptCanOpenWindowsAutomatically = true
-            allowFileAccess = true
-            layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
-            useWideViewPort = true
-            loadWithOverviewMode = true
-            setSupportMultipleWindows(true)
-            setGeolocationEnabled(true)
-            setSupportZoom(true)
-            builtInZoomControls = true
-            displayZoomControls = false
-            setAppCacheEnabled(true)
-            domStorageEnabled = true
-            cacheMode = WebSettings.LOAD_NO_CACHE
-        }
-
-        view.content.apply {
-            webViewClient = object : WebViewClient() {
+            it.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     view?.loadUrl(url)
                     return true
@@ -55,13 +66,52 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
                 }
             }
 
-            webChromeClient = object : WebChromeClient() {
+            it.webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(web: WebView?, newProgress: Int) {
                     super.onProgressChanged(web, newProgress)
-                    if (newProgress > 70) view.loading.isVisible = false
+                    if (newProgress > 70) {
+                        mBinding.loading.isVisible = false
+                        mBinding.shareLink.isVisible = true
+                    }
                 }
             }
         }
+
+        mBinding.gesture = DoubleClickListener({
+            val shareItems = arrayListOf(
+                resources.getString(R.string.copy_link),
+                resources.getString(R.string.share_links),
+                resources.getString(R.string.open_in_browser)
+            )
+
+            requireContext().selector(items = shareItems) { _, i ->
+                when (i) {
+                    0 -> (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.let {
+                        it.setPrimaryClip(ClipData.newPlainText("", url))
+                        requireContext().toast("复制成功")
+                    }
+
+                    1 -> startActivity(
+                        Intent.createChooser(
+                            Intent().apply {
+                                putExtra(Intent.EXTRA_TEXT, url)
+                                action = Intent.ACTION_SEND
+                                type = "text/plain"
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }, resources.getString(R.string.share_links)
+                        )
+                    )
+
+                    2 -> startActivity(
+                        Intent().apply {
+                            action = Intent.ACTION_VIEW
+                            data = Uri.parse(url)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                    )
+                }
+            }
+        }, null)
     }
 
     companion object {

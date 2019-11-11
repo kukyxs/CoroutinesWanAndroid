@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -8,9 +9,13 @@
             name="url"
             type="String" />
 
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -27,14 +32,34 @@
             android:text="@string/article_detail"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/share_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@null"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:src="@drawable/ic_share_24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/detail_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/detail_title"
+            bind:gesture="@{gesture}" />
 
         <WebView
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_below="@id/detail_title"
             android:overScrollMode="never"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detail_title"
             bind:url="@{url}" />
 
         <ProgressBar
@@ -43,6 +68,10 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:alpha="0.4" />
-    </RelativeLayout>
+            android:alpha="0.4"
+            app:layout_constraintBottom_toBottomOf="@id/content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/content" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
