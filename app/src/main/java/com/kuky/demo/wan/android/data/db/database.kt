@@ -12,7 +12,7 @@ import com.kuky.demo.wan.android.utils.LogUtils
  * @description
  */
 
-@Database(entities = [TestEntity::class], version = 1)
+@Database(entities = [TestEntity::class], version = 1, exportSchema = false)
 abstract class WanDatabase : RoomDatabase() {
     abstract fun testDao(): TestDao
 }

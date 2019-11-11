@@ -16,7 +16,6 @@ import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
 import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.utils.TimeUtils
-import kotlinx.android.synthetic.main.fragment_todo_edit.view.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 import java.util.*
@@ -133,8 +132,8 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     }
 
     fun updateOrAddTodo(view: View) {
-        val title = mBinding.root.todo_title.text.toString()
-        val content = mBinding.root.todo_description.text.toString()
+        val title = mBinding.todoTitle.text.toString()
+        val content = mBinding.todoDescription.text.toString()
 
         if (title.isBlank()) {
             requireContext().toast("标题不可为空")

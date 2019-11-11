@@ -11,7 +11,6 @@ import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFactory
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesRepository
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesViewModel
-import kotlinx.android.synthetic.main.dialog_collected_website.*
 import org.jetbrains.anko.toast
 
 
@@ -41,7 +40,7 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
     }
 
     fun ensure(view: View) {
-        mViewModel.addWebsites(collected_name.text.toString(), collected_link.text.toString(), {
+        mViewModel.addWebsites(mBinding.collectedName.text.toString(), mBinding.collectedLink.text.toString(), {
             mViewModel.fetchWebSitesData()
             toastAndDismiss("添加成功")
         }, { msg, dismiss -> toastAndDismiss(msg, dismiss) })

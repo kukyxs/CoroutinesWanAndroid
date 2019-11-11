@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.ui.home
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -9,7 +8,7 @@ import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.databinding.FragmentHomeBinding
+import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.ui.collection.CollectionFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
@@ -25,10 +24,7 @@ import org.jetbrains.anko.yesButton
  * @author kuky.
  * @description 主页面首页模块界面
  */
-class HomeFragment : BaseFragment<FragmentHomeBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
+class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
@@ -41,7 +37,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             .get(CollectionViewModel::class.java)
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_home
+    override fun getLayoutId(): Int = R.layout.fragment_home_article
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         // 绑定 SwipeRefreshLayout 属性
@@ -78,7 +74,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             true
         }
 
-        mBinding.errorReload = ErrorReload { fetchHomeArticleList() }
+        // 双击回顶部
+        mBinding.gesture = DoubleClickListener(null, {
+            mBinding.articleList.scrollToTop()
+        })
+
+        mBinding.errorReload = ErrorReload {
+            fetchHomeArticleList()
+        }
 
         fetchHomeArticleList()
     }
@@ -86,19 +89,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private fun fetchHomeArticleList() {
         mViewModel.fetchHomeArticle { code, _ ->
             when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> {
+                    mBinding.errorStatus = true
+                    mBinding.indicator = resources.getString(R.string.text_place_holder)
+                }
 
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~")
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
             }
-
-            mHandler.postDelayed({ mBinding.refreshing = false }, 1000)
         }
 
         mBinding.refreshing = true
         mBinding.errorStatus = false
         mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
             mAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            mBinding.indicator = resources.getString(R.string.blog_articles)
+            delayLaunch(1000) { mBinding.refreshing = false }
         })
     }
 }

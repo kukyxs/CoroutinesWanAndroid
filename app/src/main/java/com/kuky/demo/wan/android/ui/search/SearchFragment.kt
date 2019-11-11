@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.search
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,6 +14,7 @@ import com.google.android.flexbox.FlexboxLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
@@ -23,18 +23,12 @@ import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.utils.ScreenUtils
-import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.android.synthetic.main.fragment_search.view.*
 
 /**
  * @author kuky.
  * @description
  */
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
-
     private var mResultMode = false
 
     private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
@@ -66,7 +60,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
             mHistoryAdapter.getItemData(position)?.let {
-                search_content.setText(it)
+                mBinding.searchContent.setText(it)
                 searchArticles(it)
             }
         }
@@ -106,7 +100,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
 
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
-                as InputMethodManager).hideSoftInputFromWindow(search_content.windowToken, 0)
+                as InputMethodManager).hideSoftInputFromWindow(mBinding.searchContent.windowToken, 0)
 
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
@@ -118,10 +112,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
             mResultAdapter.submitList(it)
-            mHandler.postDelayed({
+            delayLaunch(1000) {
                 mBinding.refreshing = false
                 mBinding.dataNull = it.isEmpty()
-            }, 500)
+            }
         })
     }
 
@@ -132,7 +126,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         val verticalValue = ScreenUtils.dip2px(requireContext(), 2f).toInt()
         val marginValue = ScreenUtils.dip2px(requireContext(), 4f).toInt()
         val paddingValue = ScreenUtils.dip2px(requireContext(), 6f).toInt()
-        mBinding.root.keys_box.removeAllViews()
+        mBinding.keysBox.removeAllViews()
 
         hotKeys.forEach {
             val name = it.name
@@ -153,12 +147,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 layoutParams = lp
                 setPadding(paddingValue, verticalValue, paddingValue, verticalValue)
                 setOnClickListener {
-                    mBinding.root.search_content.setText(name)
+                    mBinding.searchContent.setText(name)
                     searchArticles(name)
                 }
             }
 
-            mBinding.root.keys_box.addView(label)
+            mBinding.keysBox.addView(label)
         }
     }
 }

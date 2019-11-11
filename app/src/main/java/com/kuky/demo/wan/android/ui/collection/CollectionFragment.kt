@@ -10,7 +10,6 @@ import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
-import kotlinx.android.synthetic.main.fragment_collection.view.*
 
 /**
  * @author kuky.
@@ -34,7 +33,7 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.adapter = mAdapter
         mBinding.current = arguments?.getInt("position", 0) ?: 0
-        view.collection_indicator.setupWithViewPager(view.collection_vp)
+        mBinding.collectionIndicator.setupWithViewPager(mBinding.collectionVp)
     }
 
     companion object {

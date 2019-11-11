@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.ui.collectedarticles
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +9,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import org.jetbrains.anko.alert
@@ -22,9 +22,6 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
 
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectedArticlesFactory(CollectedArticlesRepository()))
@@ -71,11 +68,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(requireActivity(), Observer {
             mAdapter.submitList(it)
-            mHandler.postDelayed({
+            delayLaunch(1000) {
                 mBinding.refreshing = false
                 // 延时来获取数据
                 mBinding.dataNull = it.isEmpty()
-            }, 500L)
+            }
         })
     }
 }

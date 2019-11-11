@@ -23,6 +23,8 @@ import com.kuky.demo.wan.android.utils.ScreenUtils
  * @author kuky.
  * @description
  */
+typealias OnSelectedListener = (Dialog, ProjectCategoryData) -> Unit
+
 class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>() {
 
     private val mAdapter: ProjectCategoryAdapter by lazy { ProjectCategoryAdapter() }
@@ -32,12 +34,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
             .get(HotProjectViewModel::class.java)
     }
 
-    private var onSelectedListener: OnSelectedListener? = null
-
-    fun setOnSelectedListener(l: OnSelectedListener?): ProjectCategoryDialog {
-        this.onSelectedListener = l
-        return this@ProjectCategoryDialog
-    }
+    var onSelectedListener: OnSelectedListener? = null
 
     override fun onStart() {
         super.onStart()
@@ -76,5 +73,3 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
         })
     }
 }
-
-typealias OnSelectedListener = (Dialog, ProjectCategoryData) -> Unit

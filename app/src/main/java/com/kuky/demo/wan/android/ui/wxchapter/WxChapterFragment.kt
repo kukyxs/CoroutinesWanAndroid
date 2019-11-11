@@ -1,15 +1,14 @@
 package com.kuky.demo.wan.android.ui.wxchapter
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 
 /**
@@ -17,9 +16,6 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
  * @description 首页公众号模块界面
  */
 class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
 
     private val mViewModel by lazy {
         ViewModelProvider(this, WxChapterFactory(WxChapterRepository()))
@@ -35,25 +31,39 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
             fetchWxChapter()
         }
 
-        mViewModel.getWxChapter()
-        mBinding.rcvChapter.adapter = mAdapter
+        mBinding.adapter = mAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
             mAdapter.getItemData(position)?.let {
                 WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
             }
         }
+
+        mBinding.errorReload = ErrorReload {
+            fetchWxChapter()
+        }
+
+        mBinding.gesture = DoubleClickListener(null, {
+            mBinding.rcvChapter.scrollToTop()
+        })
+
         fetchWxChapter()
     }
 
     private fun fetchWxChapter() {
-        mViewModel.getWxChapter()
+        mViewModel.getWxChapter {
+            mBinding.errorStatus = true
+            mBinding.wxChapterType.text = resources.getText(R.string.text_place_holder)
+        }
+
         mBinding.refreshing = true
+        mBinding.errorStatus = false
+
         mViewModel.mData.observe(this, Observer {
             mAdapter.update(it)
-            mHandler.postDelayed({
+            mBinding.wxChapterType.text = resources.getText(R.string.wx_chapter)
+            delayLaunch(1000) {
                 mBinding.refreshing = false
-                mBinding.dataNull = it?.isEmpty() ?: true
-            }, 500)
+            }
         })
     }
 }

@@ -45,7 +45,8 @@
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:banner_default_image="@drawable/ic_place_holder"
+                android:background="@drawable/image_place_holder"
+                app:banner_default_image="@drawable/image_place_holder"
                 app:layout_constraintTop_toTopOf="parent"
                 bind:bannerClick="@{listener}"
                 bind:banners="@{viewModel.banners}" />
@@ -58,11 +59,11 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginBottom="12dp"
-                android:adapter="@{adapter}"
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/banner"
+                bind:adapter="@{adapter}"
                 bind:limitOffset="@{limit}"
                 bind:reversed="@{true}"
                 bind:transformer="@{transformer}" />

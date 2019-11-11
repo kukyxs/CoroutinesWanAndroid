@@ -9,16 +9,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="refreshColor"
-            type="Integer" />
-
-        <variable
-            name="refreshing"
-            type="Boolean" />
-
-        <variable
-            name="refreshListener"
-            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+            name="indicator"
+            type="String" />
 
         <variable
             name="adapter"
@@ -33,8 +25,12 @@
             type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
 
         <variable
-            name="holder"
-            type="com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment" />
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
 
         <variable
             name="errorStatus"
@@ -47,6 +43,10 @@
         <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
     </data>
 
     <FrameLayout
@@ -63,73 +63,42 @@
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/system_type"
+                <TextView
+                    android:id="@+id/project_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:background="@drawable/home_title_bg"
-                    android:orientation="horizontal"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:gesture="@{gesture}">
-
-                    <TextView
-                        android:id="@+id/system_first"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:singleLine="true"
-                        android:textColor="@color/colorAccent"
-                        tools:text="开发环境" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_arrow_drop_down_accent_24dp" />
-
-                    <TextView
-                        android:id="@+id/system_sec"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:singleLine="true"
-                        android:textColor="@color/colorAccent"
-                        tools:text="Android Studio相关" />
-                </LinearLayout>
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:singleLine="true"
+                    android:text="@{indicator}"
+                    android:textColor="@color/colorAccent"
+                    bind:gesture="@{gesture}" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/project_list"
+                    android:id="@+id/article_list"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                     android:scrollbars="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/system_type"
                     bind:adapter="@{adapter}"
                     bind:hasFixedSize="@{true}"
                     bind:pageItemClick="@{itemClick}"
                     bind:pageItemLongClick="@{itemLongClick}"
                     tools:itemCount="20"
-                    tools:listitem="@layout/recycler_wx_chapter_list" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    tools:listitem="@layout/recycler_home_article" />
+            </LinearLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.kuky.demo.wan.android.ui.widget.StatusError

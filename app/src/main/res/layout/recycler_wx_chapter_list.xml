@@ -2,9 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
-    xmlns:tool="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
 
         <variable
             name="data"
@@ -33,7 +35,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 bind:renderHtml="@{data.title}"
-                tool:text="是什么让我们阅读RxJava源码如此艰难？" />
+                tools:text="是什么让我们阅读RxJava源码如此艰难？" />
 
             <TextView
                 android:id="@+id/chapter_author"
@@ -44,7 +46,8 @@
                 android:layout_marginTop="4dp"
                 android:text="@{data.author}"
                 android:textSize="12sp"
-                tool:text="鸿洋" />
+                android:visibility="@{data.author == null ? View.GONE : View.VISIBLE }"
+                tools:text="鸿洋" />
 
             <TextView
                 android:id="@+id/chapter_article_time"
@@ -55,9 +58,7 @@
                 android:layout_marginTop="4dp"
                 android:text="@{data.niceDate}"
                 android:textSize="12sp"
-                tool:text="2019-06-06" />
-
+                tools:text="2019-06-06" />
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
 </layout>

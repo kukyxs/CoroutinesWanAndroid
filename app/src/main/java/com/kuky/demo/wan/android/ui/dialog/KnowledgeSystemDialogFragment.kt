@@ -28,7 +28,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
             .get(KnowledgeSystemViewModel::class.java)
     }
     private var mFirstData: SystemData? = null
-    private var mOnClick: SystemClick? = null
+    var mOnClick: SystemClick? = null
 
     override fun onStart() {
         super.onStart()
@@ -89,11 +89,6 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
             mSecAdapter.updateSelectedPosition(it)
             mBinding.secPosition = it
         })
-    }
-
-    fun setSelect(block: SystemClick): KnowledgeSystemDialogFragment {
-        this.mOnClick = block
-        return this
     }
 }
 

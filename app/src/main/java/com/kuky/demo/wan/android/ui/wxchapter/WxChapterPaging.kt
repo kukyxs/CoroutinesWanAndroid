@@ -19,11 +19,7 @@ import kotlinx.coroutines.withContext
  */
 class WxChapterRepository {
     suspend fun getWxChapter() = withContext(Dispatchers.IO) {
-        try {
-            RetrofitManager.apiService.wxCahpters().data
-        } catch (throwable: Throwable) {
-            null
-        }
+        RetrofitManager.apiService.wxCahpters().data
     }
 }
 

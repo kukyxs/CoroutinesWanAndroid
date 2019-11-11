@@ -6,10 +6,7 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.BasePagedListAdapter
-import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
 import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
@@ -38,34 +35,42 @@ class HotProjectRepository {
 /**
  * 网络数据来源
  */
-class HotProjectDataSource(private val repository: HotProjectRepository, private val pid: Int) :
-    PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
+class HotProjectDataSource(
+    private val repository: HotProjectRepository,
+    private val pid: Int, private val handler: PagingThrowableHandler
+) : PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ProjectDetailData>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
+        }, {
             val data = repository.loadProjects(0, pid)
             data?.let {
                 callback.onResult(it, null, 1)
             }
-        }
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
+        }, {
             val data = repository.loadProjects(params.key, pid)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }
+        })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ProjectDetailData>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
+        }, {
             val data = repository.loadProjects(params.key, pid)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        }
+        })
     }
 
     override fun invalidate() {
@@ -74,10 +79,11 @@ class HotProjectDataSource(private val repository: HotProjectRepository, private
     }
 }
 
-class HotProjectDataSourceFactory(private val repository: HotProjectRepository, private val pid: Int) :
-    DataSource.Factory<Int, ProjectDetailData>() {
-
-    override fun create(): DataSource<Int, ProjectDetailData> = HotProjectDataSource(repository, pid)
+class HotProjectDataSourceFactory(
+    private val repository: HotProjectRepository,
+    private val pid: Int, private val handler: PagingThrowableHandler
+) : DataSource.Factory<Int, ProjectDetailData>() {
+    override fun create(): DataSource<Int, ProjectDetailData> = HotProjectDataSource(repository, pid, handler)
 }
 
 /**

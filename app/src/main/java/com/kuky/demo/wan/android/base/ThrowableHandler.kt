@@ -12,3 +12,5 @@ const val PAGING_THROWABLE_LOAD_CODE_AFTER = 0xFF10
 const val PAGING_THROWABLE_LOAD_CODE_BEFORE = 0xFF11
 
 typealias PagingThrowableHandler = (Int, Throwable) -> Unit
+
+typealias CoroutineThrowableHandler = (Throwable) -> Unit

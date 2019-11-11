@@ -6,9 +6,7 @@ import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
-import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
@@ -17,7 +15,6 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
 
-
 /**
  * @author Taonce.
  * @description
@@ -25,11 +22,7 @@ import kotlinx.coroutines.*
 
 class KnowledgeSystemRepository {
     suspend fun loadSystemType() = withContext(Dispatchers.IO) {
-        try {
-            RetrofitManager.apiService.knowledgeSystem().data
-        } catch (throwable: Throwable) {
-            null
-        }
+        RetrofitManager.apiService.knowledgeSystem().data
     }
 
     suspend fun loadArticle4System(page: Int, cid: Int): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
@@ -37,34 +30,43 @@ class KnowledgeSystemRepository {
     }
 }
 
-class KnowledgeSystemDataSource(private val repository: KnowledgeSystemRepository, private val cid: Int) :
-    PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
+class KnowledgeSystemDataSource(
+    private val repository: KnowledgeSystemRepository,
+    private val cid: Int,
+    private val handler: PagingThrowableHandler
+) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
+        }, {
             val data = repository.loadArticle4System(0, cid)
             data?.let {
                 callback.onResult(it, null, 1)
             }
-        }
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
+        }, {
             val data = repository.loadArticle4System(params.key, cid)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }
+        })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
-        safeLaunch {
+        safeLaunch({
+            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
+        }, {
             val data = repository.loadArticle4System(params.key, cid)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        }
+        })
     }
 
     override fun invalidate() {
@@ -73,10 +75,13 @@ class KnowledgeSystemDataSource(private val repository: KnowledgeSystemRepositor
     }
 }
 
-class KnowledgeSystemDataSourceFactory(private val repository: KnowledgeSystemRepository, private val pid: Int) :
-    DataSource.Factory<Int, WxChapterListDatas>() {
+class KnowledgeSystemDataSourceFactory(
+    private val repository: KnowledgeSystemRepository,
+    private val pid: Int,
+    private val handler: PagingThrowableHandler
+) : DataSource.Factory<Int, WxChapterListDatas>() {
 
-    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid)
+    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid, handler)
 }
 
 class KnowledgeSystemTypeAdapter(

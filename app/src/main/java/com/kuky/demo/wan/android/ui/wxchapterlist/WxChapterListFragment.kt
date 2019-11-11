@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.wxchapterlist
 
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.lifecycle.Observer
@@ -14,6 +13,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterListBinding
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.ui.collection.CollectionFactory
@@ -31,8 +31,6 @@ import org.jetbrains.anko.yesButton
  */
 class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     companion object {
-        private val mHandler = Handler()
-
         /**
          * 公众号跳转到列表
          * [articleId] 文章id
@@ -111,10 +109,10 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         mViewMode.chapters?.observe(this, Observer {
             mArticleList = it
             mAdapter.submitList(it)
-            mHandler.postDelayed({
+            delayLaunch(1000) {
                 mBinding.refreshing = false
                 mBinding.dataNull = it.isEmpty()
-            }, 500)
+            }
         })
     }
 }

@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="listener"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
@@ -23,23 +25,32 @@
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
 
         <variable
-            name="view"
-            type="android.view.View" />
+            name="adapter"
+            type="androidx.recyclerview.widget.RecyclerView.Adapter" />
 
         <variable
-            name="dataNull"
+            name="errorStatus"
             type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
-    <androidx.cardview.widget.CardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="8dp">
+        android:background="@drawable/page_out_background">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
             bind:refreshColor="@{refreshColor}"
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
@@ -47,16 +58,6 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
-                <include
-                    layout="@layout/include_data_null"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:isNull="@{dataNull}" />
 
                 <TextView
                     android:id="@+id/wx_chapter_type"
@@ -72,24 +73,31 @@
                     android:textColor="@color/colorAccent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    bind:gesture="@{gesture}" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rcv_chapter"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                     android:scrollbars="vertical"
-                    android:visibility="@{dataNull ? view.GONE : view.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
+                    bind:adapter="@{adapter}"
                     bind:hasFixedSize="@{true}"
                     bind:listItemClick="@{listener}"
                     tools:listitem="@layout/recycler_wx_chapter" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </androidx.cardview.widget.CardView>
+
+        <com.kuky.demo.wan.android.ui.widget.StatusError
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+            bind:reload="@{errorReload}" />
+    </FrameLayout>
 </layout>

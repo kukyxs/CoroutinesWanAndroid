@@ -1,9 +1,7 @@
 package com.kuky.demo.wan.android.ui.widget
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import com.kuky.demo.wan.android.R
 
@@ -14,7 +12,7 @@ import com.kuky.demo.wan.android.R
 
 class StatusError @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : AppCompatTextView(context, attrs, defStyleAttr) {
+) : CenterDrawableTextView(context, attrs, defStyleAttr) {
 
     var errorReload: ErrorReload? = null
 
@@ -26,8 +24,8 @@ class StatusError @JvmOverloads constructor(
         setOnClickListener { errorReload?.reload() }
     }
 
-    override fun onDraw(canvas: Canvas?) {
-        CenterDrawableHelper.preDraw(this, canvas)
-        super.onDraw(canvas)
-    }
+//    override fun onDraw(canvas: Canvas?) {
+//        CenterDrawableHelper.preDraw(this, canvas)
+//        super.onDraw(canvas)
+//    }
 }

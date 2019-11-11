@@ -1,25 +1,20 @@
 package com.kuky.demo.wan.android.ui.system
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
-import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.ui.collection.CollectionFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.KnowledgeSystemDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter
-import kotlinx.android.synthetic.main.fragment_knowledge_system.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -30,34 +25,29 @@ import org.jetbrains.anko.yesButton
  * @description 首页体系模块界面
  */
 class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
 
     private val mAdapter by lazy { WxChapterListAdapter() }
+
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
             .get(KnowledgeSystemViewModel::class.java)
     }
+
     private val mCollectionViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectionFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
     }
+
     // 体系id
     private var mCid: Int = 0
-    // 用来修改article的collect字段，并且submitList()
-    private lateinit var mProjectList: PagedList<WxChapterListDatas>
+    private var errorOnTypes = false
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            // 防止第一次进去没拿到体系分类，需先获取下体系分类
-            if (mCid == 0) {
-                mViewModel.fetchType()
-            }
-            fetchType(mCid)
+            fetchArticles(mCid)
         }
 
         mBinding.holder = this
@@ -76,8 +66,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                 requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                     yesButton {
                         if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mProjectList[position]?.collect = true
-                            mAdapter.submitList(mProjectList)
+                            mViewModel.mArticles?.value?.get(position)?.collect = true
                             requireContext().toast("收藏成功")
                         }, { message ->
                             requireContext().toast(message)
@@ -88,49 +77,68 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             }
             true
         }
-        mViewModel.fetchType()
-        mViewModel.mType.observe(this, Observer { data ->
-            data?.let {
-                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
-            }
-            data ?: let { mBinding.dataNull = true }
+
+        // 单击弹出选择框，双击返回顶部
+        mBinding.gesture = DoubleClickListener({
+            KnowledgeSystemDialogFragment().apply {
+                mOnClick = { dialog, first, sec, cid ->
+                    updateSystemArticles(first, sec, cid)
+                    dialog.dismiss()
+                }
+            }.show(childFragmentManager, "knowledgeSystem")
+        }, {
+            mBinding.projectList.scrollToTop()
         })
+
+        mBinding.errorReload = ErrorReload {
+            if (errorOnTypes) fetchSystemTypes()
+            else fetchArticles(mCid)
+        }
+
+        fetchSystemTypes()
+
+        mViewModel.mType.observe(this, Observer { data ->
+            data?.let { updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id) }
+        })
+    }
+
+    private fun fetchSystemTypes() {
+        mViewModel.fetchType {
+            mBinding.errorStatus = true
+            errorOnTypes = true
+        }
     }
 
     /**
      * 刷新文章列表
      */
-    private fun fetchType(cid: Int) {
-        mViewModel.fetchArticles(cid)
+    private fun fetchArticles(cid: Int) {
+        mViewModel.fetchArticles(cid) { code, _ ->
+            mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
+            mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
+
+            errorOnTypes = false
+            when (code) {
+                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
+            }
+        }
+
+        mBinding.errorStatus = false
         mBinding.refreshing = true
         mViewModel.mArticles?.observe(this, Observer {
-            mProjectList = it
             mAdapter.submitList(it)
-            mHandler.postDelayed({
-                mBinding.refreshing = false
-                mBinding.dataNull = it.isEmpty()
-            }, 500L)
+            delayLaunch(1000) { mBinding.refreshing = false }
         })
     }
 
     /**
      * 选择体系后更新文章列表
      */
-    private fun updateSystemArticles(
-        first: String?,
-        sec: String?,
-        cid: Int
-    ) {
+    private fun updateSystemArticles(first: String?, sec: String?, cid: Int) {
         this.mCid = cid
-        system_first.text = first
-        system_sec.text = sec
-        fetchType(cid)
-    }
-
-    fun typeClick(view: View) {
-        KnowledgeSystemDialogFragment().setSelect { dialog, first, sec, cid ->
-            updateSystemArticles(first, sec, cid)
-            dialog.dismiss()
-        }.show(childFragmentManager, "knowledgeSystem")
+        mBinding.systemFirst.text = first
+        mBinding.systemSec.text = sec
+        fetchArticles(mCid)
     }
 }

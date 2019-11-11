@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.ui.collectedwebsites
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +9,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
@@ -24,9 +24,6 @@ import org.jetbrains.anko.yesButton
  * @description
  */
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
 
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectedWebsitesFactory(CollectedWebsitesRepository()))
@@ -82,10 +79,10 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mBinding.refreshing = true
         mViewModel.mWebsitesData.observe(this, Observer {
             mAdapter.update(it as MutableList<WebsiteData>?)
-            mHandler.postDelayed({
+            delayLaunch(1000) {
                 mBinding.refreshing = false
                 mBinding.dataNull = it?.isEmpty() ?: true
-            }, 500L)
+            }
         })
     }
 }

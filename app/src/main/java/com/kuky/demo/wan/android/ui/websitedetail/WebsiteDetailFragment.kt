@@ -25,7 +25,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
         mBinding.url = arguments?.getString("url")
 
-        view.content.settings.apply {
+        mBinding.content.settings.apply {
             javaScriptEnabled = true
             javaScriptCanOpenWindowsAutomatically = true
             allowFileAccess = true

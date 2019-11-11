@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
+import com.kuky.demo.wan.android.base.PagingThrowableHandler
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
@@ -24,15 +26,17 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
         selectedCategoryPosition.value = 0
     }
 
-    fun fetchCategories() {
-        viewModelScope.safeLaunch {
+    fun fetchCategories(handler: CoroutineThrowableHandler) {
+        viewModelScope.safeLaunch({
+            handler.invoke(it)
+        }, {
             categories.value = repository.loadProjectCategories()
-        }
+        })
     }
 
-    fun fetchDiffCategoryProjects(pid: Int) {
+    fun fetchDiffCategoryProjects(pid: Int, handler: PagingThrowableHandler) {
         projects = LivePagedListBuilder(
-            HotProjectDataSourceFactory(repository, pid),
+            HotProjectDataSourceFactory(repository, pid, handler),
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)

@@ -16,16 +16,15 @@ import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.dialog.WxDialog
-import com.kuky.demo.wan.android.ui.home.HomeFragment
+import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
+import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.youth.banner.listener.OnBannerListener
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_main.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
@@ -39,7 +38,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     private val mAdapter: BaseFragmentPagerAdapter by lazy {
         BaseFragmentPagerAdapter(
             childFragmentManager, arrayListOf(
-                HomeFragment(),
+                HomeArticleFragment(),
                 HotProjectFragment(),
                 KnowledgeSystemFragment(),
                 WxChapterFragment()
@@ -67,7 +66,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
         }
 
-        banner.let {
+        mBinding.banner.let {
             it.layoutParams = it.layoutParams.apply {
                 width = ScreenUtils.getScreenWidth(requireContext())
                 height = (width * 0.45f).toInt()
@@ -76,10 +75,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         // Bind NavigationView Header Layout
         val headerBinding = DataBindingUtil.inflate<UserProfileHeaderBinding>(
-            layoutInflater, R.layout.user_profile_header, view.user_profile_drawer, false
+            layoutInflater, R.layout.user_profile_header, mBinding.userProfileDrawer, false
         )
         headerBinding.holder = this@MainFragment
-        view.user_profile_drawer.addHeaderView(headerBinding.root)
+        mBinding.userProfileDrawer.addHeaderView(headerBinding.root)
 
         // Bind ViewPager
         mBinding.adapter = mAdapter
@@ -89,7 +88,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         mViewModel.getBanners()
 
         mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            val menus = view.user_profile_drawer.menu
+            val menus = mBinding.userProfileDrawer.menu
 
             menus.findItem(R.id.user_collections).isVisible = it
             menus.findItem(R.id.login_out).isVisible = it
@@ -105,7 +104,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private fun handleUserProfile() {
         // TODO("由于 NavigationView menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
-        mBinding.root.user_profile_drawer.setNavigationItemSelectedListener { menu ->
+        mBinding.userProfileDrawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> toFavourite(0)
 
@@ -118,7 +117,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 R.id.go_star -> starForUs()
 
                 R.id.helper -> requireContext()
-                    .alert(R.string.operate_helper) {
+                    .alert(
+                        String.format(
+                            resources.getString(R.string.operate_helper),
+                            ApplicationUtils.getAppVersionName(requireContext())
+                        )
+                    ) {
                         yesButton { dialog -> dialog.dismiss() }
                     }.show()
 
@@ -138,12 +142,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             R.id.action_mainFragment_to_collectionFragment,
             position
         )
-        mBinding.root.drawer.closeDrawer(GravityCompat.START)
+        mBinding.drawer.closeDrawer(GravityCompat.START)
     }
 
     private fun launchTodoList() {
         mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
-        mBinding.root.drawer.closeDrawer(GravityCompat.START)
+        mBinding.drawer.closeDrawer(GravityCompat.START)
     }
 
     private fun showAboutUs() {
@@ -153,7 +157,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 R.id.action_mainFragment_to_websiteDetailFragment,
                 url
             )
-            mBinding.root.drawer.closeDrawer(GravityCompat.START)
+            mBinding.drawer.closeDrawer(GravityCompat.START)
         }.show(childFragmentManager, "about")
     }
 
@@ -163,7 +167,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             R.id.action_mainFragment_to_websiteDetailFragment,
             "https://github.com/kukyxs/CoroutinesWanAndroid"
         )
-        mBinding.root.drawer.closeDrawer(GravityCompat.START)
+        mBinding.drawer.closeDrawer(GravityCompat.START)
     }
 
     /**
@@ -178,16 +182,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun openSettings(view: View) {
-        mBinding.root.float_menu.close(true)
-        mBinding.root.drawer.openDrawer(GravityCompat.START)
+        mBinding.floatMenu.close(true)
+        mBinding.drawer.openDrawer(GravityCompat.START)
     }
 
     fun showWxDialog(view: View) {
-        WxDialog().show(childFragmentManager, "qrcode")
+        WxDialog().show(childFragmentManager, "wx_code")
     }
 
     fun searchArticles(view: View) {
-        mBinding.root.float_menu.close(false)
+        mBinding.floatMenu.close(false)
         mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
     }
 }

@@ -1,7 +1,6 @@
 package com.kuky.demo.wan.android.ui.todolist
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,13 +17,13 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.utils.AssetsLoader
-import kotlinx.android.synthetic.main.fragment_todo_list.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -44,10 +43,6 @@ import org.jetbrains.anko.yesButton
  * 查询参数通过 [TodoChoiceAdapter] #getApiParam 获取即可
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
-    companion object {
-        private val mHandler = Handler()
-    }
-
     private val mViewModel: TodoListViewModel by lazy {
         ViewModelProvider(requireActivity(), TodoListViewModelFactory(TodoRepository()))
             .get(TodoListViewModel::class.java)
@@ -117,7 +112,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
             }
             true
         }
-        mBinding.scrollListener = object : RecyclerView.OnScrollListener(){
+        mBinding.scrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -155,12 +150,14 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         mBinding.refreshing = true
         mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
             mTodoAdapter.submitList(it)
-            mHandler.postDelayed({ mBinding.refreshing = false }, 500)
+            delayLaunch(1000) {
+                mBinding.refreshing = false
+            }
         })
     }
 
     fun addTodo(view: View) {
-        mBinding.root.setting_drawer.animClosed()
+        mBinding.settingDrawer.animClosed()
         TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, null)
     }
 }
