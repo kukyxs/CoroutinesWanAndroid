@@ -12,10 +12,8 @@ import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
+import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
-import org.jetbrains.anko.yesButton
 
 /**
  * @author kuky.
@@ -27,7 +25,12 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         ViewModelProvider(requireActivity(), CollectedWebsitesModelFactory(CollectedWebsitesRepository()))
             .get(CollectedWebsitesViewModel::class.java)
     }
+
     private val mAdapter by lazy { CollectedWebsitesAdapter() }
+
+    private val editSelector by lazy {
+        arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website))
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_websites
 
@@ -50,17 +53,23 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         }
         mBinding.longListener = OnItemLongClickListener { position, _ ->
             mAdapter.getItemData(position)?.let { data ->
-                requireActivity().alert("是否删除本条收藏？") {
-                    yesButton {
-                        mViewModel.deleteWebsite(data.id, {
+                requireContext().selector(items = editSelector) { _, i ->
+                    when (i) {
+                        0 -> mViewModel.deleteWebsite(data.id, {
                             requireContext().toast("删除成功")
                             mAdapter.removeItem(position)
                         }, {
                             requireContext().toast(it)
                         })
+
+                        1 -> {
+                            CollectedWebsiteDialogFragment().apply {
+                                editMode = true
+                                injectWebsiteData(data)
+                            }.show(childFragmentManager, "edit_website")
+                        }
                     }
-                    noButton { it.dismiss() }
-                }.show()
+                }
             }
             true
         }
@@ -68,7 +77,10 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mBinding.errorReload = ErrorReload { fetchWebSitesData() }
 
         mBinding.gesture = DoubleClickListener({
-            CollectedWebsiteDialogFragment().show(childFragmentManager, "collectedWebsite")
+            CollectedWebsiteDialogFragment().apply {
+                editMode = false
+                injectWebsiteData()
+            }.show(childFragmentManager, "new_website")
         }, null)
 
         fetchWebSitesData()

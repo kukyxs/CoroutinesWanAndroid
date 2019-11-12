@@ -1,8 +1,13 @@
 package com.kuky.demo.wan.android.ui.main
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -74,14 +79,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
         }
 
-        // Bind NavigationView Header Layout
         val headerBinding = DataBindingUtil.inflate<UserProfileHeaderBinding>(
             layoutInflater, R.layout.user_profile_header, mBinding.userProfileDrawer, false
         )
         headerBinding.holder = this@MainFragment
         mBinding.userProfileDrawer.addHeaderView(headerBinding.root)
 
-        // Bind ViewPager
         mBinding.adapter = mAdapter
         mBinding.limit = mAdapter.count
         mBinding.transformer = GalleryTransformer()
@@ -95,9 +98,46 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             menus.findItem(R.id.login_out).isVisible = it
             menus.findItem(R.id.todo_group).isVisible = it
 
+            headerBinding.userCoins.isVisible = it
             headerBinding.name =
                 if (it) PreferencesHelper.fetchUserName(requireContext())
                 else requireContext().getString(R.string.click_to_login)
+
+            if (it) mViewModel.getCoins()
+        })
+
+        // 设置积分
+        mViewModel.coins.observe(this, Observer {
+            it?.let {
+                headerBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
+                        0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorPrimary)),
+                        run {
+                            append("\t/\t\t")
+                            length
+                        }, run {
+                            append("Lv${it.level}")
+                            length
+                        }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
+                        run {
+                            append("\t\t/\t\t")
+                            length
+                        }, run {
+                            append("R${it.rank}")
+                            length
+                        }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
         })
 
         handleUserProfile()
@@ -181,9 +221,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
+    fun userCoins(view: View) {
+        mBinding.floatMenu.close(false)
+        mNavController.navigate(R.id.action_mainFragment_to_coinFragment)
+        mBinding.drawer.closeDrawer(GravityCompat.START)
+    }
+
     fun openSettings(view: View) {
         mBinding.floatMenu.close(true)
         mBinding.drawer.openDrawer(GravityCompat.START)
+        mViewModel.getCoins()
     }
 
     fun showWxDialog(view: View) {

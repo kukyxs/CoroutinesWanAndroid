@@ -8,6 +8,7 @@ import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
+import com.kuky.demo.wan.android.entity.CoinsData
 
 /**
  * @author kuky.
@@ -16,6 +17,7 @@ import com.kuky.demo.wan.android.entity.BannerData
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val hasLogin = MutableLiveData<Boolean>()
     val banners = MutableLiveData<List<BannerData>>()
+    val coins = MutableLiveData<CoinsData?>()
 
     init {
         hasLogin.value = PreferencesHelper.hasLogin(WanApplication.instance)
@@ -28,7 +30,12 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         }
     }
 
-    // 未找到较好的解决方案，目前使用回调进行处理，有较好的方案请提 issue
+    fun getCoins() {
+        viewModelScope.safeLaunch({
+            coins.value = null
+        }, { coins.value = repository.getCoins() })
+    }
+
     fun login(username: String, password: String, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch({
             fail("登录过程出错啦~请检查网络")

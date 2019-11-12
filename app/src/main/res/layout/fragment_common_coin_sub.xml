@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="divider"
+            type="androidx.recyclerview.widget.RecyclerView.ItemDecoration" />
+
+        <variable
+            name="errorStatus"
+            type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/coin_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:adapter="@{adapter}"
+                bind:divider="@{divider}"
+                bind:hasFixedSize="@{true}"
+                tools:listitem="@layout/recycler_coin_rank" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.kuky.demo.wan.android.ui.widget.StatusError
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+            bind:reload="@{errorReload}" />
+    </FrameLayout>
+</layout>

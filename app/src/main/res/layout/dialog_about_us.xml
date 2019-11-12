@@ -11,11 +11,11 @@
 
         <variable
             name="kSpan"
-            type="android.text.SpannableString" />
+            type="android.text.SpannableStringBuilder" />
 
         <variable
             name="tSpan"
-            type="android.text.SpannableString" />
+            type="android.text.SpannableStringBuilder" />
 
         <variable
             name="movementMethod"

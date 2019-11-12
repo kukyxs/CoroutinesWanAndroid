@@ -29,6 +29,10 @@ class MainRepository {
         object : TypeToken<List<BannerData>>() {}.type
     )
 
+    suspend fun getCoins() = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.fetchUserCoins(PreferencesHelper.fetchCookie(WanApplication.instance)).data
+    }
+
     suspend fun getHomeBanners() = withContext(Dispatchers.IO) {
         val result = RetrofitManager.apiService.homeBanner().data
         PreferencesHelper.saveBannerCache(WanApplication.instance, Gson().toJson(result))

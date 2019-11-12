@@ -11,6 +11,7 @@ object PreferencesHelper {
     private const val USER_KEY_ID = "wan.user.id"
     private const val USER_KEY_NAME = "wan.user.name"
     private const val USER_KEY_COOKIE = "wan.user.cookie"
+    private const val USER_KEY_COIN = "wan.user.coin"
     private const val CACHE_KEY_BANNER = "wan.cache.banner"
     private const val CACHE_KEY_HOME_ARTICLES = "wan.cache.home.articles"
 
@@ -31,6 +32,12 @@ object PreferencesHelper {
 
     fun fetchCookie(context: Context) =
         SharePreferencesUtils.getString(context, USER_KEY_COOKIE)
+
+    fun saveCoin(context: Context, coin: Int) =
+        SharePreferencesUtils.saveInteger(context, USER_KEY_COIN, coin)
+
+    fun fetchCoin(context: Context) =
+        SharePreferencesUtils.getInteger(context, USER_KEY_COIN, 0)
 
     // =======================> LOCAL CACHES <=================================
 

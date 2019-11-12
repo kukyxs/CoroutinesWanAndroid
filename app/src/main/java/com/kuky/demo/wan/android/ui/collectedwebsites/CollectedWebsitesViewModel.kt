@@ -41,6 +41,24 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
         }
     }
 
+    fun editWebsite(
+        id: Int, name: String, link: String,
+        success: () -> Unit, failed: (msg: String, isDismiss: Boolean) -> Unit
+    ) {
+        if (name.isBlank() || link.isBlank()) {
+            failed("输入不可为空", false)
+        } else {
+            viewModelScope.safeLaunch({
+                failed("网络出错啦~请检查网络", false)
+            }, {
+                val result = repo.editWebsite(id, name, link)
+
+                if (result.code == CODE_SUCCEED) success()
+                else failed(result.message, true)
+            })
+        }
+    }
+
     fun deleteWebsite(id: Int, onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit) {
         viewModelScope.safeLaunch({
             onFailed("网络出错啦~请检查网络")

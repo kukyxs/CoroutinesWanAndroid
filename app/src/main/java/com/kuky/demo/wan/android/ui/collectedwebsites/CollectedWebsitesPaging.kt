@@ -35,6 +35,16 @@ class CollectedWebsitesRepository {
         }
     }
 
+    suspend fun editWebsite(id: Int, name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
+        val response = RetrofitManager.apiService.editWebsite(id, name, link, PreferencesHelper.fetchCookie(WanApplication.instance))
+        suspendCoroutine<ResultBack> { continuation ->
+            response.let {
+                if (response.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
+                else continuation.resume(ResultBack(CODE_FAILED, response.errorMsg))
+            }
+        }
+    }
+
     suspend fun deleteWebsite(id: Int) = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.deleteWebsite(id, getCookie())
     }

@@ -40,8 +40,7 @@ class CollectedArticlesDataSources(
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
         }, {
-            val data = repo.getCollectedArticleDatas(0)
-            data?.let {
+            repo.getCollectedArticleDatas(0)?.let {
                 callback.onResult(it, null, 1)
             }
         })
@@ -51,8 +50,7 @@ class CollectedArticlesDataSources(
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
         }, {
-            val data = repo.getCollectedArticleDatas(params.key)
-            data?.let {
+            repo.getCollectedArticleDatas(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
         })
@@ -62,8 +60,7 @@ class CollectedArticlesDataSources(
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
         }, {
-            val data = repo.getCollectedArticleDatas(params.key)
-            data?.let {
+            repo.getCollectedArticleDatas(params.key)?.let {
                 callback.onResult(it, params.key - 1)
             }
         })

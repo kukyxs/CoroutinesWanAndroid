@@ -4,6 +4,9 @@
     <string name="collections">我的收藏</string>
     <string name="collected_articles">文章收藏</string>
     <string name="collected_websites">网址收藏</string>
+    <string name="coins">积分</string>
+    <string name="coin_record">积分记录</string>
+    <string name="coin_rank">积分排行</string>
     <string name="info_about">关于</string>
     <string name="about_us">关于我们</string>
     <string name="statement">一些说明</string>
@@ -39,4 +42,6 @@
     <string name="copy_link">复制链接</string>
     <string name="open_in_browser">浏览器打开</string>
     <string name="share_links">分享链接</string>
+    <string name="del_website">删除网址</string>
+    <string name="edit_website">编辑网址</string>
 </resources>

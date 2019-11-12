@@ -116,7 +116,7 @@ interface ApiService {
     suspend fun editWebsite(
         @Field("id") id: Int, @Field("name") name: String,
         @Field("link") link: String, @Header("Cookie") cookie: String
-    ): ResponseBody
+    ): BasicResultData
 
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
@@ -140,6 +140,18 @@ interface ApiService {
         @Header("Cookie") cookie: String,
         @Query("k") keyword: String
     ): WxChapterList
+
+    // 积分排行榜
+    @GET("/coin/rank/{page}/json")
+    suspend fun fetchCoinRanks(@Path("page") page: Int): CoinRank
+
+    // 个人积分查询
+    @GET("/lg/coin/userinfo/json")
+    suspend fun fetchUserCoins(@Header("Cookie") cookie: String): UserCoins
+
+    // 个人积分获取记录
+    @GET("/lg/coin/list/{page}/json")
+    suspend fun fetchCoinsRecord(@Path("page") page: Int, @Header("Cookie") cookie: String): CoinRecord
 
     // ===============================>
     /**
