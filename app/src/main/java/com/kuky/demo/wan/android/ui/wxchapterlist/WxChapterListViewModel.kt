@@ -16,9 +16,9 @@ class WxChapterListViewModel(private val repository: WxChapterListRepository) : 
 
     var chapters: LiveData<PagedList<WxChapterListDatas>>? = null
 
-    fun fetchWxArticles(wxId: Int, handler: PagingThrowableHandler) {
+    fun fetchWxArticles(wxId: Int, keyword: String, handler: PagingThrowableHandler) {
         chapters = LivePagedListBuilder(
-            WxChapterListDataSourceFactory(repository, wxId, handler),
+            WxChapterListDataSourceFactory(repository, wxId, keyword, handler),
             PagedList.Config.Builder().setPageSize(20)
                 .setEnablePlaceholders(false)
                 .setInitialLoadSizeHint(20)

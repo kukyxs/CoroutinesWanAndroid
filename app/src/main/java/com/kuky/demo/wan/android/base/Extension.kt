@@ -1,7 +1,10 @@
 package com.kuky.demo.wan.android.base
 
+import android.content.Context
 import android.os.Build
 import android.text.Html
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,3 +71,13 @@ fun String.renderHtml(): String =
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
         Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
     else Html.fromHtml(this).toString()
+
+
+fun EditText.hideSoftInput() {
+    (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+        ?.hideSoftInputFromWindow(windowToken, 0)
+}
+
+fun EditText.clearText() {
+    setText("")
+}

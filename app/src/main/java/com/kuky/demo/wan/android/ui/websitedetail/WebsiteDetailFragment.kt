@@ -56,12 +56,12 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             it.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     view?.loadUrl(url)
-                    return true
+                    return false
                 }
 
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                     view?.loadUrl(request?.url.toString())
-                    return true
+                    return false
                 }
             }
 

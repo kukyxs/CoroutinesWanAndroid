@@ -37,6 +37,10 @@
             type="String" />
 
         <variable
+            name="searchMode"
+            type="Boolean" />
+
+        <variable
             name="errorStatus"
             type="Boolean" />
 
@@ -47,6 +51,14 @@
         <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="editAction"
+            type="android.widget.TextView.OnEditorActionListener" />
+
+        <variable
+            name="searchGesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
     <LinearLayout
@@ -56,18 +68,48 @@
 
         <include layout="@layout/include_status_bar" />
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="@{wxChapter}"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            bind:gesture="@{gesture}"
-            tools:text="鸿洋" />
+            android:background="@color/colorPrimary">
+
+            <TextView
+                android:id="@+id/wx_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@{wxChapter}"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="@{searchMode ? View.INVISIBLE : View.VISIBLE}"
+                bind:gesture="@{gesture}"
+                tools:text="鸿洋" />
+
+            <EditText
+                android:id="@+id/wx_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/search_bg"
+                android:drawableStart="@drawable/ic_search_grey_18dp"
+                android:drawablePadding="8dp"
+                android:ellipsize="start"
+                android:gravity="center_vertical"
+                android:hint="@string/search_hint"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="8dp"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:visibility="@{searchMode ? View.VISIBLE : View.INVISIBLE}"
+                bind:editAction="@{editAction}"
+                tools:ignore="Autofill,LabelFor" />
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -98,6 +140,18 @@
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_wx_chapter_list" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_search_white_24dp"
+                app:fabSize="mini"
+                bind:gesture="@{searchGesture}" />
 
             <com.kuky.demo.wan.android.ui.widget.StatusError
                 android:layout_width="match_parent"

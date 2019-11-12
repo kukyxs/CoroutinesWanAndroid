@@ -16,7 +16,7 @@ import com.kuky.demo.wan.android.databinding.DialogAboutUsBinding
  */
 class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
 
-    private var mAboutUsHandler: AboutUsHandler? = null
+    var aboutUsHandler: ((String) -> Unit)? = null
 
     override fun getLayoutId(): Int = R.layout.dialog_about_us
 
@@ -28,7 +28,7 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
                 .apply {
                     setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
-                            mAboutUsHandler?.invoke("https://github.com/kukyxs")
+                            aboutUsHandler?.invoke("https://github.com/kukyxs")
                             dialog?.dismiss()
                         }
                     }, 0, 6, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -39,21 +39,14 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
                 .apply {
                     setSpan(object : ClickableSpan() {
                         override fun onClick(widget: View) {
-                            mAboutUsHandler?.invoke("https://github.com/Taonce")
+                            aboutUsHandler?.invoke("https://github.com/Taonce")
                             dialog?.dismiss()
                         }
                     }, 0, 6, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 }
     }
 
-    fun setHandler(handler: AboutUsHandler?): AboutUsDialog {
-        this.mAboutUsHandler = handler
-        return this@AboutUsDialog
-    }
-
     fun ensure(view: View) {
         dialog?.dismiss()
     }
 }
-
-typealias AboutUsHandler = (String) -> Unit

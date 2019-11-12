@@ -17,20 +17,21 @@ import kotlinx.coroutines.*
  * @description
  */
 class WxChapterListRepository {
-    suspend fun loadPage(wxId: Int, page: Int): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.wxChapterList(wxId, page, PreferencesHelper.fetchCookie(WanApplication.instance)).data.datas
+    suspend fun loadPage(wxId: Int, page: Int, key: String): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.wxChapterList(wxId, page, PreferencesHelper.fetchCookie(WanApplication.instance), key).data.datas
     }
 }
 
 class WxChapterListDataSource(
     private val repository: WxChapterListRepository,
-    private val wxId: Int, private val handler: PagingThrowableHandler
+    private val wxId: Int, private val keyword: String,
+    private val handler: PagingThrowableHandler
 ) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
         }, {
-            val result = repository.loadPage(wxId, 0)
+            val result = repository.loadPage(wxId, 0, keyword)
             result?.let {
                 callback.onResult(it, null, 1)
             }
@@ -41,7 +42,7 @@ class WxChapterListDataSource(
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
         }, {
-            val result = repository.loadPage(wxId, params.key)
+            val result = repository.loadPage(wxId, params.key, keyword)
             result?.let {
                 callback.onResult(it, params.key + 1)
             }
@@ -52,7 +53,7 @@ class WxChapterListDataSource(
         safeLaunch({
             handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
         }, {
-            val result = repository.loadPage(wxId, params.key)
+            val result = repository.loadPage(wxId, params.key, keyword)
             result?.let {
                 callback.onResult(it, params.key - 1)
             }
@@ -67,10 +68,11 @@ class WxChapterListDataSource(
 
 class WxChapterListDataSourceFactory(
     private val repository: WxChapterListRepository,
-    private val wxId: Int, private val handler: PagingThrowableHandler
+    private val wxId: Int, private val keyword: String,
+    private val handler: PagingThrowableHandler
 ) : DataSource.Factory<Int, WxChapterListDatas>() {
 
-    override fun create(): DataSource<Int, WxChapterListDatas> = WxChapterListDataSource(repository, wxId, handler)
+    override fun create(): DataSource<Int, WxChapterListDatas> = WxChapterListDataSource(repository, wxId, keyword, handler)
 }
 
 class WxChapterListAdapter : BasePagedListAdapter<WxChapterListDatas, RecyclerWxChapterListBinding>(DIFF_CALLBACK) {

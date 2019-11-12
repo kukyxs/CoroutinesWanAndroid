@@ -28,7 +28,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
             .get(KnowledgeSystemViewModel::class.java)
     }
     private var mFirstData: SystemData? = null
-    var mOnClick: SystemClick? = null
+    var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
 
     override fun onStart() {
         super.onStart()
@@ -91,6 +91,3 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
         })
     }
 }
-
-typealias SystemClick = (KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit
-

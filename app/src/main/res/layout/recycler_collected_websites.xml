@@ -17,7 +17,7 @@
             android:id="@+id/website_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_keyboard_arrow_right_blue_grey_300_24dp"
+            android:drawableEnd="@drawable/ic_right_blue_grey_24dp"
             android:gravity="center_vertical"
             android:paddingStart="30dp"
             android:paddingTop="10dp"

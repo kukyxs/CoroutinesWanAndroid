@@ -154,13 +154,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private fun showAboutUs() {
-        AboutUsDialog().setHandler { url ->
-            WebsiteDetailFragment.viewDetail(
-                mNavController,
-                R.id.action_mainFragment_to_websiteDetailFragment,
-                url
-            )
-            mBinding.drawer.closeDrawer(GravityCompat.START)
+        AboutUsDialog().apply {
+            aboutUsHandler = { url ->
+                WebsiteDetailFragment.viewDetail(
+                    mNavController,
+                    R.id.action_mainFragment_to_websiteDetailFragment,
+                    url
+                )
+                mBinding.drawer.closeDrawer(GravityCompat.START)
+            }
         }.show(childFragmentManager, "about")
     }
 

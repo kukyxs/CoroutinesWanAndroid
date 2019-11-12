@@ -3,6 +3,10 @@ package com.kuky.demo.wan.android.ui.wxchapterlist
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -42,14 +46,38 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             })
     }
 
+    private var mSearchKeyword = ""
     private val mAdapter by lazy { WxChapterListAdapter() }
     private val mViewMode by lazy {
         ViewModelProvider(requireActivity(), WxChapterListModelFactory(WxChapterListRepository()))
             .get(WxChapterListViewModel::class.java)
     }
+
     private val mCollectionViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
             .get(CollectionViewModel::class.java)
+    }
+
+    private val searchIn: Animation by lazy {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_in).apply {
+            setAnimationListener(object : CustomAnimationAdapter() {
+                override fun onAnimationStart(animation: Animation?) {
+                    super.onAnimationStart(animation)
+                    mBinding.searchMode = true
+                }
+            })
+        }
+    }
+
+    private val searchOut: Animation by lazy {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_out).apply {
+            setAnimationListener(object : CustomAnimationAdapter() {
+                override fun onAnimationEnd(animation: Animation?) {
+                    super.onAnimationEnd(animation)
+                    mBinding.searchMode = false
+                }
+            })
+        }
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
@@ -61,11 +89,15 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchWxChapterList(id)
+            fetchWxChapterList(id, mSearchKeyword)
         }
 
         mBinding.adapter = mAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
+            if (mBinding.searchMode == true) {
+                mBinding.wxSearch.startAnimation(searchOut)
+            }
+
             mAdapter.getItemData(position)?.let {
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
@@ -75,6 +107,10 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             }
         }
         mBinding.longClickListener = OnItemLongClickListener { position, _ ->
+            if (mBinding.searchMode == true) {
+                mBinding.wxSearch.startAnimation(searchOut)
+            }
+
             mAdapter.getItemData(position)?.let { article ->
                 requireContext().alert(
                     if (article.collect) "「${article.title}」已收藏"
@@ -95,18 +131,37 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
 
         mBinding.errorReload = ErrorReload {
-            fetchWxChapterList(id)
+            fetchWxChapterList(id, mSearchKeyword)
         }
 
         mBinding.gesture = DoubleClickListener(null, {
             mBinding.chapterList.scrollToTop()
         })
 
+        mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                fetchWxChapterList(id, v.text.toString())
+                mBinding.wxChapter = v.text.toString()
+                mBinding.wxSearch.hideSoftInput()
+                mBinding.wxSearch.startAnimation(searchOut)
+            }
+            true
+        }
+
+        mBinding.searchGesture = DoubleClickListener({
+            if (mBinding.searchMode == false || mBinding.searchMode == null) {
+                mBinding.wxSearch.clearText()
+                mBinding.wxSearch.startAnimation(searchIn)
+            }
+        }, null)
+
         fetchWxChapterList(id)
     }
 
-    private fun fetchWxChapterList(id: Int?) {
-        mViewMode.fetchWxArticles(id ?: 0) { code, _ ->
+    private fun fetchWxChapterList(id: Int?, keyword: String = "") {
+        if (mSearchKeyword != keyword) mSearchKeyword = keyword
+
+        mViewMode.fetchWxArticles(id ?: 0, keyword) { code, _ ->
             when (code) {
                 PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
 
@@ -123,5 +178,11 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                 mBinding.refreshing = false
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchIn.cancel()
+        searchOut.cancel()
     }
 }

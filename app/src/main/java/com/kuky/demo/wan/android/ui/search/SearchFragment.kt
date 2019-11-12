@@ -1,10 +1,8 @@
 package com.kuky.demo.wan.android.ui.search
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -140,8 +138,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             }
         }
 
-        (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
-                as InputMethodManager).hideSoftInputFromWindow(mBinding.searchContent.windowToken, 0)
+        mBinding.searchContent.hideSoftInput()
 
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 

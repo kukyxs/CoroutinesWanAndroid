@@ -20,7 +20,6 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.utils.TextFormatUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -97,7 +96,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     mId = category.id
                     mTitle = category.name
                     fetchProjects(category.id, category.name)
-                    dialog.dismiss()
+                    dialog?.dismiss()
                 }
             }.show(childFragmentManager, "category")
         }, { mBinding.projectList.scrollToTop() })
@@ -142,7 +141,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     // 获取分类下列表
     private fun fetchProjects(id: Int, title: String) {
-        mBinding.projectType.text = TextFormatUtils.renderHtmlText(title)
+        mBinding.projectType.text = title.renderHtml()
         mViewModel.fetchDiffCategoryProjects(id) { code, _ ->
             errorOnCategories = false
             when (code) {
