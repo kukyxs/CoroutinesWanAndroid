@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.hideSoftInput
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
@@ -166,6 +167,8 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 mNavController.navigateUp()
             }, { message -> requireContext().toast(message) })
         }
+
+        mBinding.todoTitle.hideSoftInput()
     }
 
     fun deleteTodo(view: View) {

@@ -16,7 +16,7 @@ class WxChapterViewModel(private val repository: WxChapterRepository) : ViewMode
     val mData = MutableLiveData<MutableList<WxChapterData>?>()
 
     fun getWxChapter(handler: CoroutineThrowableHandler) =
-        viewModelScope.safeLaunch({ handler.invoke(it) }, {
+        viewModelScope.safeLaunch({
             mData.value = repository.getWxChapter()
-        })
+        }, { handler.invoke(it) })
 }

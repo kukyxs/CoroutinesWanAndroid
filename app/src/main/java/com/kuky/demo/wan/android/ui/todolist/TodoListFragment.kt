@@ -85,7 +85,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
         mBinding.todoAdapter = mTodoAdapter
         mBinding.todoLayoutManager = mTodoLayoutManager
-        mBinding.todoItemClick = OnItemClickListener { position, v ->
+        mBinding.todoItemClick = OnItemClickListener { position, _ ->
             mTodoAdapter.getItemData(position)?.let {
                 if (it.status == 1) {
                     requireContext().alert("当前 Todo 已完成，无法更新内容，请长按修改 Todo 状态后再进行更新") {

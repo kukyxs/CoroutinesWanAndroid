@@ -63,6 +63,14 @@
                 android:src="@drawable/ic_fresh"
                 android:visibility="@{detail.fresh ? View.VISIBLE : View.GONE}" />
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/author_time"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_rec"
+                android:visibility="@{detail.type != 1 &amp;&amp; !detail.fresh ? View.VISIBLE : View.GONE}" />
+
             <TextView
                 android:id="@+id/article_category"
                 android:layout_width="wrap_content"

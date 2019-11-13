@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
  */
 
 @Suppress("UNCHECKED_CAST")
-class WxChapterFactory(private val repository: WxChapterRepository) : ViewModelProvider.NewInstanceFactory() {
+class WxChapterModelFactory(private val repository: WxChapterRepository) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return WxChapterViewModel(repository) as T
     }

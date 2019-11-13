@@ -67,6 +67,19 @@ interface ApiService {
     @GET("/user/{id}/share_articles/{page}/json")
     suspend fun sharedUserInfo(@Path("id") user: Int, @Path("page") page: Int, @Header("Cookie") cookie: String): SharedUser
 
+    // 用户分享列表
+    @GET("/user/lg/private_articles/{page}/json")
+    suspend fun userShareList(@Path("page") page: Int, @Header("Cookie") cookie: String): SharedUser
+
+    // 删除分享
+    @POST("/lg/user_article/delete/{shared}/json")
+    suspend fun deleteAShare(@Path("shared") id: Int, @Header("Cookie") cookie: String): BasicResultData
+
+    // 添加分享
+    @POST("/lg/user_article/add/json")
+    @FormUrlEncoded
+    suspend fun putAShare(@Field("title") title: String, @Field("link") link: String, @Header("Cookie") cookie: String): BasicResultData
+
     // ================================>
     // 登录
     @POST("/user/login")
@@ -83,7 +96,7 @@ interface ApiService {
 
     // 退出
     @GET("/user/logout/json")
-    suspend fun loginout(): BasicResultData
+    suspend fun loginOut(): BasicResultData
 
     // ===============================>
     // 收藏文章列表

@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.WebsiteData
@@ -17,56 +16,48 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
 
     fun fetchWebSitesData(handler: CoroutineThrowableHandler? = null) {
         viewModelScope.safeLaunch({
-            handler?.invoke(it)
-        }, {
             mWebsitesData.value = repo.getCollectedWebsites()
-        })
+        }, { handler?.invoke(it) })
     }
 
     fun addWebsites(
         name: String?, link: String?,
-        success: () -> Unit, failed: (msg: String, isDismiss: Boolean) -> Unit
+        success: () -> Unit, fail: (msg: String, isDismiss: Boolean) -> Unit
     ) {
         if (name.isNullOrBlank() || link.isNullOrBlank()) {
-            failed("输入不可为空!", false)
+            fail("输入不可为空!", false)
         } else {
             viewModelScope.safeLaunch({
-                failed("网络出错啦~请检查网络", false)
-            }, {
-                val result = repo.addWebsite(name, link)
-
-                if (result.code == CODE_SUCCEED) success()
-                else failed(result.message, true)
-            })
+                repo.addWebsite(name, link).let {
+                    if (it.errorCode == 0) success()
+                    else fail(it.errorMsg, true)
+                }
+            }, { fail("网络出错啦~请检查网络", false) })
         }
     }
 
     fun editWebsite(
         id: Int, name: String, link: String,
-        success: () -> Unit, failed: (msg: String, isDismiss: Boolean) -> Unit
+        success: () -> Unit, fail: (msg: String, isDismiss: Boolean) -> Unit
     ) {
         if (name.isBlank() || link.isBlank()) {
-            failed("输入不可为空", false)
+            fail("输入不可为空", false)
         } else {
             viewModelScope.safeLaunch({
-                failed("网络出错啦~请检查网络", false)
-            }, {
-                val result = repo.editWebsite(id, name, link)
-
-                if (result.code == CODE_SUCCEED) success()
-                else failed(result.message, true)
-            })
+                repo.editWebsite(id, name, link).let {
+                    if (it.errorCode == 0) success()
+                    else fail(it.errorMsg, true)
+                }
+            }, { fail("网络出错啦~请检查网络", false) })
         }
     }
 
     fun deleteWebsite(id: Int, onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit) {
         viewModelScope.safeLaunch({
-            onFailed("网络出错啦~请检查网络")
-        }, {
             val result = repo.deleteWebsite(id)
             if (result.errorCode == 0) {
                 onSuccess()
             } else onFailed(result.errorMsg)
-        })
+        }, { onFailed("网络出错啦~请检查网络") })
     }
 }

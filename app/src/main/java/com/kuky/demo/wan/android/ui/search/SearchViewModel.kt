@@ -26,11 +26,9 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
     fun fetchKeys(handler: CoroutineThrowableHandler) {
         viewModelScope.safeLaunch({
-            handler.invoke(it)
-        }, {
-            hotKeys.value = repository.hotKeys().data
+            hotKeys.value = repository.hotKeys()
             history.value = SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance)
-        })
+        }, { handler.invoke(it) })
     }
 
     fun fetchResult(key: String, handler: PagingThrowableHandler) {

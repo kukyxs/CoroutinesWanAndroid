@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.todoedit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kuky.demo.wan.android.base.CODE_SUCCEED
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.utils.TimeUtils
 import java.util.*
@@ -37,31 +36,25 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
 
     fun addTodo(param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch({
-            fail("网络出错啦~请检查网络")
-        }, {
             repository.addTodo(param).let {
-                if (it.code == CODE_SUCCEED) success() else fail(it.message)
+                if (it.errorCode == 0) success() else fail(it.errorMsg)
             }
-        })
+        }, { fail("网络出错啦~请检查网络") })
     }
 
     fun updateTodo(id: Int, param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch({
-            fail("网络出错啦~请检查网络")
-        }, {
             repository.updateTodo(id, param).let {
-                if (it.code == CODE_SUCCEED) success() else fail(it.message)
+                if (it.errorCode == 0) success() else fail(it.errorMsg)
             }
-        })
+        }, { fail("网络出错啦~请检查网络") })
     }
 
     fun deleteTodo(id: Int, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch({
-            fail("网络出错啦~请检查网络")
-        }, {
             repository.deleteTodo(id).let {
-                if (it.code == CODE_SUCCEED) success() else fail(it.message)
+                if (it.errorCode == 0) success() else fail(it.errorMsg)
             }
-        })
+        }, { fail("网络出错啦~请检查网络") })
     }
 }

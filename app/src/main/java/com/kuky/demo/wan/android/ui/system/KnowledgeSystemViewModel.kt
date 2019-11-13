@@ -35,10 +35,8 @@ class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository
 
     fun fetchType(handler: CoroutineThrowableHandler) {
         viewModelScope.safeLaunch({
-            handler.invoke(it)
-        }, {
             mType.value = repository.loadSystemType()
-        })
+        }, { handler.invoke(it) })
     }
 
     fun fetchArticles(cid: Int, handler: PagingThrowableHandler) {

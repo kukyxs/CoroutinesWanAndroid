@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.websitedetail
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -7,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Property
 import android.view.View
 import android.webkit.*
 import androidx.annotation.IdRes
@@ -27,6 +29,20 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
     private val url: String by lazy {
         arguments?.getString("url") ?: ""
+    }
+
+    private val scrollProperty: Property<WebView, Int> by lazy {
+        object : Property<WebView, Int>(Int::class.java, "") {
+            override fun get(`object`: WebView?): Int = `object`?.scrollY ?: 0
+
+            override fun set(`object`: WebView?, value: Int?) {
+                `object`?.scrollTo(`object`.scrollX, value ?: 0)
+            }
+        }
+    }
+
+    private val scrollAnim: ObjectAnimator by lazy {
+        ObjectAnimator.ofInt(mBinding.content, scrollProperty, 0).setDuration(500)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_wesite_detail
@@ -111,6 +127,18 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
                 }
             }
         }, null)
+
+        mBinding.scrollGesture = DoubleClickListener(null, {
+            scrollAnim.start()
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (scrollAnim.isRunning) {
+            scrollAnim.cancel()
+        }
     }
 
     companion object {

@@ -18,7 +18,7 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, WxChapterFactory(WxChapterRepository()))
+        ViewModelProvider(this, WxChapterModelFactory(WxChapterRepository()))
             .get(WxChapterViewModel::class.java)
     }
     private val mAdapter by lazy { WxChapterAdapter(null) }

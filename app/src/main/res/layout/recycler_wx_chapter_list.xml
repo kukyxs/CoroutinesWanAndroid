@@ -59,6 +59,13 @@
                 android:text="@{data.niceDate}"
                 android:textSize="12sp"
                 tools:text="2019-06-06" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/chapter_article_time"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_rec" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </layout>

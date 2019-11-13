@@ -32,7 +32,7 @@ class SharedUserViewModel(private val repository: UserSharedRepository) : ViewMo
     }
 
     fun fetchUserInfo(userId: Int) {
-        viewModelScope.safeLaunch(null, {
+        viewModelScope.safeLaunch({
             userCoin.value = repository.fetchUserCoinInfo(userId)
         })
     }

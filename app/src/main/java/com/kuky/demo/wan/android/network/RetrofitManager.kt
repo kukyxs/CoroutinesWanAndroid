@@ -41,7 +41,7 @@ object RetrofitManager {
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient.Builder()
-            .connectTimeout(5000L, TimeUnit.MILLISECONDS)
+            .connectTimeout(5_000L, TimeUnit.MILLISECONDS)
             .readTimeout(10_000, TimeUnit.MILLISECONDS)
             .writeTimeout(30_000, TimeUnit.MILLISECONDS)
             .addInterceptor(httpLoggingInterceptor)

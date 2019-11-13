@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="itemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="itemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="errorStatus"
+            type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="shareGesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/include_status_bar" />
+
+        <TextView
+            android:id="@+id/wx_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/user_shares"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{errorStatus ? View.INVISIBLE : View.VISIBLE}"
+                bind:refreshColor="@{refreshColor}"
+                bind:refreshListener="@{refreshListener}"
+                bind:refreshState="@{refreshing}">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/article_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                    android:scrollbars="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    bind:adapter="@{adapter}"
+                    bind:hasFixedSize="@{true}"
+                    bind:pageItemClick="@{itemClick}"
+                    bind:pageItemLongClick="@{itemLongClick}"
+                    tools:itemCount="20"
+                    tools:listitem="@layout/recycler_user_article" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/ic_add_white_24dp"
+                app:fabSize="mini"
+                bind:gesture="@{shareGesture}" />
+
+            <com.kuky.demo.wan.android.ui.widget.StatusError
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                bind:reload="@{errorReload}" />
+        </FrameLayout>
+    </LinearLayout>
+</layout>

@@ -22,8 +22,7 @@ import kotlinx.coroutines.*
 class CollectedArticlesRepository {
     private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
 
-
-    suspend fun getCollectedArticleDatas(page: Int): List<UserCollectDetail>? = withContext(Dispatchers.IO) {
+    suspend fun getCollectedArticleList(page: Int): List<UserCollectDetail>? = withContext(Dispatchers.IO) {
         RetrofitManager.apiService.userCollectedArticles(page, getCookie()).data.datas
     }
 
@@ -38,32 +37,26 @@ class CollectedArticlesDataSources(
 ) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by MainScope() {
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserCollectDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
-        }, {
-            repo.getCollectedArticleDatas(0)?.let {
+            repo.getCollectedArticleList(0)?.let {
                 callback.onResult(it, null, 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
-        }, {
-            repo.getCollectedArticleDatas(params.key)?.let {
+            repo.getCollectedArticleList(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
-        }, {
-            repo.getCollectedArticleDatas(params.key)?.let {
+            repo.getCollectedArticleList(params.key)?.let {
                 callback.onResult(it, params.key - 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
     }
 
     override fun invalidate() {

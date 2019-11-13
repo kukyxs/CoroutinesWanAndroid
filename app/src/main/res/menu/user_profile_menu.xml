@@ -11,8 +11,19 @@
                 android:title="@string/collected_articles" />
             <item
                 android:id="@+id/favourite_website"
-                android:icon="@drawable/ic_favorite_outline_24dp"
+                android:icon="@drawable/ic_web_black_24dp"
                 android:title="@string/collected_websites" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/share"
+        android:title="@string/share">
+        <menu>
+            <item
+                android:id="@+id/share_list"
+                android:icon="@drawable/ic_share_24dp"
+                android:title="@string/user_shares" />
         </menu>
     </item>
 
@@ -38,7 +49,7 @@
 
             <item
                 android:id="@+id/helper"
-                android:icon="@drawable/ic_info_outline_24dp"
+                android:icon="@drawable/ic_data_usage_black_24dp"
                 android:title="@string/statement" />
         </menu>
     </item>

@@ -33,7 +33,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchCollectedArticleDatas()
+            fetchCollectedArticleList()
         }
 
         mBinding.adapter = mAdapter
@@ -59,15 +59,15 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             true
         }
 
-        mBinding.errorReload = ErrorReload { fetchCollectedArticleDatas() }
+        mBinding.errorReload = ErrorReload { fetchCollectedArticleList() }
 
-        fetchCollectedArticleDatas()
+        fetchCollectedArticleList()
     }
 
     fun scrollToTop() = mBinding.collectedArticleList.scrollToTop()
 
-    private fun fetchCollectedArticleDatas() {
-        mViewModel.fetchCollectedArticleDatas { code, _ ->
+    private fun fetchCollectedArticleList() {
+        mViewModel.fetchCollectedArticleList { code, _ ->
             when (code) {
                 PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
 

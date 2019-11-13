@@ -43,8 +43,6 @@ class HomeArticleDataSource(
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
-        }, {
             val result = ArrayList<ArticleDetail>()
             val tops = repository.loadTops()
             val data = repository.loadPageData(0)
@@ -53,29 +51,25 @@ class HomeArticleDataSource(
             result.addAll(data ?: arrayListOf())
 
             callback.onResult(result, null, 1)
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
-        }, {
             val data = repository.loadPageData(params.key)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
-        }, {
             val data = repository.loadPageData(params.key)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
     }
 
     override fun invalidate() {

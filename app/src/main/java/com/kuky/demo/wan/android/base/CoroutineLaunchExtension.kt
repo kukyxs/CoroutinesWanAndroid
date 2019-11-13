@@ -15,12 +15,12 @@ private fun coroutineExceptionHandler(
 }
 
 private fun coroutineExceptionContext(
-    throwableHandler: CoroutineThrowableHandler? = null
+    throwableHandler: CoroutineThrowableHandler = DEFAULT_HANDLER
 ): CoroutineContext = coroutineExceptionHandler(throwableHandler) + GlobalScope.coroutineContext
 
 fun CoroutineScope.safeLaunch(
-    throwableHandler: CoroutineThrowableHandler? = null,
-    block: suspend () -> Unit
+    block: suspend () -> Unit,
+    throwableHandler: CoroutineThrowableHandler = DEFAULT_HANDLER
 ): Job = launch(coroutineExceptionContext(throwableHandler)) {
     block()
 }

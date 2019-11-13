@@ -28,10 +28,8 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
 
     fun fetchCategories(handler: CoroutineThrowableHandler) {
         viewModelScope.safeLaunch({
-            handler.invoke(it)
-        }, {
             categories.value = repository.loadProjectCategories()
-        })
+        }, { handler.invoke(it) })
     }
 
     fun fetchDiffCategoryProjects(pid: Int, handler: PagingThrowableHandler) {

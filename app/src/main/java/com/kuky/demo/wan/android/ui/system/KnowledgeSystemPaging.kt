@@ -38,35 +38,29 @@ class KnowledgeSystemDataSource(
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
-        }, {
             val data = repository.loadArticle4System(0, cid)
             data?.let {
                 callback.onResult(it, null, 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
-        }, {
             val data = repository.loadArticle4System(params.key, cid)
             data?.let {
                 callback.onResult(it, params.key + 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
-        }, {
             val data = repository.loadArticle4System(params.key, cid)
             data?.let {
                 callback.onResult(it, params.key - 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
     }
 
     override fun invalidate() {

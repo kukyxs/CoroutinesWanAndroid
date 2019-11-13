@@ -18,8 +18,6 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author kuky.
@@ -33,15 +31,7 @@ class TodoRepository {
     }
 
     suspend fun updateTodoState(id: Int, state: Int) = withContext(Dispatchers.IO) {
-        val result = RetrofitManager.apiService.updateTodoState(
-            id, state,
-            PreferencesHelper.fetchCookie(WanApplication.instance)
-        )
-
-        suspendCoroutine<ResultBack> { continuation ->
-            if (result.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
-            else continuation.resume(ResultBack(CODE_FAILED, result.errorMsg))
-        }
+        RetrofitManager.apiService.updateTodoState(id, state, PreferencesHelper.fetchCookie(WanApplication.instance))
     }
 }
 
@@ -53,33 +43,27 @@ class TodoDataSource(
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
-        }, {
             val result = repository.fetchTodoList(1, param)
             result?.let {
                 callback.onResult(it, null, 2)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
-        }, {
             repository.fetchTodoList(params.key, param)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
-        }, {
             repository.fetchTodoList(params.key, param)?.let {
                 callback.onResult(it, params.key - 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
     }
 
     override fun invalidate() {

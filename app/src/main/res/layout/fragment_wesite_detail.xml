@@ -13,6 +13,10 @@
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
 
+        <variable
+            name="scrollGesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +37,8 @@
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            bind:gesture="@{scrollGesture}" />
 
         <ImageView
             android:id="@+id/share_link"

@@ -4,15 +4,14 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
+import com.kuky.demo.wan.android.base.BaseViewHolder
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author Taonce.
@@ -25,24 +24,12 @@ class CollectedWebsitesRepository {
         RetrofitManager.apiService.collectWebsiteList(getCookie()).data
     }
 
-    suspend fun addWebsite(name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
-        val response = RetrofitManager.apiService.addWebsite(name, link, getCookie())
-        suspendCoroutine<ResultBack> { con ->
-            response.let {
-                if (response.errorCode == 0) con.resume(ResultBack(CODE_SUCCEED, ""))
-                else con.resume(ResultBack(CODE_FAILED, response.errorMsg))
-            }
-        }
+    suspend fun addWebsite(name: String, link: String) = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.addWebsite(name, link, getCookie())
     }
 
-    suspend fun editWebsite(id: Int, name: String, link: String): ResultBack = withContext(Dispatchers.IO) {
-        val response = RetrofitManager.apiService.editWebsite(id, name, link, PreferencesHelper.fetchCookie(WanApplication.instance))
-        suspendCoroutine<ResultBack> { continuation ->
-            response.let {
-                if (response.errorCode == 0) continuation.resume(ResultBack(CODE_SUCCEED, ""))
-                else continuation.resume(ResultBack(CODE_FAILED, response.errorMsg))
-            }
-        }
+    suspend fun editWebsite(id: Int, name: String, link: String) = withContext(Dispatchers.IO) {
+        RetrofitManager.apiService.editWebsite(id, name, link, PreferencesHelper.fetchCookie(WanApplication.instance))
     }
 
     suspend fun deleteWebsite(id: Int) = withContext(Dispatchers.IO) {

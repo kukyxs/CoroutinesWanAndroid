@@ -39,32 +39,26 @@ class UserSharedDataSource(
 ) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by MainScope() {
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it)
-        }, {
             repository.fetchUserSharedArticles(userId, 1)?.let {
                 callback.onResult(it, null, 2)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it)
-        }, {
             repository.fetchUserSharedArticles(userId, params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
         safeLaunch({
-            handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it)
-        }, {
             repository.fetchUserSharedArticles(userId, params.key)?.let {
                 callback.onResult(it, params.key - 1)
             }
-        })
+        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
     }
 }
 

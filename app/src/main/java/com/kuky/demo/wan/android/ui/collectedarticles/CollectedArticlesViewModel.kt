@@ -19,7 +19,7 @@ import com.kuky.demo.wan.android.entity.UserCollectDetail
 class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) : ViewModel() {
     var mArticles: LiveData<PagedList<UserCollectDetail>>? = null
 
-    fun fetchCollectedArticleDatas(handler: PagingThrowableHandler) {
+    fun fetchCollectedArticleList(handler: PagingThrowableHandler) {
         mArticles = LivePagedListBuilder(
             CollectedArticlesDataSourceFactory(repo, handler),
             PagedList.Config.Builder()
@@ -31,12 +31,10 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
     }
 
     fun deleteCollectedArticle(
-        articleId: Int,
-        originId: Int,
-        onSuccess: () -> Unit,
-        onFailed: (errorMsg: String) -> Unit
+        articleId: Int, originId: Int,
+        onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit
     ) {
-        viewModelScope.safeLaunch {
+        viewModelScope.safeLaunch({
             val result = repo.deleteCollectedArticle(articleId, originId)
             if (result.errorCode == 0) {
                 // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
@@ -45,7 +43,7 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
             } else {
                 onFailed(result.errorMsg)
             }
-        }
+        }, { onFailed("网络出错啦~请检查网络") })
     }
 }
 

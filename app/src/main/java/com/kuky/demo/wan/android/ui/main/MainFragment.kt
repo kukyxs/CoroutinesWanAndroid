@@ -99,6 +99,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             menus.findItem(R.id.user_collections).isVisible = it
             menus.findItem(R.id.login_out).isVisible = it
             menus.findItem(R.id.todo_group).isVisible = it
+            menus.findItem(R.id.share).isVisible = it
 
             headerBinding.userCoins.isVisible = it
             headerBinding.name =
@@ -146,12 +147,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private fun handleUserProfile() {
-        // TODO("由于 NavigationView menu.xml 不支持 dataBinding 绑定，目前未想到更好办法进行处理")
         mBinding.userProfileDrawer.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> toFavourite(0)
 
                 R.id.favourite_website -> toFavourite(1)
+
+                R.id.share_list -> toShare()
 
                 R.id.todo_list -> launchTodoList()
 
@@ -172,7 +174,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 R.id.login_out -> requireContext()
                     .alert("是否退出登录") {
                         yesButton {
-                            mViewModel.loginout { requireContext().toast(it) }
+                            mViewModel.loginOut { requireContext().toast(it) }
                         }
                         noButton { }
                     }.show()
@@ -187,6 +189,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             R.id.action_mainFragment_to_collectionFragment,
             position
         )
+        mBinding.drawer.closeDrawer(GravityCompat.START)
+    }
+
+    private fun toShare() {
+        mNavController.navigate(R.id.action_mainFragment_to_userShareListFragment)
         mBinding.drawer.closeDrawer(GravityCompat.START)
     }
 
