@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="article"
+            type="com.kuky.demo.wan.android.entity.UserArticleDetail" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/article_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:minLines="2"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                bind:renderHtml="@{article.title}"
+                tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
+
+            <TextView
+                android:id="@+id/share_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/article_title"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="6dp"
+                android:clickable="true"
+                android:ellipsize="end"
+                android:focusable="true"
+                android:singleLine="true"
+                android:text="@{article.shareUser}"
+                android:textColor="@color/colorAccent"
+                android:textSize="12sp"
+                tools:text="kk" />
+
+            <TextView
+                android:id="@+id/share_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/share_user"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="2dp"
+                android:singleLine="true"
+                android:text="@{article.niceShareDate}"
+                android:textSize="12sp"
+                tools:text="一天前" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/share_time"
+                android:contentDescription="@null"
+                android:src="@{article.fresh ? @drawable/ic_fresh : @drawable/ic_rec}" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

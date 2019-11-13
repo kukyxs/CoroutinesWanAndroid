@@ -9,4 +9,5 @@
     <color name="half_black">#77000000</color>
     <color name="label_color">#33BBBBBB</color>
     <color name="coin_color">#FFFFA726</color>
+    <color name="half_accent">#AAD81B60</color>
 </resources>

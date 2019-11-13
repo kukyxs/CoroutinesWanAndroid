@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="avatarKey"
+            type="String" />
+
+        <variable
+            name="nick"
+            type="String" />
+
+        <variable
+            name="shared"
+            type="android.text.SpannableStringBuilder" />
+
+        <variable
+            name="coin"
+            type="android.text.SpannableStringBuilder" />
+
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="itemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="itemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="errorStatus"
+            type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/include_status_bar" />
+
+        <TextView
+            android:id="@+id/user_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/barHeight"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/shared_user"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:gesture="@{gesture}"
+            tools:text="分享用户" />
+
+        <TextView
+            android:id="@+id/user_avatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/user_avatar"
+            android:gravity="center"
+            android:text="@{avatarKey}"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_title"
+            tools:text="K" />
+
+        <TextView
+            android:id="@+id/user_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:text="@{nick}"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/user_avatar"
+            app:layout_constraintTop_toTopOf="@id/user_avatar"
+            tools:text="K**k" />
+
+        <TextView
+            android:id="@+id/share_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{shared}"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/user_nick"
+            app:layout_constraintTop_toBottomOf="@id/user_nick"
+            tools:text="共分享了 138 篇" />
+
+        <TextView
+            android:id="@+id/coin_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{coin}"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/user_nick"
+            app:layout_constraintTop_toBottomOf="@id/share_count"
+            tools:text="12345 / lv11 / R1" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:visibility="@{errorStatus ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_avatar"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/article_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                bind:adapter="@{adapter}"
+                bind:hasFixedSize="@{true}"
+                bind:pageItemClick="@{itemClick}"
+                bind:pageItemLongClick="@{itemLongClick}"
+                tools:itemCount="20"
+                tools:listitem="@layout/recycler_user_article" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.kuky.demo.wan.android.ui.widget.StatusError
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_avatar"
+            bind:reload="@{errorReload}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

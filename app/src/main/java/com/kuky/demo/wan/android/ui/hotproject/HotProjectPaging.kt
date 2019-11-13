@@ -98,6 +98,7 @@ class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeP
         position: Int, holder: BaseViewHolder<RecyclerHomeProjectBinding>
     ) {
         holder.binding.project = data
+        holder.binding.title = data.title.renderHtml()
     }
 
     companion object {

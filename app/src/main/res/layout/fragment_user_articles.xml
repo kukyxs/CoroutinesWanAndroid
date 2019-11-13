@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="indicator"
+            type="String" />
+
+        <variable
+            name="adapter"
+            type="androidx.paging.PagedListAdapter" />
+
+        <variable
+            name="itemClick"
+            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+
+        <variable
+            name="itemLongClick"
+            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+
+        <variable
+            name="refreshColor"
+            type="Integer" />
+
+        <variable
+            name="refreshing"
+            type="Boolean" />
+
+        <variable
+            name="errorStatus"
+            type="Boolean" />
+
+        <variable
+            name="errorReload"
+            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+
+        <variable
+            name="gesture"
+            type="com.kuky.demo.wan.android.base.DoubleClickListener" />
+
+        <variable
+            name="refreshListener"
+            type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/page_out_background">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/article_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/home_title_bg"
+                    android:drawablePadding="4dp"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:singleLine="true"
+                    android:text="@{indicator}"
+                    android:textColor="@color/colorAccent"
+                    bind:gesture="@{gesture}" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/article_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                    android:scrollbars="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    bind:adapter="@{adapter}"
+                    bind:hasFixedSize="@{true}"
+                    bind:pageItemClick="@{itemClick}"
+                    bind:pageItemLongClick="@{itemLongClick}"
+                    tools:itemCount="20"
+                    tools:listitem="@layout/recycler_user_article" />
+            </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.kuky.demo.wan.android.ui.widget.StatusError
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+            bind:reload="@{errorReload}" />
+    </FrameLayout>
+</layout>

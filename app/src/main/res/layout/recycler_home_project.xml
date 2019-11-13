@@ -9,6 +9,10 @@
         <variable
             name="project"
             type="com.kuky.demo.wan.android.entity.ProjectDetailData" />
+
+        <variable
+            name="title"
+            type="String" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -46,7 +50,7 @@
                 android:layout_toStartOf="@id/env_image"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:text="@{project.title}"
+                android:text="@{title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"

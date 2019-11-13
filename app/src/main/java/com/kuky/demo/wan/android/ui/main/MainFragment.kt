@@ -24,6 +24,7 @@ import com.kuky.demo.wan.android.ui.dialog.WxDialog
 import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
+import com.kuky.demo.wan.android.ui.userarticles.UserArticleFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
@@ -47,6 +48,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 HomeArticleFragment(),
                 HotProjectFragment(),
                 KnowledgeSystemFragment(),
+                UserArticleFragment(),
                 WxChapterFragment()
             )
         )

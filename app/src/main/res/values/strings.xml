@@ -44,4 +44,6 @@
     <string name="share_links">分享链接</string>
     <string name="del_website">删除网址</string>
     <string name="edit_website">编辑网址</string>
+    <string name="share_articles">分享广场</string>
+    <string name="shared_user">用户信息</string>
 </resources>

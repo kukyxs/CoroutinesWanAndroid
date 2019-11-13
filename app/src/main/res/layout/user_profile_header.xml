@@ -22,11 +22,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/label_color"
         android:paddingStart="12dp"
         android:paddingTop="50dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="4dp">
+        android:paddingEnd="20dp">
 
         <ImageView
             android:id="@+id/avatar"
@@ -44,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:visibility="gone"
             android:text="@string/description"
             app:layout_constraintTop_toBottomOf="@id/avatar" />
 

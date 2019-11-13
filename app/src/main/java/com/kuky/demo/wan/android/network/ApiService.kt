@@ -59,6 +59,14 @@ interface ApiService {
     @GET("/project/list/{page}/json")
     suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): ProjectDetailEntity
 
+    // 广场分享文章列表
+    @GET("/user_article/list/{page}/json")
+    suspend fun shareArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): UserArticle
+
+    // 分享用户信息
+    @GET("/user/{id}/share_articles/{page}/json")
+    suspend fun sharedUserInfo(@Path("id") user: Int, @Path("page") page: Int, @Header("Cookie") cookie: String): SharedUser
+
     // ================================>
     // 登录
     @POST("/user/login")
