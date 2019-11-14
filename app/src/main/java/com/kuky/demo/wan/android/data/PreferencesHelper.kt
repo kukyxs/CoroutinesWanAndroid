@@ -8,10 +8,17 @@ import com.kuky.demo.wan.android.utils.SharePreferencesUtils
  * @description
  */
 object PreferencesHelper {
+    private const val STATE_KEY_FIRST_INT = "wan.state.first.in"
     private const val USER_KEY_ID = "wan.user.id"
     private const val USER_KEY_NAME = "wan.user.name"
     private const val USER_KEY_COOKIE = "wan.user.cookie"
     private const val CACHE_KEY_BANNER = "wan.cache.banner"
+
+    fun saveFirstState(context: Context, isFirst: Boolean) =
+        SharePreferencesUtils.saveBoolean(context, STATE_KEY_FIRST_INT, isFirst)
+
+    fun isFirstIn(context: Context) =
+        SharePreferencesUtils.getBoolean(context, STATE_KEY_FIRST_INT, true)
 
     fun saveUserId(context: Context, id: Int) =
         SharePreferencesUtils.saveInteger(context, USER_KEY_ID, id)

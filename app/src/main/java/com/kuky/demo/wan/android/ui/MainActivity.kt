@@ -8,8 +8,12 @@ import android.net.NetworkRequest
 import android.os.Bundle
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
+import com.kuky.demo.wan.android.utils.ApplicationUtils
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.yesButton
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
     private var availableCount = 0
@@ -42,6 +46,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun initActivity(savedInstanceState: Bundle?) {
         manager.registerNetworkCallback(request, netStateCallback)
+
+        if (PreferencesHelper.isFirstIn(this)) {
+            alert(
+                String.format(
+                    resources.getString(R.string.operate_helper),
+                    ApplicationUtils.getAppVersionName(this)
+                ), resources.getString(R.string.operate_title)
+            ) {
+                isCancelable = false
+                yesButton { PreferencesHelper.saveFirstState(this@MainActivity, false) }
+            }.show()
+        }
     }
 
     override fun onDestroy() {

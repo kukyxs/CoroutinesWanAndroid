@@ -105,8 +105,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             headerBinding.userCoins.isVisible = it
             headerBinding.loginState = it
             headerBinding.name = if (it) PreferencesHelper.fetchUserName(requireContext()) else requireContext().getString(R.string.click_to_login)
-            headerBinding.avatarKey =
-                PreferencesHelper.fetchUserName(requireContext()).toCharArray()[0].toString().toUpperCase(Locale.getDefault())
+            headerBinding.avatarKey = PreferencesHelper.fetchUserName(requireContext()).run {
+                if (isNullOrBlank()) "A" else toCharArray()[0].toString().toUpperCase(Locale.getDefault())
+            }
 
             if (it) mViewModel.getCoins()
         })
@@ -168,9 +169,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         String.format(
                             resources.getString(R.string.operate_helper),
                             ApplicationUtils.getAppVersionName(requireContext())
-                        )
+                        ), resources.getString(R.string.operate_title)
                     ) {
-                        yesButton { dialog -> dialog.dismiss() }
+                        yesButton { PreferencesHelper.saveFirstState(requireContext(), false) }
                     }.show()
 
                 R.id.login_out -> requireContext()
