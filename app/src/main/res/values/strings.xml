@@ -1,54 +1,70 @@
 <resources>
     <string name="app_name">玩Android</string>
+
     <string name="collection">收藏</string>
     <string name="collections">我的收藏</string>
     <string name="collected_articles">文章收藏</string>
     <string name="collected_websites">网址收藏</string>
+    <string name="del_website">删除网址</string>
+    <string name="edit_website">编辑网址</string>
+    <string name="collected_website_name">请输入网址名称</string>
+    <string name="collected_website_link">请输入网址链接</string>
+
     <string name="share">分享</string>
     <string name="user_shares">我的分享</string>
     <string name="share_art">文章分享</string>
     <string name="shared_art_title">分享文章标题</string>
     <string name="shared_art_link">分享文章链接</string>
+
     <string name="coins">积分</string>
     <string name="coin_record">积分记录</string>
     <string name="coin_rank">积分排行</string>
+
     <string name="info_about">关于</string>
     <string name="about_us">关于我们</string>
     <string name="statement">一些说明</string>
+
+    <string name="long_save">长按保存并关注</string>
+    <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
+
     <string name="todo_title">TODO</string>
     <string name="todo_list">我的待办</string>
+    <string name="todo_title_hint">在这输入标题</string>
+    <string name="todo_description_hint">在这输入详情</string>
+
     <string name="star">支持一下</string>
+    <string name="operate_helper">当前版本：%s\n\n如何收藏文章和项目：<b>长按</b>当前文章或者项目进行收藏\n\n如何取消收藏：在<b>「我的收藏」</b>里，可以通过<b>长按</b>文章或者网址进行取消收藏\n\n如何更新待办状态：在<b>「我的待办」</b>里，<b>长按</b>待办项目，可以进行快速完成/取消完成待办\n\n如何筛选待办：将待办列表<b>底部区域上拉</b>，即可出现待办筛选条件，点击即可筛选\n\n<b>双击列表顶部快速回顶部</b>\n\n<b>如果有问题请提 issue</b></string>
+
     <string name="login_out">退出登录</string>
-    <string name="search_hint">输入搜索关键词</string>
-    <string name="hot_search_keys">热门搜索</string>
-    <string name="history_search_keys">历史搜索</string>
     <string name="click_to_login">点此登录</string>
     <string name="username_hint">输入用户名</string>
     <string name="password_hint">输入密码</string>
     <string name="repass_hint">再次输入密码</string>
     <string name="login_text">登录</string>
     <string name="register_text">注册</string>
+
+    <string name="search_hint">输入搜索关键词</string>
+    <string name="hot_search_keys">热门搜索</string>
+    <string name="history_search_keys">历史搜索</string>
+
     <string name="blog_articles">最新博文</string>
     <string name="wx_chapter">公众号</string>
-    <string name="collected_website_name">请输入网址名称</string>
-    <string name="collected_website_link">请输入网址链接</string>
-    <string name="cancel">取消</string>
-    <string name="ensure">确定</string>
-    <string name="long_save">长按保存并关注</string>
-    <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
-    <string name="delete">删除</string>
-    <string name="todo_title_hint">在这输入标题</string>
-    <string name="todo_description_hint">在这输入详情</string>
+    <string name="share_articles">分享广场</string>
+    <string name="shared_user">用户详情</string>
+
     <string name="article_detail">文章详情</string>
-    <string name="operate_helper">当前版本：%s\n\n如何收藏文章和项目：<b>长按</b>当前文章或者项目进行收藏\n\n如何取消收藏：在<b>「我的收藏」</b>里，可以通过<b>长按</b>文章或者网址进行取消收藏\n\n如何更新待办状态：在<b>「我的待办」</b>里，<b>长按</b>待办项目，可以进行快速完成/取消完成待办\n\n如何筛选待办：将待办列表<b>底部区域上拉</b>，即可出现待办筛选条件，点击即可筛选\n\n<b>双击列表顶部快速回顶部</b>\n\n<b>如果有问题请提 issue</b></string>
-    <string name="reload_data">加载出错啦~点击重新加载</string>
-    <string name="text_place_holder">--</string>
-    <string name="net_disconnected">当前网络连接不可用</string>
     <string name="copy_link">复制链接</string>
     <string name="open_in_browser">浏览器打开</string>
     <string name="share_links">分享链接</string>
-    <string name="del_website">删除网址</string>
-    <string name="edit_website">编辑网址</string>
-    <string name="share_articles">分享广场</string>
-    <string name="shared_user">用户信息</string>
+
+    <string name="cancel">取消</string>
+    <string name="ensure">确定</string>
+    <string name="delete">删除</string>
+
+    <string name="text_place_holder">--</string>
+    <string name="net_disconnected">当前网络连接不可用</string>
+    <string name="empty_data">未查找到任何数据~</string>
+    <string name="loading_data">正在努力加载数据中..</string>
+    <string name="reload_data">加载出错啦~点击重新加载</string>
+    <string name="no_net_on_loading">无法加载更多~请检查您的网络~</string>
 </resources>

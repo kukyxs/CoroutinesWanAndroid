@@ -49,6 +49,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private var errorOnCategories = false
+    private var isFirstObserver = true
 
     private val mAdapter: HomeProjectAdapter by lazy { HomeProjectAdapter() }
 
@@ -108,17 +109,13 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         fetchCategories()
 
-        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
-            list[0].let {
-                // 保存当前选项，用于刷新
-                mId = it.id
-                mTitle = it.name
-                fetchProjects(it.id, it.name)
-            }
-        })
-
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (isFirstObserver) {
+                isFirstObserver = false
+                return@Observer
+            }
+
             if (!it) {
                 mViewModel.projects?.value?.forEach { arc ->
                     arc.collect = false
@@ -131,30 +128,60 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     // 获取分类信息
     private fun fetchCategories() {
-        mViewModel.fetchCategories {
-            errorOnCategories = true
-            mBinding.errorStatus = true
-            mBinding.projectType.text = resources.getString(R.string.text_place_holder)
-        }
+        mViewModel.fetchCategories()
+
+        mViewModel.typeNetState.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING, State.SUCCESS -> injectStates(refreshing = true, loading = true)
+
+                State.FAILED -> {
+                    errorOnCategories = true
+                    mBinding.projectType.text = resources.getString(R.string.text_place_holder)
+                    injectStates(error = true)
+                }
+            }
+        })
+
+        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
+            list[0].let {
+                mId = it.id
+                mTitle = it.name
+                fetchProjects(it.id, it.name, false)
+            }
+        })
     }
 
 
     // 获取分类下列表
-    private fun fetchProjects(id: Int, title: String) {
+    private fun fetchProjects(id: Int, title: String, isRefresh: Boolean = true) {
         mBinding.projectType.text = title.renderHtml()
-        mViewModel.fetchDiffCategoryProjects(id) { code, _ ->
-            errorOnCategories = false
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
-            }
+
+        mViewModel.fetchDiffCategoryProjects(id) {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    errorOnCategories = false
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
         mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
             mAdapter.submitList(it)
-            delayLaunch(1000) { mBinding.refreshing = false }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

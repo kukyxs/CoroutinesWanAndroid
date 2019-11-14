@@ -4,6 +4,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -33,15 +34,18 @@ class CoinRepository {
 }
 
 class CoinRecordDataSource(
-    private val repository: CoinRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: CoinRepository
 ) : PageKeyedDataSource<Int, CoinRecordDetail>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
+
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRecordDetail>) {
         safeLaunch({
+            initState.postValue(NetworkState.LOADING)
             repository.getCoinRecord(1)?.let {
                 callback.onResult(it, null, 2)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRecordDetail>) {
@@ -49,16 +53,10 @@ class CoinRecordDataSource(
             repository.getCoinRecord(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRecordDetail>) {
-        safeLaunch({
-            repository.getCoinRecord(params.key)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRecordDetail>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -67,10 +65,14 @@ class CoinRecordDataSource(
 }
 
 class CoinRecordDataSourceFactory(
-    private val repository: CoinRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: CoinRepository
 ) : DataSource.Factory<Int, CoinRecordDetail>() {
-    override fun create(): DataSource<Int, CoinRecordDetail> = CoinRecordDataSource(repository, handler)
+    val sourceLiveData = MutableLiveData<CoinRecordDataSource>()
+
+    override fun create(): DataSource<Int, CoinRecordDetail> =
+        CoinRecordDataSource(repository).apply {
+            sourceLiveData.postValue(this)
+        }
 }
 
 class CoinRecordAdapter : BasePagedListAdapter<CoinRecordDetail, RecyclerCoinRecordBinding>(DIFF_CALLBACK) {
@@ -93,15 +95,18 @@ class CoinRecordAdapter : BasePagedListAdapter<CoinRecordDetail, RecyclerCoinRec
 }
 
 class CoinRankDataSource(
-    private val repository: CoinRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: CoinRepository
 ) : PageKeyedDataSource<Int, CoinRankDetail>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
+
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRankDetail>) {
         safeLaunch({
+            initState.postValue(NetworkState.LOADING)
             repository.getCoinRanks(1)?.let {
                 callback.onResult(it, null, 2)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRankDetail>) {
@@ -109,16 +114,10 @@ class CoinRankDataSource(
             repository.getCoinRanks(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRankDetail>) {
-        safeLaunch({
-            repository.getCoinRanks(params.key)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRankDetail>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -127,10 +126,14 @@ class CoinRankDataSource(
 }
 
 class CoinRankDataSourceFactory(
-    private val repository: CoinRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: CoinRepository
 ) : DataSource.Factory<Int, CoinRankDetail>() {
-    override fun create(): DataSource<Int, CoinRankDetail> = CoinRankDataSource(repository, handler)
+    val sourceLiveData = MutableLiveData<CoinRankDataSource>()
+
+    override fun create(): DataSource<Int, CoinRankDetail> =
+        CoinRankDataSource(repository).apply {
+            sourceLiveData.postValue(this)
+        }
 }
 
 class CoinRankAdapter : BasePagedListAdapter<CoinRankDetail, RecyclerCoinRankBinding>(DIFF_CALLBACK) {

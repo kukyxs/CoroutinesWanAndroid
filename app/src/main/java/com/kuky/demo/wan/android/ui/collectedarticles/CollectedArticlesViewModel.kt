@@ -1,11 +1,12 @@
 package com.kuky.demo.wan.android.ui.collectedarticles
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.UserCollectDetail
 
@@ -17,17 +18,21 @@ import com.kuky.demo.wan.android.entity.UserCollectDetail
  * Desc:
  */
 class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) : ViewModel() {
+    var netState: LiveData<NetworkState>? = null
     var mArticles: LiveData<PagedList<UserCollectDetail>>? = null
 
-    fun fetchCollectedArticleList(handler: PagingThrowableHandler) {
+    fun fetchCollectedArticleList(empty: () -> Unit) {
         mArticles = LivePagedListBuilder(
-            CollectedArticlesDataSourceFactory(repo, handler),
-            PagedList.Config.Builder()
+            CollectedArticlesDataSourceFactory(repo).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            }, PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<UserCollectDetail>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 
     fun deleteCollectedArticle(

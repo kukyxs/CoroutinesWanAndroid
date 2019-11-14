@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.system
 
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -32,36 +33,30 @@ class KnowledgeSystemRepository {
 
 class KnowledgeSystemDataSource(
     private val repository: KnowledgeSystemRepository,
-    private val cid: Int,
-    private val handler: PagingThrowableHandler
+    private val cid: Int
 ) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
+
+    val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            val data = repository.loadArticle4System(0, cid)
-            data?.let {
+            initState.postValue(NetworkState.LOADING)
+            repository.loadArticle4System(0, cid)?.let {
                 callback.onResult(it, null, 1)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            val data = repository.loadArticle4System(params.key, cid)
-            data?.let {
+            repository.loadArticle4System(params.key, cid)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
-        safeLaunch({
-            val data = repository.loadArticle4System(params.key, cid)
-            data?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -71,11 +66,13 @@ class KnowledgeSystemDataSource(
 
 class KnowledgeSystemDataSourceFactory(
     private val repository: KnowledgeSystemRepository,
-    private val pid: Int,
-    private val handler: PagingThrowableHandler
+    private val pid: Int
 ) : DataSource.Factory<Int, WxChapterListDatas>() {
+    val sourceLiveData = MutableLiveData<KnowledgeSystemDataSource>()
 
-    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid, handler)
+    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class KnowledgeSystemTypeAdapter(

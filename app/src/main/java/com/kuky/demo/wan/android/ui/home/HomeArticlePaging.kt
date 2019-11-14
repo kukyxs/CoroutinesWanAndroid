@@ -1,9 +1,9 @@
 package com.kuky.demo.wan.android.ui.home
 
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
-import com.google.gson.Gson
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
@@ -20,11 +20,7 @@ import kotlinx.coroutines.*
 class HomeArticleRepository {
 
     suspend fun loadPageData(page: Int): List<ArticleDetail>? = withContext(Dispatchers.IO) {
-        val result = RetrofitManager.apiService.homeArticles(page).data.datas
-        if (page == 0) {
-            PreferencesHelper.saveHomeArticleCache(WanApplication.instance, Gson().toJson(result))
-        }
-        result
+        RetrofitManager.apiService.homeArticles(page).data.datas
     }
 
     // 加载首页置顶文章
@@ -37,40 +33,36 @@ class HomeArticleRepository {
  * 网络数据加载
  */
 class HomeArticleDataSource(
-    private val repository: HomeArticleRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: HomeArticleRepository
 ) : PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by MainScope() {
+
+    val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ArticleDetail>) {
         safeLaunch({
-            val result = ArrayList<ArticleDetail>()
+            initState.postValue(NetworkState.LOADING)
             val tops = repository.loadTops()
             val data = repository.loadPageData(0)
 
-            result.addAll(tops ?: arrayListOf())
-            result.addAll(data ?: arrayListOf())
-
-            callback.onResult(result, null, 1)
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+            callback.onResult(arrayListOf<ArticleDetail>().apply {
+                addAll(tops ?: arrayListOf())
+                addAll(data ?: arrayListOf())
+            }, null, 1)
+            initState.postValue(NetworkState.LOADED)
+        }, {
+            initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+        })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
         safeLaunch({
-            val data = repository.loadPageData(params.key)
-            data?.let {
+            repository.loadPageData(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {
-        safeLaunch({
-            val data = repository.loadPageData(params.key)
-            data?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ArticleDetail>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -79,11 +71,13 @@ class HomeArticleDataSource(
 }
 
 class HomeArticleDataSourceFactory(
-    private val repository: HomeArticleRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: HomeArticleRepository
 ) : DataSource.Factory<Int, ArticleDetail>() {
+    val sourceLiveData = MutableLiveData<HomeArticleDataSource>()
 
-    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository, handler)
+    override fun create(): DataSource<Int, ArticleDetail> = HomeArticleDataSource(repository).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 /**

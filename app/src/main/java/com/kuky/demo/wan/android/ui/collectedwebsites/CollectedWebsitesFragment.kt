@@ -83,23 +83,35 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }.show(childFragmentManager, "new_website")
         }, null)
 
-        fetchWebSitesData()
+        fetchWebSitesData(false)
     }
 
     fun scrollToTop() = mBinding.websiteList.scrollToTop()
 
-    private fun fetchWebSitesData() {
-        mViewModel.fetchWebSitesData {
-            mBinding.errorStatus = true
-        }
+    private fun fetchWebSitesData(isRefresh: Boolean = true) {
+        mViewModel.fetchWebSitesData()
+        mViewModel.netState.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                // 非 paging 加载情况直接设置 error status
+                State.FAILED -> injectStates(error = true)
+            }
+        })
 
         mBinding.errorStatus = false
         mBinding.refreshing = true
         mViewModel.mWebsitesData.observe(this, Observer {
+            mBinding.emptyStatus = it.isNullOrEmpty()
             mAdapter.update(it as MutableList<WebsiteData>?)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
-            }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

@@ -78,6 +78,11 @@ fun EditText.hideSoftInput() {
         ?.hideSoftInputFromWindow(windowToken, 0)
 }
 
+fun EditText.showSoftInput() {
+    (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+        ?.showSoftInput(this, InputMethodManager.SHOW_FORCED)
+}
+
 fun EditText.clearText() {
     setText("")
 }

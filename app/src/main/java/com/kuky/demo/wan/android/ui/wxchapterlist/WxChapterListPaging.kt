@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.wxchapterlist
 
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -24,35 +25,29 @@ class WxChapterListRepository {
 
 class WxChapterListDataSource(
     private val repository: WxChapterListRepository,
-    private val wxId: Int, private val keyword: String,
-    private val handler: PagingThrowableHandler
+    private val wxId: Int, private val keyword: String
 ) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
+
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            val result = repository.loadPage(wxId, 0, keyword)
-            result?.let {
+            initState.postValue(NetworkState.LOADING)
+            repository.loadPage(wxId, 0, keyword)?.let {
                 callback.onResult(it, null, 1)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
         safeLaunch({
-            val result = repository.loadPage(wxId, params.key, keyword)
-            result?.let {
+            repository.loadPage(wxId, params.key, keyword)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
-        safeLaunch({
-            val result = repository.loadPage(wxId, params.key, keyword)
-            result?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -62,11 +57,13 @@ class WxChapterListDataSource(
 
 class WxChapterListDataSourceFactory(
     private val repository: WxChapterListRepository,
-    private val wxId: Int, private val keyword: String,
-    private val handler: PagingThrowableHandler
+    private val wxId: Int, private val keyword: String
 ) : DataSource.Factory<Int, WxChapterListDatas>() {
+    val sourceLiveData = MutableLiveData<WxChapterListDataSource>()
 
-    override fun create(): DataSource<Int, WxChapterListDatas> = WxChapterListDataSource(repository, wxId, keyword, handler)
+    override fun create(): DataSource<Int, WxChapterListDatas> = WxChapterListDataSource(repository, wxId, keyword).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class WxChapterListAdapter : BasePagedListAdapter<WxChapterListDatas, RecyclerWxChapterListBinding>(DIFF_CALLBACK) {

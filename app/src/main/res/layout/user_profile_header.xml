@@ -6,12 +6,22 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="holder"
             type="com.kuky.demo.wan.android.ui.main.MainFragment" />
 
         <variable
+            name="loginState"
+            type="Boolean" />
+
+        <variable
             name="name"
+            type="String" />
+
+        <variable
+            name="avatarKey"
             type="String" />
 
         <variable
@@ -26,32 +36,53 @@
         android:paddingTop="50dp"
         android:paddingEnd="20dp">
 
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:contentDescription="@null"
-            android:onClick="@{holder::showWxDialog}"
-            android:scaleType="centerCrop"
-            android:src="@drawable/wx_pic"
+        <FrameLayout
+            android:id="@+id/avatar_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            bind:circleImg="@{@drawable/wx_pic}" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@null"
+                android:onClick="@{holder::showWxDialog}"
+                android:scaleType="centerCrop"
+                android:src="@drawable/wx_pic"
+                android:visibility="@{loginState ? View.GONE : View.VISIBLE}"
+                bind:circleImg="@{@drawable/wx_pic}" />
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/user_avatar"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="@{holder::showWxDialog}"
+                android:text="@{avatarKey}"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:visibility="@{loginState ? View.VISIBLE : View.GONE}"
+                tools:text="K" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:visibility="gone"
             android:text="@string/description"
-            app:layout_constraintTop_toBottomOf="@id/avatar" />
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/avatar_container" />
 
         <View
             android:id="@+id/guide"
             android:layout_width="match_parent"
             android:layout_height="0.1dp"
-            app:layout_constraintBottom_toBottomOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="@id/avatar" />
+            app:layout_constraintBottom_toBottomOf="@id/avatar_container"
+            app:layout_constraintTop_toTopOf="@id/avatar_container" />
 
         <TextView
             android:id="@+id/user_name"
@@ -67,7 +98,7 @@
             android:textColor="@color/half_black"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@id/guide"
-            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintStart_toEndOf="@id/avatar_container"
             tools:text="kk" />
 
         <TextView
@@ -85,7 +116,7 @@
             android:textColor="@android:color/black"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintStart_toEndOf="@id/avatar_container"
             app:layout_constraintTop_toBottomOf="@id/guide"
             tools:text="10234" />
     </androidx.constraintlayout.widget.ConstraintLayout>

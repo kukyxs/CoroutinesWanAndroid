@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.shareduser
 
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -34,15 +35,18 @@ class UserSharedRepository {
 
 class UserSharedDataSource(
     private val repository: UserSharedRepository,
-    private val userId: Int,
-    private val handler: PagingThrowableHandler
+    private val userId: Int
 ) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
+
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserArticleDetail>) {
         safeLaunch({
+            initState.postValue(NetworkState.LOADING)
             repository.fetchUserSharedArticles(userId, 1)?.let {
                 callback.onResult(it, null, 2)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
@@ -50,24 +54,21 @@ class UserSharedDataSource(
             repository.fetchUserSharedArticles(userId, params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
-        safeLaunch({
-            repository.fetchUserSharedArticles(userId, params.key)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {}
 }
 
 class UserSharedDataSourceFactory(
     private val repository: UserSharedRepository,
-    private val userId: Int,
-    private val handler: PagingThrowableHandler
+    private val userId: Int
 ) : DataSource.Factory<Int, UserArticleDetail>() {
-    override fun create(): DataSource<Int, UserArticleDetail> = UserSharedDataSource(repository, userId, handler)
+    val sourceLiveData = MutableLiveData<UserSharedDataSource>()
+
+    override fun create(): DataSource<Int, UserArticleDetail> = UserSharedDataSource(repository, userId).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class UserSharedArticleAdapter : BasePagedListAdapter<UserArticleDetail, RecyclerUserArticleBinding>(DIFF_CALLBACK) {
@@ -76,7 +77,7 @@ class UserSharedArticleAdapter : BasePagedListAdapter<UserArticleDetail, Recycle
 
     override fun setVariable(data: UserArticleDetail, position: Int, holder: BaseViewHolder<RecyclerUserArticleBinding>) {
         holder.binding.article = data
-        holder.binding.shareUser.isVisible = false
+        holder.binding.shareUser.isInvisible = true
     }
 
     companion object {

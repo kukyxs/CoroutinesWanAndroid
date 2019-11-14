@@ -3,7 +3,7 @@ package com.kuky.demo.wan.android.ui.wxchapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.WxChapterData
 
@@ -13,10 +13,14 @@ import com.kuky.demo.wan.android.entity.WxChapterData
  */
 
 class WxChapterViewModel(private val repository: WxChapterRepository) : ViewModel() {
+
+    var netState = MutableLiveData<NetworkState>()
     val mData = MutableLiveData<MutableList<WxChapterData>?>()
 
-    fun getWxChapter(handler: CoroutineThrowableHandler) =
+    fun getWxChapter() =
         viewModelScope.safeLaunch({
+            netState.postValue(NetworkState.LOADING)
             mData.value = repository.getWxChapter()
-        }, { handler.invoke(it) })
+            netState.postValue(NetworkState.LOADED)
+        }, { netState.postValue(NetworkState.error(it.message)) })
 }

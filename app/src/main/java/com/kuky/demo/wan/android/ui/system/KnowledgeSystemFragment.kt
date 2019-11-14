@@ -49,13 +49,15 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     // 体系id
     private var mCid: Int = 0
     private var errorOnTypes = false
+    private var isFirstObserver = true
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchArticles(mCid)
+            if (errorOnTypes) fetchSystemTypes()
+            else fetchArticles(mCid)
         }
 
         mBinding.holder = this
@@ -108,14 +110,13 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
         fetchSystemTypes()
 
-        mViewModel.mType.observe(this, Observer { data ->
-            data?.let {
-                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
-            }
-        })
-
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (isFirstObserver) {
+                isFirstObserver = false
+                return@Observer
+            }
+
             if (!it) {
                 mViewModel.mArticles?.value?.forEach { arc ->
                     arc.collect = false
@@ -127,42 +128,69 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     }
 
     private fun fetchSystemTypes() {
-        mViewModel.fetchType {
-            mBinding.errorStatus = true
-            errorOnTypes = true
-        }
-    }
+        mViewModel.fetchType()
+        mViewModel.typeNetState.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING, State.SUCCESS -> injectStates(refreshing = true, loading = true)
 
-    /**
-     * 刷新文章列表
-     */
-    private fun fetchArticles(cid: Int) {
-        mViewModel.fetchArticles(cid) { code, _ ->
-            mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
-            mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
-
-            errorOnTypes = false
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
+                State.FAILED -> {
+                    errorOnTypes = true
+                    mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
+                    mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
+                    injectStates(error = true)
+                }
             }
-        }
+        })
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
-        mViewModel.mArticles?.observe(this, Observer {
-            mAdapter.submitList(it)
-            delayLaunch(1000) { mBinding.refreshing = false }
+        mViewModel.mType.observe(this, Observer { data ->
+            data?.let {
+                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id, false)
+            }
         })
     }
 
     /**
      * 选择体系后更新文章列表
      */
-    private fun updateSystemArticles(first: String?, sec: String?, cid: Int) {
+    private fun updateSystemArticles(first: String?, sec: String?, cid: Int, isRefresh: Boolean = true) {
         this.mCid = cid
         mBinding.systemFirst.text = first
         mBinding.systemSec.text = sec
-        fetchArticles(mCid)
+        fetchArticles(mCid, isRefresh)
+    }
+
+    /**
+     * 刷新文章列表
+     */
+    private fun fetchArticles(cid: Int, isRefresh: Boolean = true) {
+        mViewModel.fetchArticles(cid) {
+            mBinding.emptyStatus = true
+        }
+
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    errorOnTypes = false
+                    mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
+                    mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
+        mViewModel.mArticles?.observe(this, Observer {
+            mAdapter.submitList(it)
+        })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

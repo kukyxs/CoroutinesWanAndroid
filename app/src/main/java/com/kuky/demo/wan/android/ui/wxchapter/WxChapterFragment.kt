@@ -18,7 +18,7 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
     private val mViewModel by lazy {
-        ViewModelProvider(this, WxChapterModelFactory(WxChapterRepository()))
+        ViewModelProvider(requireActivity(), WxChapterModelFactory(WxChapterRepository()))
             .get(WxChapterViewModel::class.java)
     }
     private val mAdapter by lazy { WxChapterAdapter(null) }
@@ -46,24 +46,34 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
             mBinding.rcvChapter.scrollToTop()
         })
 
-        fetchWxChapter()
+        fetchWxChapter(false)
     }
 
-    private fun fetchWxChapter() {
-        mViewModel.getWxChapter {
-            mBinding.errorStatus = true
-            mBinding.wxChapterType.text = resources.getText(R.string.text_place_holder)
-        }
+    private fun fetchWxChapter(isRefresh: Boolean = true) {
+        mViewModel.getWxChapter()
+        mViewModel.netState.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
 
-        mBinding.refreshing = true
-        mBinding.errorStatus = false
+                State.SUCCESS -> injectStates()
 
-        mViewModel.mData.observe(this, Observer {
-            mAdapter.update(it)
-            mBinding.wxChapterType.text = resources.getText(R.string.wx_chapter)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
+                State.FAILED -> {
+                    mBinding.wxChapterType.text = resources.getText(R.string.text_place_holder)
+                    injectStates(error = true)
+                }
             }
         })
+
+        mViewModel.mData.observe(this, Observer {
+            mBinding.emptyStatus = it.isNullOrEmpty()
+            mAdapter.update(it)
+            mBinding.wxChapterType.text = resources.getText(R.string.wx_chapter)
+        })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

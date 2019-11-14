@@ -68,16 +68,12 @@
             app:layout_constraintTop_toBottomOf="@id/detail_title"
             bind:url="@{url}" />
 
-        <ProgressBar
+        <com.kuky.demo.wan.android.ui.widget.StatusLoading
             android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:alpha="0.4"
-            app:layout_constraintBottom_toBottomOf="@id/content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/content" />
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:alpha="0.5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detail_title" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

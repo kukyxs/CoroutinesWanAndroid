@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.userarticles
 
 import android.graphics.Paint
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -28,16 +29,18 @@ class UserArticleRepository {
 }
 
 class UserArticleDataSource(
-    private val repository: UserArticleRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: UserArticleRepository
 ) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserArticleDetail>) {
         safeLaunch({
+            initState.postValue(NetworkState.LOADING)
             repository.fetchUserArticles(0)?.let {
                 callback.onResult(it, null, 1)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
@@ -45,23 +48,20 @@ class UserArticleDataSource(
             repository.fetchUserArticles(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {
-        safeLaunch({
-            repository.fetchUserArticles(params.key)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserArticleDetail>) {}
 }
 
 class UserArticleDataSourceFactory(
-    private val repository: UserArticleRepository,
-    private val handler: PagingThrowableHandler
+    private val repository: UserArticleRepository
 ) : DataSource.Factory<Int, UserArticleDetail>() {
-    override fun create(): DataSource<Int, UserArticleDetail> = UserArticleDataSource(repository, handler)
+    val sourceLiveData = MutableLiveData<UserArticleDataSource>()
+
+    override fun create(): DataSource<Int, UserArticleDetail> = UserArticleDataSource(repository).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class UserArticleAdapter : BasePagedListAdapter<UserArticleDetail, RecyclerUserArticleBinding>(DIFF_CALLBACK) {

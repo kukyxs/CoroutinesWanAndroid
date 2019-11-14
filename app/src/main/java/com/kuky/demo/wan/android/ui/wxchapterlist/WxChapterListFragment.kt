@@ -65,6 +65,12 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                     super.onAnimationStart(animation)
                     mBinding.searchMode = true
                 }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    super.onAnimationEnd(animation)
+                    mBinding.wxSearch.requestFocus()
+                    mBinding.wxSearch.showSoftInput()
+                }
             })
         }
     }
@@ -140,7 +146,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
         mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
-                fetchWxChapterList(id, v.text.toString())
+                fetchWxChapterList(id, v.text.toString(), isRefresh = false)
                 mBinding.wxChapter = v.text.toString()
                 mBinding.wxSearch.hideSoftInput()
                 mBinding.wxSearch.startAnimation(searchOut)
@@ -155,29 +161,38 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             }
         }, null)
 
-        fetchWxChapterList(id)
+        fetchWxChapterList(id, isRefresh = false)
     }
 
-    private fun fetchWxChapterList(id: Int?, keyword: String = "") {
+    private fun fetchWxChapterList(id: Int?, keyword: String = "", isRefresh: Boolean = true) {
         if (mSearchKeyword != keyword) mSearchKeyword = keyword
 
-        mViewMode.fetchWxArticles(id ?: 0, keyword) { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
+        mViewMode.fetchWxArticles(id ?: 0, keyword) {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.refreshing = true
-        mBinding.errorStatus = false
+        mViewMode.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
 
         mViewMode.chapters?.observe(this, Observer {
             mAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
-            }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 
     override fun onDestroy() {

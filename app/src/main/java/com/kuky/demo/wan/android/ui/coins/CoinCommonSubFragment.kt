@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.ERROR_CODE_INIT
+import com.kuky.demo.wan.android.base.State
+import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.toast
@@ -50,46 +53,62 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
             else fetchRanks()
         }
 
-        if (type == 0) fetchRecords() else fetchRanks()
+        if (type == 0) fetchRecords(false) else fetchRanks(false)
     }
 
-    private fun fetchRanks() {
-        mViewModel.fetchRankList { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
+    private fun fetchRanks(isRefresh: Boolean = true) {
+        mViewModel.fetchRankList {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
+        mViewModel.rankNetState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
         mViewModel.coinRanks?.observe(this, Observer {
             mRankAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
-            }
         })
     }
 
-    private fun fetchRecords() {
-        mViewModel.fetchRecordList { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
+    private fun fetchRecords(isRefresh: Boolean = true) {
+        mViewModel.fetchRecordList {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
+        mViewModel.rankNetState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
         mViewModel.coinRecords?.observe(this, Observer {
             mRecordAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
-            }
         })
     }
 
     fun scrollToTop() = mBinding.coinList.scrollToTop()
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
+    }
 
     companion object {
         private fun instance(type: Int) = CoinCommonSubFragment().apply {

@@ -1,13 +1,9 @@
 package com.kuky.demo.wan.android.ui.system
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
@@ -19,6 +15,10 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
  * @description
  */
 class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository) : ViewModel() {
+
+    val typeNetState = MutableLiveData<NetworkState>()
+    var netState: LiveData<NetworkState>? = null
+
     val mType: MutableLiveData<List<SystemData>?> = MutableLiveData()
     var mArticles: LiveData<PagedList<WxChapterListDatas>>? = null
     // 一级体系下标
@@ -33,21 +33,26 @@ class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository
         children.value = arrayListOf()
     }
 
-    fun fetchType(handler: CoroutineThrowableHandler) {
+    fun fetchType() {
         viewModelScope.safeLaunch({
+            typeNetState.postValue(NetworkState.LOADING)
             mType.value = repository.loadSystemType()
-        }, { handler.invoke(it) })
+            typeNetState.postValue(NetworkState.LOADED)
+        }, { typeNetState.postValue(NetworkState.error(it.message)) })
     }
 
-    fun fetchArticles(cid: Int, handler: PagingThrowableHandler) {
+    fun fetchArticles(cid: Int, empty: () -> Unit) {
         mArticles = LivePagedListBuilder(
-            KnowledgeSystemDataSourceFactory(repository, cid, handler),
-            PagedList.Config.Builder()
+            KnowledgeSystemDataSourceFactory(repository, cid).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            }, PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<WxChapterListDatas>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 }
 

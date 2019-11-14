@@ -48,10 +48,16 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
     private val mAdapter: UserArticleAdapter by lazy {
         UserArticleAdapter().apply {
             userListener = { id, nick ->
-                SharedUserFragment.navToUser(mNavController, R.id.action_mainFragment_to_sharedUserFragment, id, nick)
+                SharedUserFragment.navToUser(
+                    mNavController,
+                    R.id.action_mainFragment_to_sharedUserFragment,
+                    id, nick
+                )
             }
         }
     }
+
+    private var isFirstObserver = true
 
     override fun getLayoutId(): Int = R.layout.fragment_user_articles
 
@@ -103,6 +109,11 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (isFirstObserver) {
+                isFirstObserver = false
+                return@Observer
+            }
+
             if (!it) {
                 mViewModel.userArticles?.value?.forEach { arc ->
                     arc.collect = false
@@ -112,27 +123,37 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
             }
         })
 
-        fetchSharedArticles()
+        fetchSharedArticles(false)
     }
 
-    private fun fetchSharedArticles() {
-        mViewModel.fetchSharedArticles { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> {
-                    mBinding.errorStatus = true
-                    mBinding.indicator = resources.getString(R.string.text_place_holder)
-                }
-
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
-            }
+    private fun fetchSharedArticles(isRefresh: Boolean = true) {
+        mViewModel.fetchSharedArticles {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.refreshing = true
-        mBinding.errorStatus = false
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    mBinding.indicator = resources.getString(R.string.text_place_holder)
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
         mViewModel.userArticles?.observe(this, Observer<PagedList<UserArticleDetail>> {
             mAdapter.submitList(it)
             mBinding.indicator = resources.getString(R.string.share_articles)
-            delayLaunch(1000) { mBinding.refreshing = false }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

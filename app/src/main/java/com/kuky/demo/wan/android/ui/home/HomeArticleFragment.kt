@@ -18,6 +18,7 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.LogUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -46,6 +47,8 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             .get(MainViewModel::class.java)
     }
 
+    private var isFirstObserver = true
+
     override fun getLayoutId(): Int = R.layout.fragment_home_article
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
@@ -53,6 +56,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
             fetchHomeArticleList()
+            LogUtils.error("== refresh == ")
         }
 
         // 绑定 rv 属性
@@ -95,10 +99,15 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             fetchHomeArticleList()
         }
 
-        fetchHomeArticleList()
+        fetchHomeArticleList(false)
 
-        // 根据登录状态做修改
+        // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+            if (isFirstObserver) {
+                isFirstObserver = false
+                return@Observer
+            }
+
             if (!it) {
                 mViewModel.articles?.value?.forEach { arc ->
                     arc.collect = false
@@ -109,24 +118,37 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         })
     }
 
-    private fun fetchHomeArticleList() {
-        mViewModel.fetchHomeArticle { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> {
-                    mBinding.errorStatus = true
-                    mBinding.indicator = resources.getString(R.string.text_place_holder)
-                }
-
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
-            }
+    private fun fetchHomeArticleList(isRefresh: Boolean = true) {
+        mViewModel.fetchHomeArticle {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.refreshing = true
-        mBinding.errorStatus = false
+        mViewModel.netState?.observe(requireActivity(), Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> {
+                    injectStates()
+                    mBinding.indicator = resources.getString(R.string.blog_articles)
+                }
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) {
+                        injectStates(error = true)
+                        mBinding.indicator = resources.getString(R.string.text_place_holder)
+                    } else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
+
         mViewModel.articles?.observe(this, Observer<PagedList<ArticleDetail>> {
             mAdapter.submitList(it)
-            mBinding.indicator = resources.getString(R.string.blog_articles)
-            delayLaunch(1000) { mBinding.refreshing = false }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

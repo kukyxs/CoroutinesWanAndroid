@@ -35,6 +35,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import java.util.*
 
 /**
  * @author kuky.
@@ -94,17 +95,18 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         mViewModel.getBanners()
 
         mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            val menus = mBinding.userProfileDrawer.menu
-
-            menus.findItem(R.id.user_collections).isVisible = it
-            menus.findItem(R.id.login_out).isVisible = it
-            menus.findItem(R.id.todo_group).isVisible = it
-            menus.findItem(R.id.share).isVisible = it
+            mBinding.userProfileDrawer.menu.let { menus ->
+                menus.findItem(R.id.user_collections).isVisible = it
+                menus.findItem(R.id.login_out).isVisible = it
+                menus.findItem(R.id.todo_group).isVisible = it
+                menus.findItem(R.id.share).isVisible = it
+            }
 
             headerBinding.userCoins.isVisible = it
-            headerBinding.name =
-                if (it) PreferencesHelper.fetchUserName(requireContext())
-                else requireContext().getString(R.string.click_to_login)
+            headerBinding.loginState = it
+            headerBinding.name = if (it) PreferencesHelper.fetchUserName(requireContext()) else requireContext().getString(R.string.click_to_login)
+            headerBinding.avatarKey =
+                PreferencesHelper.fetchUserName(requireContext()).toCharArray()[0].toString().toUpperCase(Locale.getDefault())
 
             if (it) mViewModel.getCoins()
         })

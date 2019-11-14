@@ -61,27 +61,35 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
 
         mBinding.errorReload = ErrorReload { fetchCollectedArticleList() }
 
-        fetchCollectedArticleList()
+        fetchCollectedArticleList(false)
     }
 
     fun scrollToTop() = mBinding.collectedArticleList.scrollToTop()
 
-    private fun fetchCollectedArticleList() {
-        mViewModel.fetchCollectedArticleList { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
+    private fun fetchCollectedArticleList(isRefresh: Boolean = true) {
+        mViewModel.fetchCollectedArticleList { mBinding.emptyStatus = true }
 
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
-        }
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
-        mViewModel.mArticles?.observe(requireActivity(), Observer {
-            mAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
             }
         })
+
+        mViewModel.mArticles?.observe(requireActivity(), Observer {
+            mAdapter.submitList(it)
+        })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

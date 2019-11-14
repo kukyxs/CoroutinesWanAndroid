@@ -1,12 +1,9 @@
 package com.kuky.demo.wan.android.ui.shareduser
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.SharedData
 import com.kuky.demo.wan.android.entity.UserArticleDetail
@@ -17,18 +14,22 @@ import com.kuky.demo.wan.android.entity.UserArticleDetail
  */
 class SharedUserViewModel(private val repository: UserSharedRepository) : ViewModel() {
 
+    var netState: LiveData<NetworkState>? = null
     var articles: LiveData<PagedList<UserArticleDetail>>? = null
     var userCoin = MutableLiveData<SharedData?>()
 
-    fun fetchSharedArticles(handler: PagingThrowableHandler, userId: Int) {
+    fun fetchSharedArticles(userId: Int, empty: () -> Unit) {
         articles = LivePagedListBuilder(
-            UserSharedDataSourceFactory(repository, userId, handler),
-            PagedList.Config.Builder()
+            UserSharedDataSourceFactory(repository, userId).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            }, PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<UserArticleDetail>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 
     fun fetchUserInfo(userId: Int) {

@@ -41,7 +41,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
 
     private val mViewModel: SearchViewModel by lazy {
-        ViewModelProvider(this, SearchModelFactory(SearchRepository()))
+        ViewModelProvider(requireActivity(), SearchModelFactory(SearchRepository()))
             .get(SearchViewModel::class.java)
     }
 
@@ -56,7 +56,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mBinding.enable = false
         mBinding.refreshColor = R.color.colorAccent
         mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            searchArticles(mKey)
+            if (errorOnLabel) loadKeys()
+            else searchArticles(mKey)
         }
 
         mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
@@ -66,7 +67,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             true
         }
 
-        mBinding.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
         mBinding.needOverScroll = false
         mBinding.adapter = mHistoryAdapter
         mBinding.listener = OnItemClickListener { position, _ ->
@@ -76,14 +76,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             }
         }
 
-        mViewModel.history.observe(this, Observer<List<String>> {
-            mHistoryAdapter.updateHistory(it as MutableList<String>)
-        })
-
-        mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> {
-            addLabel(it)
-        })
-
         mBinding.errorReload = ErrorReload {
             if (errorOnLabel) loadKeys()
             else searchArticles(mKey)
@@ -92,11 +84,33 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         loadKeys()
     }
 
-    private fun loadKeys() =
-        mViewModel.fetchKeys {
-            errorOnLabel = true
-            mBinding.errorStatus = true
-        }
+    private fun loadKeys() {
+        mViewModel.fetchKeys()
+
+        mViewModel.keyNetState.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = true)
+
+                State.SUCCESS -> {
+                    injectStates()
+                    mBinding.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
+                }
+
+                State.FAILED -> {
+                    errorOnLabel = true
+                    injectStates(error = true)
+                }
+            }
+        })
+
+        mViewModel.history.observe(this, Observer<List<String>> {
+            mHistoryAdapter.updateHistory(it as MutableList<String>)
+        })
+
+        mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> {
+            addLabel(it)
+        })
+    }
 
     /**
      * 搜索
@@ -107,6 +121,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         if (!resultMode) {
             resultMode = true
 
+            mBinding.needOverScroll = true
             mBinding.adapter = mResultAdapter
             mBinding.listener = OnItemClickListener { position, _ ->
                 mResultAdapter.getItemData(position)?.let {
@@ -142,25 +157,36 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
-        mViewModel.fetchResult(keyword) { code, _ ->
-            errorOnLabel = false
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
+        mViewModel.fetchResult(keyword) {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.enable = true
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
-        mBinding.needOverScroll = true
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = true)
+
+                State.SUCCESS -> {
+                    mBinding.enable = true
+                    injectStates()
+                }
+
+                State.FAILED -> {
+                    errorOnLabel = false
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
 
         mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
             mResultAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
-            }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 
     /**

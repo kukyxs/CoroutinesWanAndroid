@@ -53,6 +53,14 @@
             type="Boolean" />
 
         <variable
+            name="loadingStatus"
+            type="Boolean" />
+
+        <variable
+            name="emptyStatus"
+            type="Boolean" />
+
+        <variable
             name="errorReload"
             type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
 
@@ -96,51 +104,50 @@
                 tools:ignore="Autofill,LabelFor" />
         </FrameLayout>
 
-        <FrameLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshEnable="@{enable}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                bind:refreshColor="@{refreshColor}"
-                bind:refreshEnable="@{enable}"
-                bind:refreshListener="@{refreshListener}"
-                bind:refreshState="@{refreshing}">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/hot_search_keys"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/keys_box"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    app:flexWrap="wrap" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/hot_search_keys"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/history_search_keys"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:visibility="@{(hasHistory &amp;&amp; !needOverScroll) ? View.VISIBLE : View.GONE}" />
 
-                    <com.google.android.flexbox.FlexboxLayout
-                        android:id="@+id/keys_box"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:layout_marginBottom="12dp"
-                        app:flexWrap="wrap" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/history_search_keys"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:visibility="@{(hasHistory &amp;&amp; !needOverScroll) ? View.VISIBLE : View.GONE}" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/search_result"
@@ -152,20 +159,31 @@
                         android:paddingEnd="4dp"
                         android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                         android:scrollbars="vertical"
+                        android:visibility="@{errorStatus || loadingStatus || emptyStatus ? View.GONE : View.VISIBLE}"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         bind:adapter="@{adapter}"
                         bind:listItemClick="@{listener}"
                         bind:pageItemClick="@{listener}"
                         bind:pageItemLongClick="@{longListener}"
                         tools:listitem="@layout/recycler_home_article" />
-                </LinearLayout>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <com.kuky.demo.wan.android.ui.widget.StatusError
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
-                bind:reload="@{errorReload}" />
-        </FrameLayout>
+                    <com.kuky.demo.wan.android.ui.widget.StatusError
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                        bind:reload="@{errorReload}" />
+
+                    <com.kuky.demo.wan.android.ui.widget.StatusLoading
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}" />
+
+                    <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}" />
+                </FrameLayout>
+            </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

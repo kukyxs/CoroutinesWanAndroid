@@ -1,13 +1,9 @@
 package com.kuky.demo.wan.android.ui.hotproject
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
@@ -18,6 +14,8 @@ import com.kuky.demo.wan.android.entity.ProjectDetailData
  */
 class HotProjectViewModel(private val repository: HotProjectRepository) : ViewModel() {
 
+    val typeNetState = MutableLiveData<NetworkState>()
+    var netState: LiveData<NetworkState>? = null
     val categories: MutableLiveData<List<ProjectCategoryData>> = MutableLiveData()
     var projects: LiveData<PagedList<ProjectDetailData>>? = null
     val selectedCategoryPosition = MutableLiveData<Int>()
@@ -26,20 +24,25 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
         selectedCategoryPosition.value = 0
     }
 
-    fun fetchCategories(handler: CoroutineThrowableHandler) {
+    fun fetchCategories() {
         viewModelScope.safeLaunch({
+            typeNetState.postValue(NetworkState.LOADING)
             categories.value = repository.loadProjectCategories()
-        }, { handler.invoke(it) })
+            typeNetState.postValue(NetworkState.LOADED)
+        }, { typeNetState.postValue(NetworkState.error(it.message)) })
     }
 
-    fun fetchDiffCategoryProjects(pid: Int, handler: PagingThrowableHandler) {
+    fun fetchDiffCategoryProjects(pid: Int, empty: () -> Unit) {
         projects = LivePagedListBuilder(
-            HotProjectDataSourceFactory(repository, pid, handler),
-            PagedList.Config.Builder()
+            HotProjectDataSourceFactory(repository, pid).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            }, PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<ProjectDetailData>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 }

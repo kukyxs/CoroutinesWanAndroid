@@ -8,19 +8,24 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @author kuky.
  * @description 解决协程处理网络请求不能处理异常
  */
+
+const val ERROR_CODE_NORM = 0xFF00
+const val ERROR_CODE_INIT = 0xFF10
+const val ERROR_CODE_MORE = 0xFF11
+
 private fun coroutineExceptionHandler(
-    throwableHandler: CoroutineThrowableHandler? = null
+    throwableHandler: CoroutineThrowableHandler?
 ): CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
     throwableHandler?.invoke(throwable)
 }
 
 private fun coroutineExceptionContext(
-    throwableHandler: CoroutineThrowableHandler = DEFAULT_HANDLER
+    throwableHandler: CoroutineThrowableHandler?
 ): CoroutineContext = coroutineExceptionHandler(throwableHandler) + GlobalScope.coroutineContext
 
 fun CoroutineScope.safeLaunch(
     block: suspend () -> Unit,
-    throwableHandler: CoroutineThrowableHandler = DEFAULT_HANDLER
+    throwableHandler: CoroutineThrowableHandler? = null
 ): Job = launch(coroutineExceptionContext(throwableHandler)) {
     block()
 }

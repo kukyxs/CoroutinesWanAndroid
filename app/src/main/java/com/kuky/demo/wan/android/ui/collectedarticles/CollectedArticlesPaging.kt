@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.collectedarticles
 
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -32,15 +33,19 @@ class CollectedArticlesRepository {
 }
 
 class CollectedArticlesDataSources(
-    private val repo: CollectedArticlesRepository,
-    private val handler: PagingThrowableHandler
+    private val repo: CollectedArticlesRepository
 ) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
+
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserCollectDetail>) {
         safeLaunch({
+            initState.postValue(NetworkState.LOADING)
+
             repo.getCollectedArticleList(0)?.let {
                 callback.onResult(it, null, 1)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
@@ -48,16 +53,10 @@ class CollectedArticlesDataSources(
             repo.getCollectedArticleList(params.key)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
-        safeLaunch({
-            repo.getCollectedArticleList(params.key)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -66,10 +65,13 @@ class CollectedArticlesDataSources(
 }
 
 class CollectedArticlesDataSourceFactory(
-    private val repo: CollectedArticlesRepository,
-    private val handler: PagingThrowableHandler
+    private val repo: CollectedArticlesRepository
 ) : DataSource.Factory<Int, UserCollectDetail>() {
-    override fun create(): DataSource<Int, UserCollectDetail> = CollectedArticlesDataSources(repo, handler)
+    val sourceLiveData = MutableLiveData<CollectedArticlesDataSources>()
+
+    override fun create(): DataSource<Int, UserCollectDetail> = CollectedArticlesDataSources(repo).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class CollectedArticlesAdapter :

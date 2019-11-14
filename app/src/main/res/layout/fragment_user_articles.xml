@@ -37,6 +37,14 @@
             type="Boolean" />
 
         <variable
+            name="loadingStatus"
+            type="Boolean" />
+
+        <variable
+            name="emptyStatus"
+            type="Boolean" />
+
+        <variable
             name="errorReload"
             type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
 
@@ -49,61 +57,74 @@
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
     </data>
 
-    <FrameLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/page_out_background">
+        bind:refreshColor="@{refreshColor}"
+        bind:refreshListener="@{refreshListener}"
+        bind:refreshState="@{refreshing}">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
-            bind:refreshColor="@{refreshColor}"
-            bind:refreshListener="@{refreshListener}"
-            bind:refreshState="@{refreshing}">
+            android:background="@drawable/page_out_background">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/article_title"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/home_title_bg"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:padding="12dp"
+                android:singleLine="true"
+                android:text="@{indicator}"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:gesture="@{gesture}" />
 
-                <TextView
-                    android:id="@+id/article_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/home_title_bg"
-                    android:drawablePadding="4dp"
-                    android:gravity="center"
-                    android:padding="12dp"
-                    android:singleLine="true"
-                    android:text="@{indicator}"
-                    android:textColor="@color/colorAccent"
-                    bind:gesture="@{gesture}" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/article_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
+                android:scrollbars="vertical"
+                android:visibility="@{errorStatus || emptyStatus || loadingStatus ? View.GONE : View.VISIBLE}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/article_title"
+                bind:adapter="@{adapter}"
+                bind:hasFixedSize="@{true}"
+                bind:pageItemClick="@{itemClick}"
+                bind:pageItemLongClick="@{itemLongClick}"
+                tools:itemCount="20"
+                tools:listitem="@layout/recycler_user_article" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/article_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
-                    android:scrollbars="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    bind:adapter="@{adapter}"
-                    bind:hasFixedSize="@{true}"
-                    bind:pageItemClick="@{itemClick}"
-                    bind:pageItemLongClick="@{itemLongClick}"
-                    tools:itemCount="20"
-                    tools:listitem="@layout/recycler_user_article" />
-            </LinearLayout>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <com.kuky.demo.wan.android.ui.widget.StatusError
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/article_title"
+                bind:reload="@{errorReload}" />
 
-        <com.kuky.demo.wan.android.ui.widget.StatusError
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
-            bind:reload="@{errorReload}" />
-    </FrameLayout>
+            <com.kuky.demo.wan.android.ui.widget.StatusLoading
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/article_title" />
+
+            <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/article_title" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

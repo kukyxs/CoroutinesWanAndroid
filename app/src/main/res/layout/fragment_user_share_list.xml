@@ -33,6 +33,14 @@
             type="Boolean" />
 
         <variable
+            name="loadingStatus"
+            type="Boolean" />
+
+        <variable
+            name="emptyStatus"
+            type="Boolean" />
+
+        <variable
             name="errorReload"
             type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
 
@@ -68,17 +76,16 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <FrameLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            bind:refreshColor="@{refreshColor}"
+            bind:refreshListener="@{refreshListener}"
+            bind:refreshState="@{refreshing}">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{errorStatus ? View.INVISIBLE : View.VISIBLE}"
-                bind:refreshColor="@{refreshColor}"
-                bind:refreshListener="@{refreshListener}"
-                bind:refreshState="@{refreshing}">
+                android:layout_height="match_parent">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/article_list"
@@ -88,6 +95,7 @@
                     android:paddingBottom="8dp"
                     android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                     android:scrollbars="vertical"
+                    android:visibility="@{errorStatus || loadingStatus || emptyStatus ? View.INVISIBLE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     bind:adapter="@{adapter}"
                     bind:hasFixedSize="@{true}"
@@ -96,23 +104,32 @@
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_user_article" />
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:src="@drawable/ic_add_white_24dp"
+                    app:fabSize="mini"
+                    bind:gesture="@{shareGesture}" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
-                android:src="@drawable/ic_add_white_24dp"
-                app:fabSize="mini"
-                bind:gesture="@{shareGesture}" />
+                <com.kuky.demo.wan.android.ui.widget.StatusError
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
+                    bind:reload="@{errorReload}" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusError
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
-                bind:reload="@{errorReload}" />
-        </FrameLayout>
+                <com.kuky.demo.wan.android.ui.widget.StatusLoading
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}" />
+
+                <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}" />
+            </FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

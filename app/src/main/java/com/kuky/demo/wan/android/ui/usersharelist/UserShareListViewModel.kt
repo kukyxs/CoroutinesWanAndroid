@@ -1,11 +1,12 @@
 package com.kuky.demo.wan.android.ui.usersharelist
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 
@@ -15,17 +16,21 @@ import com.kuky.demo.wan.android.entity.UserArticleDetail
  */
 class UserShareListViewModel(private val repository: UserShareListRepository) : ViewModel() {
 
+    var netState: LiveData<NetworkState>? = null
     var articles: LiveData<PagedList<UserArticleDetail>>? = null
 
-    fun fetchSharedArticles(handler: PagingThrowableHandler) {
+    fun fetchSharedArticles(empty: () -> Unit) {
         articles = LivePagedListBuilder(
-            UserShareDataSourceFactory(repository, handler),
-            PagedList.Config.Builder()
+            UserShareDataSourceFactory(repository).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            }, PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<UserArticleDetail>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 
     fun deleteAShare(id: Int, success: () -> Unit, fail: (String) -> Unit) {

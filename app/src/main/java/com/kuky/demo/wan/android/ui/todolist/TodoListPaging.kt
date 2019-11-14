@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.todolist
 
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -37,17 +38,18 @@ class TodoRepository {
 
 class TodoDataSource(
     private val repository: TodoRepository,
-    private val param: HashMap<String, Int>,
-    private val handler: PagingThrowableHandler
+    private val param: HashMap<String, Int>
 ) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by MainScope() {
+    val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {
         safeLaunch({
-            val result = repository.fetchTodoList(1, param)
-            result?.let {
+            initState.postValue(NetworkState.LOADING)
+            repository.fetchTodoList(1, param)?.let {
                 callback.onResult(it, null, 2)
+                initState.postValue(NetworkState.LOADED)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_INITIAL, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
@@ -55,16 +57,10 @@ class TodoDataSource(
             repository.fetchTodoList(params.key, param)?.let {
                 callback.onResult(it, params.key + 1)
             }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_AFTER, it) })
+        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
-        safeLaunch({
-            repository.fetchTodoList(params.key, param)?.let {
-                callback.onResult(it, params.key - 1)
-            }
-        }, { handler.invoke(PAGING_THROWABLE_LOAD_CODE_BEFORE, it) })
-    }
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {}
 
     override fun invalidate() {
         super.invalidate()
@@ -74,10 +70,13 @@ class TodoDataSource(
 
 class TodoDataSourceFactory(
     private val repository: TodoRepository,
-    private val param: HashMap<String, Int>,
-    private val handler: PagingThrowableHandler
+    private val param: HashMap<String, Int>
 ) : DataSource.Factory<Int, TodoInfo>() {
-    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param, handler)
+    val sourceLiveData = MutableLiveData<TodoDataSource>()
+
+    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param).apply {
+        sourceLiveData.postValue(this)
+    }
 }
 
 class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {

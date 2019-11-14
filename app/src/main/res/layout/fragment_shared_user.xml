@@ -49,6 +49,14 @@
             type="Boolean" />
 
         <variable
+            name="loadingStatus"
+            type="Boolean" />
+
+        <variable
+            name="emptyStatus"
+            type="Boolean" />
+
+        <variable
             name="errorReload"
             type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
 
@@ -136,7 +144,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:visibility="@{errorStatus ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_avatar"
             bind:refreshColor="@{refreshColor}"
@@ -152,6 +159,7 @@
                 android:paddingBottom="8dp"
                 android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                 android:scrollbars="vertical"
+                android:visibility="@{errorStatus || loadingStatus || emptyStatus ? View.INVISIBLE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
@@ -169,6 +177,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_avatar"
             bind:reload="@{errorReload}" />
+
+        <com.kuky.demo.wan.android.ui.widget.StatusLoading
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_avatar" />
+
+        <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_avatar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

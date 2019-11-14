@@ -3,7 +3,7 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.WebsiteData
 
@@ -12,12 +12,15 @@ import com.kuky.demo.wan.android.entity.WebsiteData
  * @description
  */
 class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) : ViewModel() {
+    val netState = MutableLiveData<NetworkState>()
     val mWebsitesData = MutableLiveData<List<WebsiteData>?>()
 
-    fun fetchWebSitesData(handler: CoroutineThrowableHandler? = null) {
+    fun fetchWebSitesData() {
         viewModelScope.safeLaunch({
+            netState.postValue(NetworkState.LOADING)
             mWebsitesData.value = repo.getCollectedWebsites()
-        }, { handler?.invoke(it) })
+            netState.postValue(NetworkState.LOADED)
+        }, { netState.postValue(NetworkState.error(it.message)) })
     }
 
     fun addWebsites(

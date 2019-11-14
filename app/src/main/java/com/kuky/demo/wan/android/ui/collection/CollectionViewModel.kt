@@ -13,12 +13,9 @@ import com.kuky.demo.wan.android.base.safeLaunch
 class CollectionViewModel(private val repo: CollectionRepository) : ViewModel() {
     fun collectArticle(id: Int, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch({
-            val result = repo.collectArticle(id)
-
-            if (result.errorCode == 0) {
-                success()
-            } else {
-                fail(result.errorMsg)
+            repo.collectArticle(id).let {
+                if (it.errorCode == 0) success()
+                else fail(it.errorMsg)
             }
         }, { fail("网络出错啦~请检查您的网络") })
     }

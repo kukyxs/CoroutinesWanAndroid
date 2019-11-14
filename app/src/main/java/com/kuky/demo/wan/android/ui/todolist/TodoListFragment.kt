@@ -151,21 +151,32 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
         mParams = param
 
-        mViewModel.fetchTodoList(param) { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多出错啦~请检查网络")
-            }
+        mViewModel.fetchTodoList(param) {
+            mBinding.emptyStatus = true
         }
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
-        mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
-            mTodoAdapter.submitList(it)
-            delayLaunch(1000) {
-                mBinding.refreshing = false
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
             }
         })
+
+        mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
+            mTodoAdapter.submitList(it)
+        })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 
     fun addTodo(view: View) {

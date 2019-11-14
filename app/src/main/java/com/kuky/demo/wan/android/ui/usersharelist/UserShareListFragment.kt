@@ -79,23 +79,37 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
             fetchSharedArticles()
         }
 
-        fetchSharedArticles()
+        fetchSharedArticles(false)
     }
 
-    private fun fetchSharedArticles() {
-        mViewModel.fetchSharedArticles { code, _ ->
-            when (code) {
-                PAGING_THROWABLE_LOAD_CODE_INITIAL -> mBinding.errorStatus = true
-
-                PAGING_THROWABLE_LOAD_CODE_AFTER -> requireContext().toast("加载更多数据出错啦~请检查网络")
-            }
+    private fun fetchSharedArticles(isRefresh: Boolean = true) {
+        mViewModel.fetchSharedArticles {
+            mBinding.emptyStatus = true
         }
+
+        mViewModel.netState?.observe(this, Observer {
+            when (it.state) {
+                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
+
+                State.SUCCESS -> injectStates()
+
+                State.FAILED -> {
+                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
+                    else requireContext().toast(R.string.no_net_on_loading)
+                }
+            }
+        })
 
         mBinding.refreshing = true
         mBinding.errorStatus = false
         mViewModel.articles?.observe(this, Observer<PagedList<UserArticleDetail>> {
             mAdapter.submitList(it)
-            delayLaunch(1000) { mBinding.refreshing = false }
         })
+    }
+
+    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
+        mBinding.refreshing = refreshing
+        mBinding.loadingStatus = loading
+        mBinding.errorStatus = error
     }
 }

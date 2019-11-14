@@ -84,7 +84,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             it.webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(web: WebView?, newProgress: Int) {
                     super.onProgressChanged(web, newProgress)
-                    if (newProgress > 70) {
+                    if (newProgress > 85) {
                         mBinding.loading.isVisible = false
                         mBinding.shareLink.isVisible = true
                     }

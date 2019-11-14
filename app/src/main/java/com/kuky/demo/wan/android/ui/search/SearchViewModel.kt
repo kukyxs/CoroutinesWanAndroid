@@ -1,14 +1,10 @@
 package com.kuky.demo.wan.android.ui.search
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.CoroutineThrowableHandler
-import com.kuky.demo.wan.android.base.PagingThrowableHandler
+import com.kuky.demo.wan.android.base.NetworkState
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.entity.ArticleDetail
@@ -20,25 +16,34 @@ import com.kuky.demo.wan.android.entity.HotKeyData
  */
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
+    val keyNetState = MutableLiveData<NetworkState>()
+    var netState: LiveData<NetworkState>? = null
+
     val history = MutableLiveData<List<String>>()
     val hotKeys = MutableLiveData<List<HotKeyData>>()
     var result: LiveData<PagedList<ArticleDetail>>? = null
 
-    fun fetchKeys(handler: CoroutineThrowableHandler) {
+    fun fetchKeys() {
         viewModelScope.safeLaunch({
+            keyNetState.postValue(NetworkState.LOADING)
             hotKeys.value = repository.hotKeys()
             history.value = SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance)
-        }, { handler.invoke(it) })
+            keyNetState.postValue(NetworkState.LOADED)
+        }, { keyNetState.postValue(NetworkState.error(it.message)) })
     }
 
-    fun fetchResult(key: String, handler: PagingThrowableHandler) {
+    fun fetchResult(key: String, empty: () -> Unit) {
         result = LivePagedListBuilder(
-            SearchDataSourceFactory(repository, key, handler),
+            SearchDataSourceFactory(repository, key).apply {
+                netState = Transformations.switchMap(sourceLiveData) { it.initState }
+            },
             PagedList.Config.Builder()
                 .setPageSize(20)
                 .setEnablePlaceholders(true)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).build()
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<ArticleDetail>() {
+            override fun onZeroItemsLoaded() = empty()
+        }).build()
     }
 }
