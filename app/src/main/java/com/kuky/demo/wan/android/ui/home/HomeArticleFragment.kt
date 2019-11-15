@@ -106,7 +106,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private fun fetchHomeArticleList() {
         mViewModel.fetchHomeArticle {
-            mBinding.emptyStatus = true
+            mBinding.emptyStatus = !hasCache
         }
 
         mViewModel.netState?.observe(this, Observer {

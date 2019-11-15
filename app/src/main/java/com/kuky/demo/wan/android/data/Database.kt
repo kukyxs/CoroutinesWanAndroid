@@ -1,10 +1,11 @@
-package com.kuky.demo.wan.android.data.db
+package com.kuky.demo.wan.android.data
 
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.utils.LogUtils
 
 /**

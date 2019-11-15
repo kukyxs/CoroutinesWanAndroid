@@ -1,10 +1,11 @@
-package com.kuky.demo.wan.android.data.db
+package com.kuky.demo.wan.android.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 
 /**
  * @author kuky.

@@ -10,7 +10,7 @@ import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
-import com.kuky.demo.wan.android.data.db.WanDatabaseUtils
+import com.kuky.demo.wan.android.data.WanDatabaseUtils
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*

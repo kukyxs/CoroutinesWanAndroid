@@ -16,6 +16,11 @@
 - 文章分享/删除功能
 - 积分功能
 
+### 目前存在问题
+- `androidx` 包下 `Navigation` 存在 `Fragment` 重新创建的问题，目前参考的方案只使用于 `support` 包下的 `Navigation`(不要问我 `androidx` 和 `support` 能共存，我也懵...)，有解决方案请提 issue
+- `Paging` 刷新数据的时候，调用 `liveData.value.dataSource.invalidate()` 方法会造成界面空白，目前通过两个 `adapter` 进行处理，处理方式参考 `home` 模块，如果有更好的方式请提 issue
+- `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理，只能通过普通方式处理，如果有解决方案请提 issue
+
 ### 特此感谢（排名不分先后）
 - [玩 Android 洋神](https://www.wanandroid.com/)
 - [Kotlin](https://github.com/JetBrains/kotlin)
@@ -32,7 +37,7 @@
 如果该项目对你有帮助，请在右上角帮我们 **star** 一下。如果有什么问题，可以直接提 **issue**
 
 ### 体验下载
-[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/1.0.1/wan.1.0.1.apk)
+[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.0/wan_2.0.apk)
 
 ### 附上效果图：
 <div align="center">

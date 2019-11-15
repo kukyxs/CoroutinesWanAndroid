@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.NetworkState
+import com.kuky.demo.wan.android.data.WanDatabaseUtils
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
-import com.kuky.demo.wan.android.data.db.WanDatabaseUtils
 
 /**
  * @author kuky.
