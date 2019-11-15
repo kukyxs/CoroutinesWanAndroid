@@ -18,7 +18,6 @@ import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
-import com.kuky.demo.wan.android.ui.home.HomeArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.ScreenUtils
@@ -36,7 +35,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private var errorOnLabel = false
     private var mKey = ""
 
-    private val mResultAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
+    private val mResultAdapter: SearchArticleAdapter by lazy { SearchArticleAdapter() }
 
     private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
 

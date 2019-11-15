@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.kuky.demo.wan.android.base.NetworkState
-import com.kuky.demo.wan.android.entity.ArticleDetail
+import com.kuky.demo.wan.android.data.db.HomeArticleDetail
+import com.kuky.demo.wan.android.data.db.WanDatabaseUtils
 
 /**
  * @author kuky.
@@ -14,7 +15,8 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
  */
 class HomeArticleViewModel(private val repository: HomeArticleRepository) : ViewModel() {
     var netState: LiveData<NetworkState>? = null
-    var articles: LiveData<PagedList<ArticleDetail>>? = null
+    var cache: LiveData<List<HomeArticleDetail>>? = null
+    var articles: LiveData<PagedList<HomeArticleDetail>>? = null
 
     fun fetchHomeArticle(empty: () -> Unit) {
         articles = LivePagedListBuilder(
@@ -25,8 +27,14 @@ class HomeArticleViewModel(private val repository: HomeArticleRepository) : View
                 .setEnablePlaceholders(false)
                 .setInitialLoadSizeHint(20)
                 .build()
-        ).setBoundaryCallback(object : PagedList.BoundaryCallback<ArticleDetail>() {
+        ).setBoundaryCallback(object : PagedList.BoundaryCallback<HomeArticleDetail>() {
             override fun onZeroItemsLoaded() = empty()
         }).build()
+    }
+
+    fun refreshArticle() = articles?.value?.dataSource?.invalidate()
+
+    fun fetchCache() {
+        cache = WanDatabaseUtils.homeArticleCacheDao.fetchAllCache()
     }
 }

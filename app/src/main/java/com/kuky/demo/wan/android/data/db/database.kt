@@ -12,9 +12,9 @@ import com.kuky.demo.wan.android.utils.LogUtils
  * @description
  */
 
-@Database(entities = [TestEntity::class], version = 1, exportSchema = false)
+@Database(entities = [HomeArticleDetail::class], version = 1, exportSchema = false)
 abstract class WanDatabase : RoomDatabase() {
-    abstract fun testDao(): TestDao
+    abstract fun homeArticleCacheDao(): HomeArticleCacheDao
 }
 
 object WanDatabaseUtils {
@@ -35,5 +35,5 @@ object WanDatabaseUtils {
             }).build()
     }
 
-    val testDao = instance.testDao()
+    val homeArticleCacheDao = instance.homeArticleCacheDao()
 }

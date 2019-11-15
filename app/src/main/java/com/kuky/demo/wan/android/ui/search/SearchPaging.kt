@@ -3,12 +3,12 @@ package com.kuky.demo.wan.android.ui.search
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.recyclerview.widget.DiffUtil
+import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.ERROR_CODE_INIT
-import com.kuky.demo.wan.android.base.ERROR_CODE_MORE
-import com.kuky.demo.wan.android.base.NetworkState
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
+import com.kuky.demo.wan.android.databinding.RecyclerSearchArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.*
@@ -70,5 +70,24 @@ class SearchDataSourceFactory(
 
     override fun create(): DataSource<Int, ArticleDetail> = SearchDataSource(repository, key).apply {
         sourceLiveData.postValue(this)
+    }
+}
+
+class SearchArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerSearchArticleBinding>(DIFF_CALLBACK) {
+
+    override fun getLayoutId(viewType: Int): Int = R.layout.recycler_search_article
+
+    override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerSearchArticleBinding>) {
+        holder.binding.detail = data
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ArticleDetail>() {
+            override fun areItemsTheSame(oldItem: ArticleDetail, newItem: ArticleDetail): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: ArticleDetail, newItem: ArticleDetail): Boolean =
+                oldItem == newItem
+        }
     }
 }

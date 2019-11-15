@@ -8,7 +8,7 @@
 
         <variable
             name="detail"
-            type="com.kuky.demo.wan.android.data.db.HomeArticleDetail" />
+            type="com.kuky.demo.wan.android.entity.ArticleDetail" />
 
         <import type="android.view.View" />
     </data>
@@ -92,6 +92,5 @@
                 android:textSize="12sp"
                 tools:text="xiaoyang  一天前" />
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
 </layout>
