@@ -94,28 +94,37 @@
 
         <TextView
             android:id="@+id/user_avatar"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
             android:background="@drawable/user_avatar"
             android:gravity="center"
             android:text="@{avatarKey}"
             android:textColor="@android:color/white"
             android:textSize="40sp"
+            app:layout_constraintBottom_toBottomOf="@id/barrier"
+            app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_title"
+            app:layout_constraintTop_toTopOf="@id/user_nick"
             tools:text="K" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="user_nick,share_count,coin_level" />
 
         <TextView
             android:id="@+id/user_nick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
+            android:layout_marginTop="12dp"
             android:text="@{nick}"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/user_avatar"
-            app:layout_constraintTop_toTopOf="@id/user_avatar"
+            app:layout_constraintTop_toBottomOf="@id/user_title"
             tools:text="K**k" />
 
         <TextView
@@ -145,7 +154,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_avatar"
+            app:layout_constraintTop_toBottomOf="@id/barrier"
             bind:refreshColor="@{refreshColor}"
             bind:refreshListener="@{refreshListener}"
             bind:refreshState="@{refreshing}">
