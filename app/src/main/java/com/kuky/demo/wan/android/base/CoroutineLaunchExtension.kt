@@ -13,6 +13,8 @@ const val ERROR_CODE_NORM = 0xFF00
 const val ERROR_CODE_INIT = 0xFF10
 const val ERROR_CODE_MORE = 0xFF11
 
+typealias CoroutineThrowableHandler = (Throwable) -> Unit
+
 private fun coroutineExceptionHandler(
     throwableHandler: CoroutineThrowableHandler?
 ): CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
