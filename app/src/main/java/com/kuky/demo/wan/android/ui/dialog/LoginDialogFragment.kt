@@ -47,7 +47,7 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
 
     fun register(view: View) {
         dialog?.dismiss()
-        RegisterDialogFragment().show(requireActivity().supportFragmentManager, "register")
+        RegisterDialogFragment().showAllowStateLoss(requireActivity().supportFragmentManager, "register")
     }
 
     fun close(view: View) {

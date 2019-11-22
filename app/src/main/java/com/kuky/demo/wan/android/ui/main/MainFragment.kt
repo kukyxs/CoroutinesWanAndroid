@@ -215,7 +215,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 )
                 mBinding.drawer.closeDrawer(GravityCompat.START)
             }
-        }.show(childFragmentManager, "about")
+        }.showAllowStateLoss(childFragmentManager, "about")
     }
 
     private fun starForUs() {
@@ -229,7 +229,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     fun headerLogin(view: View) {
         if (mViewModel.hasLogin.value == false) {
-            LoginDialogFragment().show(childFragmentManager, "login")
+            LoginDialogFragment().showAllowStateLoss(childFragmentManager, "login")
         }
     }
 
@@ -246,7 +246,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun showWxDialog(view: View) {
-        WxDialog().show(childFragmentManager, "wx_code")
+        WxDialog().showAllowStateLoss(childFragmentManager, "wx_code")
     }
 
     fun searchArticles(view: View) {

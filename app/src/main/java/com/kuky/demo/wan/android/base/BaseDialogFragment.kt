@@ -1,11 +1,13 @@
 package com.kuky.demo.wan.android.base
 
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.utils.ScreenUtils
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,7 @@ import kotlinx.coroutines.cancel
 abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(), CoroutineScope by MainScope() {
 
     protected lateinit var mBinding: VB
+    private var mSavedState = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setStyle(STYLE_NO_FRAME, android.R.style.Theme_Material_Dialog_Alert)
@@ -31,6 +34,20 @@ abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(), Coro
         return mBinding.root
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        mSavedState = true
+        super.onSaveInstanceState(outState)
+    }
+
+    fun showAllowStateLoss(manager: FragmentManager, tag: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (manager.isStateSaved) return
+        }
+
+        if (mSavedState) return
+
+        show(manager, tag)
+    }
 
     override fun onStart() {
         super.onStart()

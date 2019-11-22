@@ -99,7 +99,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     fetchProjects(category.id, category.name)
                     dialog?.dismiss()
                 }
-            }.show(childFragmentManager, "category")
+            }.showAllowStateLoss(childFragmentManager, "category")
         }, { mBinding.projectList.scrollToTop() })
 
         mBinding.errorReload = ErrorReload {

@@ -72,7 +72,7 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
         })
 
         mBinding.shareGesture = DoubleClickListener({
-            ShareArticleDialogFragment().show(childFragmentManager, "share_art")
+            ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
         }, null)
 
         mBinding.errorReload = ErrorReload {

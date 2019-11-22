@@ -80,7 +80,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             CollectedWebsiteDialogFragment().apply {
                 editMode = false
                 injectWebsiteData()
-            }.show(childFragmentManager, "new_website")
+            }.showAllowStateLoss(childFragmentManager, "new_website")
         }, null)
 
         fetchWebSitesData(false)

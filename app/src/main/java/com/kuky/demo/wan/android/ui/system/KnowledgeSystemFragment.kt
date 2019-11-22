@@ -98,7 +98,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     updateSystemArticles(first, sec, cid)
                     dialog.dismiss()
                 }
-            }.show(childFragmentManager, "knowledgeSystem")
+            }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
         }, {
             mBinding.projectList.scrollToTop()
         })
