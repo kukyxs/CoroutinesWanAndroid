@@ -14,7 +14,10 @@ import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
@@ -39,7 +42,7 @@ class HotProjectRepository {
 class HotProjectDataSource(
     private val repository: HotProjectRepository,
     private val pid: Int
-) : PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, ProjectDetailData>(), CoroutineScope by IOScope() {
 
     val initState = MutableLiveData<NetworkState>()
 
@@ -92,7 +95,6 @@ class HomeProjectAdapter : BasePagedListAdapter<ProjectDetailData, RecyclerHomeP
         position: Int, holder: BaseViewHolder<RecyclerHomeProjectBinding>
     ) {
         holder.binding.project = data
-        holder.binding.title = data.title.renderHtml()
     }
 
     companion object {

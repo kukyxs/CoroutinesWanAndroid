@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.AsyncPagedListDiffer
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
@@ -17,7 +18,10 @@ import com.kuky.demo.wan.android.databinding.RecyclerCoinRecordBinding
 import com.kuky.demo.wan.android.entity.CoinRankDetail
 import com.kuky.demo.wan.android.entity.CoinRecordDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
@@ -35,7 +39,7 @@ class CoinRepository {
 
 class CoinRecordDataSource(
     private val repository: CoinRepository
-) : PageKeyedDataSource<Int, CoinRecordDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, CoinRecordDetail>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRecordDetail>) {
@@ -75,13 +79,16 @@ class CoinRecordDataSourceFactory(
         }
 }
 
-class CoinRecordAdapter : BasePagedListAdapter<CoinRecordDetail, RecyclerCoinRecordBinding>(DIFF_CALLBACK) {
+class CoinRecordAdapter : BaseNoBlinkingPagedListAdapter<CoinRecordDetail, RecyclerCoinRecordBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_coin_record
 
     override fun setVariable(data: CoinRecordDetail, position: Int, holder: BaseViewHolder<RecyclerCoinRecordBinding>) {
         holder.binding.coinRecord = data
     }
+
+    override fun generateItemId(differ: AsyncPagedListDiffer<CoinRecordDetail>?, position: Int): Long =
+        differ?.getItem(position)?.id?.toLong() ?: 0L
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CoinRecordDetail>() {
@@ -96,7 +103,7 @@ class CoinRecordAdapter : BasePagedListAdapter<CoinRecordDetail, RecyclerCoinRec
 
 class CoinRankDataSource(
     private val repository: CoinRepository
-) : PageKeyedDataSource<Int, CoinRankDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, CoinRankDetail>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRankDetail>) {
@@ -136,7 +143,7 @@ class CoinRankDataSourceFactory(
         }
 }
 
-class CoinRankAdapter : BasePagedListAdapter<CoinRankDetail, RecyclerCoinRankBinding>(DIFF_CALLBACK) {
+class CoinRankAdapter : BaseNoBlinkingPagedListAdapter<CoinRankDetail, RecyclerCoinRankBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_coin_rank
 
@@ -171,6 +178,9 @@ class CoinRankAdapter : BasePagedListAdapter<CoinRankDetail, RecyclerCoinRankBin
         )
     }
 
+    override fun generateItemId(differ: AsyncPagedListDiffer<CoinRankDetail>?, position: Int): Long =
+        differ?.getItem(position)?.userId?.toLong() ?: 0L
+
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CoinRankDetail>() {
             override fun areItemsTheSame(oldItem: CoinRankDetail, newItem: CoinRankDetail): Boolean =
@@ -179,5 +189,6 @@ class CoinRankAdapter : BasePagedListAdapter<CoinRankDetail, RecyclerCoinRankBin
             override fun areContentsTheSame(oldItem: CoinRankDetail, newItem: CoinRankDetail): Boolean =
                 oldItem == newItem
         }
+
     }
 }

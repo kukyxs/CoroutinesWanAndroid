@@ -18,7 +18,10 @@ import com.kuky.demo.wan.android.entity.ITodoChoice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
@@ -39,7 +42,7 @@ class TodoRepository {
 class TodoDataSource(
     private val repository: TodoRepository,
     private val param: HashMap<String, Int>
-) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {

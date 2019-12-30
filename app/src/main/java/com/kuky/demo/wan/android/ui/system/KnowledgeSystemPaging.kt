@@ -14,7 +14,10 @@ import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author Taonce.
@@ -34,7 +37,7 @@ class KnowledgeSystemRepository {
 class KnowledgeSystemDataSource(
     private val repository: KnowledgeSystemRepository,
     private val cid: Int
-) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by IOScope() {
 
     val initState = MutableLiveData<NetworkState>()
 

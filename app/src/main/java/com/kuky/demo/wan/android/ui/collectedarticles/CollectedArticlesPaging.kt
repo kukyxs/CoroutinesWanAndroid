@@ -11,7 +11,10 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedArticleBinding
 import com.kuky.demo.wan.android.entity.UserCollectDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -34,7 +37,7 @@ class CollectedArticlesRepository {
 
 class CollectedArticlesDataSources(
     private val repo: CollectedArticlesRepository
-) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserCollectDetail>) {

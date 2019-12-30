@@ -32,6 +32,9 @@ fun CoroutineScope.safeLaunch(
     block()
 }
 
+@Suppress("FunctionName")
+fun IOScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 fun CoroutineScope.delayLaunch(
     timeMills: Long,
     context: CoroutineContext = EmptyCoroutineContext,

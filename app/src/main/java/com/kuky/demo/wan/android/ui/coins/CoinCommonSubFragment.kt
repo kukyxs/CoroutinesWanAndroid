@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.coins
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -45,6 +46,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
             else fetchRanks()
         }
 
+        mBinding.coinList.itemAnimator = null
         mBinding.adapter = if (type == 0) mRecordAdapter else mRankAdapter
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
 
@@ -112,9 +114,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
     companion object {
         private fun instance(type: Int) = CoinCommonSubFragment().apply {
-            arguments = Bundle().apply {
-                putInt("type", type)
-            }
+            arguments = bundleOf(Pair("type", type))
         }
 
         fun recordInstance() = instance(0)

@@ -9,11 +9,14 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
-import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.data.WanDatabaseUtils
+import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
@@ -36,7 +39,7 @@ class HomeArticleRepository {
  */
 class HomeArticleDataSource(
     private val repository: HomeArticleRepository
-) : PageKeyedDataSource<Int, HomeArticleDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, HomeArticleDetail>(), CoroutineScope by IOScope() {
 
     val initState = MutableLiveData<NetworkState>()
 

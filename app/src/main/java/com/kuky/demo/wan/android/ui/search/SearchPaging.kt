@@ -11,7 +11,10 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerSearchArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
@@ -33,7 +36,7 @@ class SearchRepository {
 
 class SearchDataSource(
     private val repository: SearchRepository, private val key: String
-) : PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by IOScope() {
 
     val initState = MutableLiveData<NetworkState>()
 

@@ -4,16 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.base.ERROR_CODE_INIT
-import com.kuky.demo.wan.android.base.ERROR_CODE_MORE
-import com.kuky.demo.wan.android.base.NetworkState
-import com.kuky.demo.wan.android.base.safeLaunch
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.withContext
 
 /**
@@ -38,7 +34,7 @@ class UserShareListRepository {
 
 class UserShareDataSource(
     private val repository: UserShareListRepository
-) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserArticleDetail>) {

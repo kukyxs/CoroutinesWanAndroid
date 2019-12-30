@@ -11,7 +11,10 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerWxChapterListBinding
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 /**
  * @author Taonce.
@@ -26,7 +29,7 @@ class WxChapterListRepository {
 class WxChapterListDataSource(
     private val repository: WxChapterListRepository,
     private val wxId: Int, private val keyword: String
-) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {

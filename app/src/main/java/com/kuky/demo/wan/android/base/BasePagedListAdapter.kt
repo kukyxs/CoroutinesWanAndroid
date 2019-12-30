@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.paging.AsyncPagedListDiffer
+import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 
@@ -36,7 +38,7 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
-        val data = getItem(position) ?: return
+        val data = getItemData(position) ?: return
         setVariable(data, position, holder)
         holder.binding.executePendingBindings()
         holder.binding.root.setOnClickListener { v -> itemListener?.onItemClick(position, v) }
@@ -51,7 +53,7 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
      * 获取对应 position 下的数据
      * @param position
      */
-    fun getItemData(position: Int): T? = getItem(position)
+    open fun getItemData(position: Int): T? = getItem(position)
 
     /**
      * 根据 viewType 返回不同布局
@@ -66,4 +68,55 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
      * @param holder
      */
     abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)
+}
+
+/**
+ * 解决刷新列表闪动的问题，参考自
+ * `https://stackoverflow.com/questions/48438944/how-to-stop-blinking-on-recycler-view-with-architecture-components-paging-librar/54442392#54442392`
+ * 部分 recyclerView 存在列表网上推的动画，消除可通过设置 `recyclerView.itemAnimator = null` 实现
+ * 部分 recyclerView 不设置 `itemAnimator = null` 刷新时也不会闪动
+ */
+@Suppress("LeakingThis")
+abstract class BaseNoBlinkingPagedListAdapter<T, VB : ViewDataBinding>(cb: DiffUtil.ItemCallback<T>) :
+    BasePagedListAdapter<T, VB>(cb) {
+
+    private var mDiffer: AsyncPagedListDiffer<T>? = null
+
+    init {
+        mDiffer = AsyncPagedListDiffer(this, callback)
+        setHasStableIds(true)
+    }
+
+    override fun getItemData(position: Int): T? = mDiffer?.getItem(position)
+
+    override fun getItemCount(): Int = mDiffer?.itemCount ?: 0
+
+    override fun getItemId(position: Int): Long = generateItemId(mDiffer, position)
+
+    override fun submitList(pagedList: PagedList<T>?) {
+        pagedList?.addWeakCallback(pagedList.snapshot(), object : BasePagedListCallback() {
+            override fun onInserted(position: Int, count: Int) {
+                mDiffer?.submitList(pagedList)
+            }
+        })
+    }
+
+    /**
+     * 生成 id
+     */
+    abstract fun generateItemId(differ: AsyncPagedListDiffer<T>?, position: Int): Long
+}
+
+abstract class BasePagedListCallback : PagedList.Callback() {
+    override fun onChanged(position: Int, count: Int) {
+
+    }
+
+    override fun onInserted(position: Int, count: Int) {
+
+    }
+
+    override fun onRemoved(position: Int, count: Int) {
+
+    }
 }

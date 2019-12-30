@@ -14,7 +14,6 @@ import com.kuky.demo.wan.android.entity.UserArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.withContext
 
 /**
@@ -36,7 +35,7 @@ class UserSharedRepository {
 class UserSharedDataSource(
     private val repository: UserSharedRepository,
     private val userId: Int
-) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by MainScope() {
+) : PageKeyedDataSource<Int, UserArticleDetail>(), CoroutineScope by IOScope() {
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserArticleDetail>) {
