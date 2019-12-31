@@ -50,67 +50,71 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
 
     private var userId = 0
 
+    override fun actionsOnViewInflate() {
+        fetchUserInfo()
+        fetchSharedArticles()
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_shared_user
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         userId = arguments?.getInt("user") ?: 0
 
-        arguments?.getString("name")?.let {
-            mBinding.nick = it
-            mBinding.avatarKey = it.toCharArray()[0].toString().toUpperCase(Locale.getDefault())
-        }
+        mBinding?.let { binding ->
+            arguments?.getString("name")?.let {
+                binding.nick = it
+                binding.avatarKey = it.toCharArray()[0].toString().toUpperCase(Locale.getDefault())
+            }
 
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchSharedArticles()
-        }
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchSharedArticles()
+            }
 
-        mBinding.adapter = mAdapter
-        mBinding.itemClick = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_sharedUserFragment_to_websiteDetailFragment,
-                    it.link
-                )
+            binding.adapter = mAdapter
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_sharedUserFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { article ->
+                    requireContext().alert(
+                        if (article.collect) "「${article.title}」已收藏"
+                        else " 是否收藏 「${article.title}」"
+                    ) {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewModel.articles?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            // 双击回顶部
+            binding.gesture = DoubleClickListener(null, {
+                binding.articleList.scrollToTop()
+            })
+
+            binding.errorReload = ErrorReload {
+                fetchSharedArticles()
             }
         }
-        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(
-                    if (article.collect) "「${article.title}」已收藏"
-                    else " 是否收藏 「${article.title}」"
-                ) {
-                    yesButton {
-                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mViewModel.articles?.value?.get(position)?.collect = true
-                            requireContext().toast("收藏成功")
-                        }, { message ->
-                            requireContext().toast(message)
-                        })
-                    }
-                    if (!article.collect) noButton { }
-                }.show()
-            }
-            true
-        }
-
-        // 双击回顶部
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.articleList.scrollToTop()
-        })
-
-        mBinding.errorReload = ErrorReload {
-            fetchSharedArticles()
-        }
-
-        fetchUserInfo()
-        fetchSharedArticles()
     }
 
     private fun fetchSharedArticles() {
         mViewModel.fetchSharedArticles(userId) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -134,7 +138,7 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
     private fun fetchUserInfo() {
         mViewModel.fetchUserInfo(userId)
         mViewModel.userCoin.observe(this, Observer {
-            mBinding.shared = SpannableStringBuilder().apply {
+            mBinding?.shared = SpannableStringBuilder().apply {
                 setSpan(ForegroundColorSpan(Color.RED), run {
                     append("共分享了")
                     length
@@ -146,7 +150,7 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
             }
 
             it?.coinInfo?.let { coin ->
-                mBinding.coin = SpannableStringBuilder("${coin.coinCount}").apply {
+                mBinding?.coin = SpannableStringBuilder("${coin.coinCount}").apply {
                     setSpan(
                         ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
                         0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
@@ -179,9 +183,11 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 
     companion object {

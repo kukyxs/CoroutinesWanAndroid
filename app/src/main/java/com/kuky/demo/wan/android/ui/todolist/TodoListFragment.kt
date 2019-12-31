@@ -73,75 +73,79 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
     private var mParams: HashMap<String, Int>? = null
 
+    override fun actionsOnViewInflate() {
+        fetchTodoList()
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@TodoListFragment
+        mBinding?.let { binding ->
+            binding.holder = this@TodoListFragment
 
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchTodoList(true)
-        }
-
-        mBinding.todoAdapter = mTodoAdapter
-        mBinding.todoLayoutManager = mTodoLayoutManager
-        mBinding.todoItemClick = OnItemClickListener { position, _ ->
-            mTodoAdapter.getItemData(position)?.let {
-                if (it.status == 1) {
-                    requireContext().alert("当前 Todo 已完成，无法更新内容，请长按修改 Todo 状态后再进行更新") {
-                        yesButton { }
-                    }.show()
-                    return@let
-                }
-                TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, it)
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchTodoList(true)
             }
-        }
-        mBinding.todoItemLongClick = OnItemLongClickListener { position, _ ->
-            mTodoAdapter.getItemData(position)?.let { todo ->
-                requireContext().alert("是否设置当前待办完成状态为${if (todo.status == 0) "完成" else "未完成"}") {
-                    yesButton {
-                        mViewModel.updateTodoState(todo.id, if (todo.status == 0) 1 else 0, {
-                            requireContext().toast("修改成功")
-                            mUpdateFlag.needUpdate.value = true
-                        }, { message -> requireContext().toast(message) })
+
+            binding.todoAdapter = mTodoAdapter
+            binding.todoLayoutManager = mTodoLayoutManager
+            binding.todoItemClick = OnItemClickListener { position, _ ->
+                mTodoAdapter.getItemData(position)?.let {
+                    if (it.status == 1) {
+                        requireContext().alert("当前 Todo 已完成，无法更新内容，请长按修改 Todo 状态后再进行更新") {
+                            yesButton { }
+                        }.show()
+                        return@let
                     }
-                    noButton { }
-                }.show()
-            }
-            true
-        }
-        mBinding.scrollListener = object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                val firstCompletedVisibleItems = IntArray(2)
-                mTodoLayoutManager.findFirstCompletelyVisibleItemPositions(firstCompletedVisibleItems)
-                mBinding.enabled = firstCompletedVisibleItems.contains(0)
-            }
-        }
-
-        mBinding.choiceAdapter = mChoiceAdapter
-        mBinding.choiceLayoutManager = mChoiceLayoutManager
-        mBinding.choiceItemClick = OnItemClickListener { position, _ ->
-            mChoiceAdapter.getItemData(position)?.let {
-                if (it is Choice) {
-                    mChoiceAdapter.updateSelectedIndex(position)
-                    fetchTodoList()
+                    TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, it)
                 }
             }
+            binding.todoItemLongClick = OnItemLongClickListener { position, _ ->
+                mTodoAdapter.getItemData(position)?.let { todo ->
+                    requireContext().alert("是否设置当前待办完成状态为${if (todo.status == 0) "完成" else "未完成"}") {
+                        yesButton {
+                            mViewModel.updateTodoState(todo.id, if (todo.status == 0) 1 else 0, {
+                                requireContext().toast("修改成功")
+                                mUpdateFlag.needUpdate.value = true
+                            }, { message -> requireContext().toast(message) })
+                        }
+                        noButton { }
+                    }.show()
+                }
+                true
+            }
+            binding.scrollListener = object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val firstCompletedVisibleItems = IntArray(2)
+                    mTodoLayoutManager.findFirstCompletelyVisibleItemPositions(firstCompletedVisibleItems)
+                    binding.enabled = firstCompletedVisibleItems.contains(0)
+                }
+            }
+
+            binding.choiceAdapter = mChoiceAdapter
+            binding.choiceLayoutManager = mChoiceLayoutManager
+            binding.choiceItemClick = OnItemClickListener { position, _ ->
+                mChoiceAdapter.getItemData(position)?.let {
+                    if (it is Choice) {
+                        mChoiceAdapter.updateSelectedIndex(position)
+                        fetchTodoList()
+                    }
+                }
+            }
+
+            binding.gesture = DoubleClickListener(null, {
+                binding.todoListPage.scrollToTop()
+            })
+
+            mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
+                if (it) fetchTodoList(true)
+            })
+
+            binding.errorReload = ErrorReload { fetchTodoList(true) }
         }
-
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.todoListPage.scrollToTop()
-        })
-
-        mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
-            if (it) fetchTodoList(true)
-        })
-
-        mBinding.errorReload = ErrorReload { fetchTodoList(true) }
-
-        fetchTodoList()
     }
 
     private fun fetchTodoList(isRefresh: Boolean = false) {
@@ -152,7 +156,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         mParams = param
 
         mViewModel.fetchTodoList(param) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -174,13 +178,15 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 
     fun addTodo(view: View) {
-        mBinding.settingDrawer.animClosed()
+        mBinding?.settingDrawer?.animClosed()
         TodoEditFragment.addOrEditTodo(mNavController, R.id.action_todoListFragment_to_todoEditFragment, null)
     }
 }

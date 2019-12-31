@@ -28,46 +28,50 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
 
     private val mAdapter by lazy { CollectedArticlesAdapter() }
 
-    override fun getLayoutId(): Int = R.layout.fragment_collected_articles
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchCollectedArticleList()
-        }
-
-        mBinding.adapter = mAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { data ->
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_collectionFragment_to_websiteDetailFragment,
-                    data.link
-                )
-            }
-        }
-        mBinding.longListener = OnItemLongClickListener { position, _ ->
-            requireActivity().alert("是否删除本条收藏？") {
-                okButton {
-                    mAdapter.getItemData(position)?.let { data ->
-                        mViewModel.deleteCollectedArticle(data.id, data.originId,
-                            { requireContext().toast("删除成功") }, { requireContext().toast(it) })
-                    }
-                }
-                noButton { }
-            }.show()
-            true
-        }
-
-        mBinding.errorReload = ErrorReload { fetchCollectedArticleList() }
-
+    override fun actionsOnViewInflate() {
         fetchCollectedArticleList(false)
     }
 
-    fun scrollToTop() = mBinding.collectedArticleList.scrollToTop()
+    override fun getLayoutId(): Int = R.layout.fragment_collected_articles
+
+    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchCollectedArticleList()
+            }
+
+            binding.adapter = mAdapter
+            binding.listener = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { data ->
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_collectionFragment_to_websiteDetailFragment,
+                        data.link
+                    )
+                }
+            }
+            binding.longListener = OnItemLongClickListener { position, _ ->
+                requireActivity().alert("是否删除本条收藏？") {
+                    okButton {
+                        mAdapter.getItemData(position)?.let { data ->
+                            mViewModel.deleteCollectedArticle(data.id, data.originId,
+                                { requireContext().toast("删除成功") }, { requireContext().toast(it) })
+                        }
+                    }
+                    noButton { }
+                }.show()
+                true
+            }
+
+            binding.errorReload = ErrorReload { fetchCollectedArticleList() }
+        }
+    }
+
+    fun scrollToTop() = mBinding?.collectedArticleList?.scrollToTop()
 
     private fun fetchCollectedArticleList(isRefresh: Boolean = true) {
-        mViewModel.fetchCollectedArticleList { mBinding.emptyStatus = true }
+        mViewModel.fetchCollectedArticleList { mBinding?.emptyStatus = true }
 
         mViewModel.netState?.observe(this, Observer {
             when (it.state) {
@@ -88,8 +92,10 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

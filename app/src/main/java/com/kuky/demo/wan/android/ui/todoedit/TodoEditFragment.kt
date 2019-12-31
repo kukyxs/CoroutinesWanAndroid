@@ -55,39 +55,41 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             }
         }
 
-        mBinding.holder = this@TodoEditFragment
-        mBinding.todo = mTodo
-        mBinding.title = if (mTodo == null) "新增待办" else "编辑待办"
-        mBinding.btnText = if (mTodo == null) "创建" else "修改"
-        mBinding.newDate = TimeUtils.formatDate(
-            mCalendar.get(Calendar.YEAR),
-            mCalendar.get(Calendar.MONTH) + 1,
-            mCalendar.get(Calendar.DAY_OF_MONTH)
-        )
-        mBinding.todoTypeStr = if (mTodo == null) "工作"
-        else when (mTodo?.type) {
-            0 -> "只用这一个"
-            1 -> "工作"
-            2 -> "学习"
-            3 -> "生活"
-            else -> ""
-        }
-        mBinding.todoPriorityStr = if (mTodo == null) "重要"
-        else when (mTodo?.priority) {
-            1 -> "重要"
-            2 -> "一般"
-            3 -> "普通"
-            else -> ""
-        }
-        mBinding.todoPriorityColor = ContextCompat.getColor(
-            requireContext(), if (mTodo == null) android.R.color.holo_red_dark
-            else when (mTodo?.priority) {
-                1 -> android.R.color.holo_red_dark
-                2 -> android.R.color.holo_orange_dark
-                3 -> android.R.color.holo_green_dark
-                else -> android.R.color.white
+        mBinding?.let { binding ->
+            binding.holder = this@TodoEditFragment
+            binding.todo = mTodo
+            binding.title = if (mTodo == null) "新增待办" else "编辑待办"
+            binding.btnText = if (mTodo == null) "创建" else "修改"
+            binding.newDate = TimeUtils.formatDate(
+                mCalendar.get(Calendar.YEAR),
+                mCalendar.get(Calendar.MONTH) + 1,
+                mCalendar.get(Calendar.DAY_OF_MONTH)
+            )
+            binding.todoTypeStr = if (mTodo == null) "工作"
+            else when (mTodo?.type) {
+                0 -> "只用这一个"
+                1 -> "工作"
+                2 -> "学习"
+                3 -> "生活"
+                else -> ""
             }
-        )
+            binding.todoPriorityStr = if (mTodo == null) "重要"
+            else when (mTodo?.priority) {
+                1 -> "重要"
+                2 -> "一般"
+                3 -> "普通"
+                else -> ""
+            }
+            binding.todoPriorityColor = ContextCompat.getColor(
+                requireContext(), if (mTodo == null) android.R.color.holo_red_dark
+                else when (mTodo?.priority) {
+                    1 -> android.R.color.holo_red_dark
+                    2 -> android.R.color.holo_orange_dark
+                    3 -> android.R.color.holo_green_dark
+                    else -> android.R.color.white
+                }
+            )
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -132,8 +134,8 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     }
 
     fun updateOrAddTodo(view: View) {
-        val title = mBinding.todoTitle.text.toString()
-        val content = mBinding.todoDescription.text.toString()
+        val title = mBinding?.todoTitle?.text.toString()
+        val content = mBinding?.todoDescription?.text.toString()
 
         if (title.isBlank()) {
             requireContext().toast("标题不可为空")
@@ -168,7 +170,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             }, { message -> requireContext().toast(message) })
         }
 
-        mBinding.todoTitle.hideSoftInput()
+        mBinding?.todoTitle?.hideSoftInput()
     }
 
     fun deleteTodo(view: View) {

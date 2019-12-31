@@ -34,57 +34,61 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
             .get(UserShareListViewModel::class.java)
     }
 
+    override fun actionsOnViewInflate() {
+        fetchSharedArticles(false)
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_user_share_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchSharedArticles()
-        }
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchSharedArticles()
+            }
 
-        mBinding.adapter = mAdapter
-        mBinding.itemClick = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_userShareListFragment_to_websiteDetailFragment,
-                    it.link
-                )
+            binding.adapter = mAdapter
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_userShareListFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    requireContext().alert("是否删除该分享") {
+                        yesButton { _ ->
+                            mViewModel.deleteAShare(it.id, {
+                                requireContext().toast("删除成功")
+                            }, { requireContext().toast(it) })
+                        }
+                        noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            // 双击回顶部
+            binding.gesture = DoubleClickListener(null, {
+                binding.articleList.scrollToTop()
+            })
+
+            binding.shareGesture = DoubleClickListener({
+                ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
+            }, null)
+
+            binding.errorReload = ErrorReload {
+                fetchSharedArticles()
             }
         }
-        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                requireContext().alert("是否删除该分享") {
-                    yesButton { _ ->
-                        mViewModel.deleteAShare(it.id, {
-                            requireContext().toast("删除成功")
-                        }, { requireContext().toast(it) })
-                    }
-                    noButton { }
-                }.show()
-            }
-            true
-        }
-
-        // 双击回顶部
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.articleList.scrollToTop()
-        })
-
-        mBinding.shareGesture = DoubleClickListener({
-            ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
-        }, null)
-
-        mBinding.errorReload = ErrorReload {
-            fetchSharedArticles()
-        }
-
-        fetchSharedArticles(false)
     }
 
     private fun fetchSharedArticles(isRefresh: Boolean = true) {
         mViewModel.fetchSharedArticles {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -100,16 +104,18 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
             }
         })
 
-        mBinding.refreshing = true
-        mBinding.errorStatus = false
+        mBinding?.refreshing = true
+        mBinding?.errorStatus = false
         mViewModel.articles?.observe(this, Observer<PagedList<UserArticleDetail>> {
             mAdapter.submitList(it)
         })
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

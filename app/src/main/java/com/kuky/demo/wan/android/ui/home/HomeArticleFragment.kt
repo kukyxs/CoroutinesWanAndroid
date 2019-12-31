@@ -18,6 +18,7 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.LogUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -51,24 +52,8 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     private var isFirstObserver = true
     private var hasCache = false
 
-    override fun getLayoutId(): Int = R.layout.fragment_home_article
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        // 绑定 SwipeRefreshLayout 属性
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            mViewModel.refreshArticle()
-        }
-
-        // 双击回顶部
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.articleList.scrollToTop()
-        })
-
-        mBinding.errorReload = ErrorReload {
-            mViewModel.refreshArticle()
-        }
-
+    override fun actionsOnViewInflate() {
+        LogUtils.error("0000000000001")
         fetchHomeArticleCache()
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
@@ -83,9 +68,33 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                     arc.collect = false
                 }
             } else {
+                LogUtils.error("00000000000004")
                 mViewModel.refreshArticle()
             }
         })
+    }
+
+    override fun getLayoutId(): Int = R.layout.fragment_home_article
+
+    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding?.let { binding ->
+            // 绑定 SwipeRefreshLayout 属性
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                LogUtils.error("00000000002")
+                mViewModel.refreshArticle()
+            }
+
+            // 双击回顶部
+            binding.gesture = DoubleClickListener(null, {
+                binding.articleList.scrollToTop()
+            })
+
+            binding.errorReload = ErrorReload {
+                LogUtils.error("0000000000003")
+                mViewModel.refreshArticle()
+            }
+        }
     }
 
     /**
@@ -95,7 +104,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
      */
     private fun fetchHomeArticleCache() {
         mViewModel.fetchCache()
-        mBinding.adapter = mCacheAdapter
+        mBinding?.adapter = mCacheAdapter
         mViewModel.cache?.observe(this, Observer {
             hasCache = it.isNotEmpty()
             mCacheAdapter.injectAdapterData(it as MutableList<HomeArticleDetail>)
@@ -106,22 +115,22 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private fun fetchHomeArticleList() {
         mViewModel.fetchHomeArticle {
-            mBinding.emptyStatus = !hasCache
+            mBinding?.emptyStatus = !hasCache
         }
 
         mViewModel.netState?.observe(this, Observer {
             when (it.state) {
                 // 请求网络数据的时候先切回缓存数据，缓存数据会根据上次请求记录
                 State.RUNNING -> {
-                    mBinding.adapter = mCacheAdapter
+                    mBinding?.adapter = mCacheAdapter
                     injectStates(refreshing = true, loading = !hasCache)
                 }
 
                 // 请求成功后，切回 paging adapter，展示新数据，可解决 Paging Adapter 数据刷新引起短时间空白的问题
                 State.SUCCESS -> {
                     injectStates()
-                    mBinding.adapter = mAdapter
-                    mBinding.itemClick = OnItemClickListener { position, _ ->
+                    mBinding?.adapter = mAdapter
+                    mBinding?.itemClick = OnItemClickListener { position, _ ->
                         mAdapter.getItemData(position)?.let { art ->
                             WebsiteDetailFragment.viewDetail(
                                 mNavController,
@@ -130,33 +139,20 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                             )
                         }
                     }
-                    mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
+                    mBinding?.itemLongClick = OnItemLongClickListener { position, _ ->
                         mAdapter.getItemData(position)?.let { article ->
-                            requireContext().alert(
-                                if (article.collect) "「${article.title}」已收藏"
-                                else " 是否收藏 「${article.title}」"
-                            ) {
-                                yesButton {
-                                    if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                        mViewModel.articles?.value?.get(position)?.collect = true
-                                        requireContext().toast("收藏成功")
-                                    }, { message ->
-                                        requireContext().toast(message)
-                                    })
-                                }
-                                if (!article.collect) noButton { }
-                            }.show()
+                            showCollectDialog(article, position)
                         }
                         true
                     }
-                    mBinding.indicator = resources.getString(R.string.blog_articles)
+                    mBinding?.indicator = resources.getString(R.string.blog_articles)
                 }
 
                 // 加载失败如果有缓存加载缓存页面，否则显示出错界面，提示用户点击刷新，重新加载
                 State.FAILED -> {
                     if (it.code == ERROR_CODE_INIT) {
                         injectStates(error = !hasCache)
-                        mBinding.indicator = resources.getString(if (hasCache) R.string.blog_articles else R.string.text_place_holder)
+                        mBinding?.indicator = resources.getString(if (hasCache) R.string.blog_articles else R.string.text_place_holder)
                     } else requireContext().toast(R.string.no_net_on_loading)
                 }
             }
@@ -167,9 +163,27 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         })
     }
 
+    private fun showCollectDialog(article: HomeArticleDetail, position: Int) =
+        requireContext().alert(
+            if (article.collect) "「${article.title}」已收藏"
+            else " 是否收藏 「${article.title}」"
+        ) {
+            yesButton {
+                if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                    mViewModel.articles?.value?.get(position)?.collect = true
+                    requireContext().toast("收藏成功")
+                }, { message ->
+                    requireContext().toast(message)
+                })
+            }
+            if (!article.collect) noButton { }
+        }.show()
+
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

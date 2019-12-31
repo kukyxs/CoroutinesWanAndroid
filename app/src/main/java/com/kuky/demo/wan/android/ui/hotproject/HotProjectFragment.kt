@@ -53,60 +53,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     private val mAdapter: HomeProjectAdapter by lazy { HomeProjectAdapter() }
 
-    override fun getLayoutId(): Int = R.layout.fragment_hot_project
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchProjects(mId, mTitle)
-        }
-
-        mBinding.adapter = mAdapter
-        mBinding.holder = this@HotProjectFragment
-        mBinding.itemClick = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_mainFragment_to_websiteDetailFragment,
-                    it.link
-                )
-            }
-        }
-
-        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { article ->
-                // 根据是否收藏显示不同信息
-                requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
-                    yesButton {
-                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mViewModel.projects?.value?.get(position)?.collect = true
-                            requireContext().toast("收藏成功")
-                        }, { message ->
-                            requireContext().toast(message)
-                        })
-                    }
-                    if (!article.collect) noButton { }
-                }.show()
-            }
-            true
-        }
-
-        mBinding.gesture = DoubleClickListener({
-            ProjectCategoryDialog().apply {
-                onSelectedListener = { dialog, category ->
-                    mId = category.id
-                    mTitle = category.name
-                    fetchProjects(category.id, category.name)
-                    dialog?.dismiss()
-                }
-            }.showAllowStateLoss(childFragmentManager, "category")
-        }, { mBinding.projectList.scrollToTop() })
-
-        mBinding.errorReload = ErrorReload {
-            if (errorOnCategories) fetchCategories()
-            else fetchProjects(mId, mTitle)
-        }
-
+    override fun actionsOnViewInflate() {
         fetchCategories()
 
         // 登录状态切换
@@ -126,6 +73,63 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         })
     }
 
+    override fun getLayoutId(): Int = R.layout.fragment_hot_project
+
+    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding?.let { binding->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchProjects(mId, mTitle)
+            }
+
+            binding.adapter = mAdapter
+            binding.holder = this@HotProjectFragment
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { article ->
+                    // 根据是否收藏显示不同信息
+                    requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewModel.projects?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            binding.gesture = DoubleClickListener({
+                ProjectCategoryDialog().apply {
+                    onSelectedListener = { dialog, category ->
+                        mId = category.id
+                        mTitle = category.name
+                        fetchProjects(category.id, category.name)
+                        dialog?.dismiss()
+                    }
+                }.showAllowStateLoss(childFragmentManager, "category")
+            }, { binding.projectList.scrollToTop() })
+
+            binding.errorReload = ErrorReload {
+                if (errorOnCategories) fetchCategories()
+                else fetchProjects(mId, mTitle)
+            }
+        }
+    }
+
     // 获取分类信息
     private fun fetchCategories() {
         mViewModel.fetchCategories()
@@ -136,7 +140,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
                 State.FAILED -> {
                     errorOnCategories = true
-                    mBinding.projectType.text = resources.getString(R.string.text_place_holder)
+                    mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
                     injectStates(error = true)
                 }
             }
@@ -154,10 +158,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     // 获取分类下列表
     private fun fetchProjects(id: Int, title: String, isRefresh: Boolean = true) {
-        mBinding.projectType.text = title.renderHtml()
+        mBinding?.projectType?.text = title.renderHtml()
 
         mViewModel.fetchDiffCategoryProjects(id) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -180,8 +184,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

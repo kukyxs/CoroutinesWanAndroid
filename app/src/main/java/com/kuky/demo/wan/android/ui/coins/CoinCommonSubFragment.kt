@@ -35,32 +35,38 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
         CoinRecordAdapter()
     }
 
+    private val type by lazy(mode = LazyThreadSafetyMode.NONE) {
+        arguments?.getInt("type", 0) ?: 0
+    }
+
+    override fun actionsOnViewInflate() {
+        if (type == 0) fetchRecords(false) else fetchRanks(false)
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_common_coin_sub
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        val type = arguments?.getInt("type") ?: 0
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                if (type == 0) fetchRecords()
+                else fetchRanks()
+            }
 
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            if (type == 0) fetchRecords()
-            else fetchRanks()
+            binding.coinList.itemAnimator = null
+            binding.adapter = if (type == 0) mRecordAdapter else mRankAdapter
+            binding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+
+            binding.errorReload = ErrorReload {
+                if (type == 0) fetchRecords()
+                else fetchRanks()
+            }
         }
-
-        mBinding.coinList.itemAnimator = null
-        mBinding.adapter = if (type == 0) mRecordAdapter else mRankAdapter
-        mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-
-        mBinding.errorReload = ErrorReload {
-            if (type == 0) fetchRecords()
-            else fetchRanks()
-        }
-
-        if (type == 0) fetchRecords(false) else fetchRanks(false)
     }
 
     private fun fetchRanks(isRefresh: Boolean = true) {
         mViewModel.fetchRankList {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.rankNetState?.observe(this, Observer {
@@ -83,7 +89,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
     private fun fetchRecords(isRefresh: Boolean = true) {
         mViewModel.fetchRecordList {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.rankNetState?.observe(this, Observer {
@@ -104,12 +110,14 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
         })
     }
 
-    fun scrollToTop() = mBinding.coinList.scrollToTop()
+    fun scrollToTop() = mBinding?.coinList?.scrollToTop()
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 
     companion object {

@@ -31,7 +31,6 @@ import org.jetbrains.anko.yesButton
  * @description
  */
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
-    private var resultMode = false
     private var errorOnLabel = false
     private var mKey = ""
 
@@ -40,7 +39,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
 
     private val mViewModel: SearchViewModel by lazy {
-        ViewModelProvider(requireActivity(), SearchModelFactory(SearchRepository()))
+        ViewModelProvider(this, SearchModelFactory(SearchRepository()))
             .get(SearchViewModel::class.java)
     }
 
@@ -49,39 +48,82 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             .get(CollectionViewModel::class.java)
     }
 
+    override fun actionsOnViewInflate() {
+        loadKeys()
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_search
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.enable = false
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            if (errorOnLabel) loadKeys()
-            else searchArticles(mKey)
-        }
-
-        mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
-                searchArticles(v.text.toString())
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                if (errorOnLabel) loadKeys()
+                else searchArticles(mKey)
             }
-            true
-        }
 
-        mBinding.needOverScroll = false
-        mBinding.adapter = mHistoryAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
-            mHistoryAdapter.getItemData(position)?.let {
-                mBinding.searchContent.setText(it)
-                searchArticles(it)
+            binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                    searchArticles(v.text.toString())
+                }
+                true
             }
-        }
 
-        mBinding.errorReload = ErrorReload {
-            if (errorOnLabel) loadKeys()
-            else searchArticles(mKey)
-        }
+            binding.errorReload = ErrorReload {
+                if (errorOnLabel) loadKeys()
+                else searchArticles(mKey)
+            }
 
-        loadKeys()
+            mViewModel.resultMode.observe(this, Observer {
+                if (it) {
+                    binding.enable = true
+                    binding.needOverScroll = true
+                    binding.adapter = mResultAdapter
+                    binding.listener = OnItemClickListener { position, _ ->
+                        mResultAdapter.getItemData(position)?.let { art ->
+                            WebsiteDetailFragment.viewDetail(
+                                mNavController,
+                                R.id.action_searchFragment_to_websiteDetailFragment,
+                                art.link
+                            )
+                        }
+                    }
+                    binding.longListener = OnItemLongClickListener { position, _ ->
+                        mResultAdapter.getItemData(position)?.let { article ->
+                            showCollectionDialog(article, position)
+                        }
+                        true
+                    }
+                } else {
+                    binding.enable = false
+                    binding.needOverScroll = false
+                    binding.adapter = mHistoryAdapter
+                    binding.listener = OnItemClickListener { position, _ ->
+                        mHistoryAdapter.getItemData(position)?.let { key ->
+                            binding.searchContent.setText(key)
+                            searchArticles(key)
+                        }
+                    }
+                }
+            })
+        }
     }
+
+    private fun showCollectionDialog(article: ArticleDetail, position: Int) =
+        requireContext().alert(
+            if (article.collect) "「${article.title.renderHtml()}」已收藏"
+            else " 是否收藏 「${article.title.renderHtml()}」"
+        ) {
+            yesButton {
+                if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                    mViewModel.result?.value?.get(position)?.collect = true
+                    requireContext().toast("收藏成功")
+                }, { message ->
+                    requireContext().toast(message)
+                })
+            }
+            if (!article.collect) noButton { }
+        }.show()
 
     private fun loadKeys() {
         mViewModel.fetchKeys()
@@ -92,7 +134,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
                 State.SUCCESS -> {
                     injectStates()
-                    mBinding.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
+                    mBinding?.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
                 }
 
                 State.FAILED -> {
@@ -117,57 +159,21 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private fun searchArticles(keyword: String) {
         if (mKey != keyword) mKey = keyword
 
-        if (!resultMode) {
-            resultMode = true
+        mViewModel.resultMode.postValue(true)
 
-            mBinding.needOverScroll = true
-            mBinding.adapter = mResultAdapter
-            mBinding.listener = OnItemClickListener { position, _ ->
-                mResultAdapter.getItemData(position)?.let {
-                    WebsiteDetailFragment.viewDetail(
-                        mNavController,
-                        R.id.action_searchFragment_to_websiteDetailFragment,
-                        it.link
-                    )
-                }
-            }
-            mBinding.longListener = OnItemLongClickListener { position, _ ->
-                mResultAdapter.getItemData(position)?.let { article ->
-                    requireContext().alert(
-                        if (article.collect) "「${article.title.renderHtml()}」已收藏"
-                        else " 是否收藏 「${article.title.renderHtml()}」"
-                    ) {
-                        yesButton {
-                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mViewModel.result?.value?.get(position)?.collect = true
-                                requireContext().toast("收藏成功")
-                            }, { message ->
-                                requireContext().toast(message)
-                            })
-                        }
-                        if (!article.collect) noButton { }
-                    }.show()
-                }
-                true
-            }
-        }
-
-        mBinding.searchContent.hideSoftInput()
+        mBinding?.searchContent?.hideSoftInput()
 
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
         mViewModel.fetchResult(keyword) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
             when (it.state) {
                 State.RUNNING -> injectStates(refreshing = true, loading = true)
 
-                State.SUCCESS -> {
-                    mBinding.enable = true
-                    injectStates()
-                }
+                State.SUCCESS -> injectStates()
 
                 State.FAILED -> {
                     errorOnLabel = false
@@ -183,9 +189,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 
     /**
@@ -194,7 +202,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private fun addLabel(hotKeys: List<HotKeyData>) {
         val marginValue = ScreenUtils.dip2px(requireContext(), 8f).toInt()
         val paddingValue = ScreenUtils.dip2px(requireContext(), 6f).toInt()
-        mBinding.keysBox.removeAllViews()
+        mBinding?.keysBox?.removeAllViews()
 
         hotKeys.forEach {
             val name = it.name
@@ -213,12 +221,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 layoutParams = lp
                 setPadding(paddingValue, paddingValue, paddingValue, paddingValue)
                 setOnClickListener {
-                    mBinding.searchContent.setText(name)
+                    mBinding?.searchContent?.setText(name)
                     searchArticles(name)
                 }
             }
 
-            mBinding.keysBox.addView(label)
+            mBinding?.keysBox?.addView(label)
         }
     }
 }

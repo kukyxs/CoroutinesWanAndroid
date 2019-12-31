@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.collection
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -32,24 +33,24 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.adapter = mAdapter
-        mBinding.current = arguments?.getInt("position", 0) ?: 0
-        mBinding.collectionIndicator.setupWithViewPager(mBinding.collectionVp)
+        mBinding?.let { binding ->
+            binding.adapter = mAdapter
+            binding.current = arguments?.getInt("position", 0) ?: 0
+            binding.collectionIndicator.setupWithViewPager(binding.collectionVp)
 
-        mBinding.gesture = DoubleClickListener(null, {
-            when (mBinding.collectionVp.currentItem) {
-                0 -> (childFragmentManager.fragments[0] as? CollectedArticlesFragment)?.scrollToTop()
+            binding.gesture = DoubleClickListener(null, {
+                when (binding.collectionVp.currentItem) {
+                    0 -> (childFragmentManager.fragments[0] as? CollectedArticlesFragment)?.scrollToTop()
 
-                1 -> (childFragmentManager.fragments[1] as? CollectedWebsitesFragment)?.scrollToTop()
-            }
-        })
+                    1 -> (childFragmentManager.fragments[1] as? CollectedWebsitesFragment)?.scrollToTop()
+                }
+            })
+        }
     }
 
     companion object {
         fun viewCollections(controller: NavController, @IdRes navId: Int, position: Int = 0) {
-            controller.navigate(navId, Bundle().apply {
-                putInt("position", position)
-            })
+            controller.navigate(navId, bundleOf(Pair("position", position)))
         }
     }
 }

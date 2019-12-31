@@ -51,63 +51,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     private var errorOnTypes = false
     private var isFirstObserver = true
 
-    override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            if (errorOnTypes) fetchSystemTypes()
-            else fetchArticles(mCid)
-        }
-
-        mBinding.holder = this
-        mBinding.adapter = mAdapter
-        mBinding.itemClick = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_mainFragment_to_websiteDetailFragment,
-                    it.link
-                )
-            }
-        }
-        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(
-                    if (article.collect) "「${article.title}」已收藏"
-                    else " 是否收藏 「${article.title}」"
-                ) {
-                    yesButton {
-                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mViewModel.mArticles?.value?.get(position)?.collect = true
-                            requireContext().toast("收藏成功")
-                        }, { message ->
-                            requireContext().toast(message)
-                        })
-                    }
-                    if (!article.collect) noButton { }
-                }.show()
-            }
-            true
-        }
-
-        // 单击弹出选择框，双击返回顶部
-        mBinding.gesture = DoubleClickListener({
-            KnowledgeSystemDialogFragment().apply {
-                mOnClick = { dialog, first, sec, cid ->
-                    updateSystemArticles(first, sec, cid)
-                    dialog.dismiss()
-                }
-            }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
-        }, {
-            mBinding.projectList.scrollToTop()
-        })
-
-        mBinding.errorReload = ErrorReload {
-            if (errorOnTypes) fetchSystemTypes()
-            else fetchArticles(mCid)
-        }
-
+    override fun actionsOnViewInflate() {
         fetchSystemTypes()
 
         // 登录状态切换
@@ -127,6 +71,66 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         })
     }
 
+    override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
+
+    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                if (errorOnTypes) fetchSystemTypes()
+                else fetchArticles(mCid)
+            }
+
+            binding.holder = this
+            binding.adapter = mAdapter
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { article ->
+                    requireContext().alert(
+                        if (article.collect) "「${article.title}」已收藏"
+                        else " 是否收藏 「${article.title}」"
+                    ) {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewModel.mArticles?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            // 单击弹出选择框，双击返回顶部
+            binding.gesture = DoubleClickListener({
+                KnowledgeSystemDialogFragment().apply {
+                    mOnClick = { dialog, first, sec, cid ->
+                        updateSystemArticles(first, sec, cid)
+                        dialog.dismiss()
+                    }
+                }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
+            }, {
+                binding.projectList.scrollToTop()
+            })
+
+            binding.errorReload = ErrorReload {
+                if (errorOnTypes) fetchSystemTypes()
+                else fetchArticles(mCid)
+            }
+        }
+    }
+
     private fun fetchSystemTypes() {
         mViewModel.fetchType()
         mViewModel.typeNetState.observe(this, Observer {
@@ -135,8 +139,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
                 State.FAILED -> {
                     errorOnTypes = true
-                    mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
-                    mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
+                    mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
+                    mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
                     injectStates(error = true)
                 }
             }
@@ -154,8 +158,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
      */
     private fun updateSystemArticles(first: String?, sec: String?, cid: Int, isRefresh: Boolean = true) {
         this.mCid = cid
-        mBinding.systemFirst.text = first
-        mBinding.systemSec.text = sec
+        mBinding?.systemFirst?.text = first
+        mBinding?.systemSec?.text = sec
         fetchArticles(mCid, isRefresh)
     }
 
@@ -164,7 +168,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
      */
     private fun fetchArticles(cid: Int, isRefresh: Boolean = true) {
         mViewModel.fetchArticles(cid) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -175,8 +179,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
                 State.FAILED -> {
                     errorOnTypes = false
-                    mBinding.systemFirst.text = resources.getString(R.string.text_place_holder)
-                    mBinding.systemSec.text = resources.getString(R.string.text_place_holder)
+                    mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
+                    mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
                     if (it.code == ERROR_CODE_INIT) injectStates(error = true)
                     else requireContext().toast(R.string.no_net_on_loading)
                 }
@@ -189,8 +193,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

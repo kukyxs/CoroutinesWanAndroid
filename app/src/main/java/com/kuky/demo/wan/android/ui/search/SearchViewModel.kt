@@ -16,12 +16,17 @@ import com.kuky.demo.wan.android.entity.HotKeyData
  */
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
+    val resultMode = MutableLiveData<Boolean>()
     val keyNetState = MutableLiveData<NetworkState>()
     var netState: LiveData<NetworkState>? = null
 
     val history = MutableLiveData<List<String>>()
     val hotKeys = MutableLiveData<List<HotKeyData>>()
     var result: LiveData<PagedList<ArticleDetail>>? = null
+
+    init {
+        resultMode.postValue(false)
+    }
 
     fun fetchKeys() {
         viewModelScope.safeLaunch({

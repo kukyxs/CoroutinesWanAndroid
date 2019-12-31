@@ -28,65 +28,67 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
     private val mAdapter by lazy { CollectedWebsitesAdapter() }
 
-    private val editSelector by lazy {
-        arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website))
+    private val editSelector by lazy { arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website)) }
+
+    override fun actionsOnViewInflate() {
+        fetchWebSitesData(false)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_websites
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchWebSitesData()
-        }
-
-        mBinding.fragment = this
-        mBinding.adapter = mAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_collectionFragment_to_websiteDetailFragment,
-                    it.link
-                )
+        mBinding?.let { binding ->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchWebSitesData()
             }
-        }
-        mBinding.longListener = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { data ->
-                requireContext().selector(items = editSelector) { _, i ->
-                    when (i) {
-                        0 -> mViewModel.deleteWebsite(data.id, {
-                            requireContext().toast("删除成功")
-                            mAdapter.removeItem(position)
-                        }, {
-                            requireContext().toast(it)
-                        })
 
-                        1 -> {
-                            CollectedWebsiteDialogFragment().apply {
-                                editMode = true
-                                injectWebsiteData(data)
-                            }.show(childFragmentManager, "edit_website")
+            binding.fragment = this
+            binding.adapter = mAdapter
+            binding.listener = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_collectionFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.longListener = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { data ->
+                    requireContext().selector(items = editSelector) { _, i ->
+                        when (i) {
+                            0 -> mViewModel.deleteWebsite(data.id, {
+                                requireContext().toast("删除成功")
+                                mAdapter.removeItem(position)
+                            }, {
+                                requireContext().toast(it)
+                            })
+
+                            1 -> {
+                                CollectedWebsiteDialogFragment().apply {
+                                    editMode = true
+                                    injectWebsiteData(data)
+                                }.show(childFragmentManager, "edit_website")
+                            }
                         }
                     }
                 }
+                true
             }
-            true
+
+            binding.errorReload = ErrorReload { fetchWebSitesData() }
+
+            binding.gesture = DoubleClickListener({
+                CollectedWebsiteDialogFragment().apply {
+                    editMode = false
+                    injectWebsiteData()
+                }.showAllowStateLoss(childFragmentManager, "new_website")
+            }, null)
         }
-
-        mBinding.errorReload = ErrorReload { fetchWebSitesData() }
-
-        mBinding.gesture = DoubleClickListener({
-            CollectedWebsiteDialogFragment().apply {
-                editMode = false
-                injectWebsiteData()
-            }.showAllowStateLoss(childFragmentManager, "new_website")
-        }, null)
-
-        fetchWebSitesData(false)
     }
 
-    fun scrollToTop() = mBinding.websiteList.scrollToTop()
+    fun scrollToTop() = mBinding?.websiteList?.scrollToTop()
 
     private fun fetchWebSitesData(isRefresh: Boolean = true) {
         mViewModel.fetchWebSitesData()
@@ -101,17 +103,19 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }
         })
 
-        mBinding.errorStatus = false
-        mBinding.refreshing = true
+        mBinding?.errorStatus = false
+        mBinding?.refreshing = true
         mViewModel.mWebsitesData.observe(this, Observer {
-            mBinding.emptyStatus = it.isNullOrEmpty()
+            mBinding?.emptyStatus = it.isNullOrEmpty()
             mAdapter.update(it as MutableList<WebsiteData>?)
         })
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding ->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

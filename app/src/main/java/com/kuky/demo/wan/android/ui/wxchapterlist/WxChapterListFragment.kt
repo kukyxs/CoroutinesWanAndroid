@@ -63,13 +63,13 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             setAnimationListener(object : CustomAnimationAdapter() {
                 override fun onAnimationStart(animation: Animation?) {
                     super.onAnimationStart(animation)
-                    mBinding.searchMode = true
+                    mBinding?.searchMode = true
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
                     super.onAnimationEnd(animation)
-                    mBinding.wxSearch.requestFocus()
-                    mBinding.wxSearch.showSoftInput()
+                    mBinding?.wxSearch?.requestFocus()
+                    mBinding?.wxSearch?.showSoftInput()
                 }
             })
         }
@@ -80,10 +80,14 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             setAnimationListener(object : CustomAnimationAdapter() {
                 override fun onAnimationEnd(animation: Animation?) {
                     super.onAnimationEnd(animation)
-                    mBinding.searchMode = false
+                    mBinding?.searchMode = false
                 }
             })
         }
+    }
+
+    override fun actionsOnViewInflate() {
+        fetchWxChapterList(arguments?.getInt("articleId"), isRefresh = false)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
@@ -91,84 +95,84 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("articleId")
 
-        mBinding.wxChapter = arguments?.getString("name") ?: ""
+        mBinding?.let { binding ->
+            binding.wxChapter = arguments?.getString("name") ?: ""
 
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchWxChapterList(id, mSearchKeyword)
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchWxChapterList(id, mSearchKeyword)
+            }
+
+            binding.adapter = mAdapter
+            binding.listener = OnItemClickListener { position, _ ->
+                if (binding.searchMode == true) {
+                    binding.wxSearch.startAnimation(searchOut)
+                }
+
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_wxChapterListFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.longClickListener = OnItemLongClickListener { position, _ ->
+                if (binding.searchMode == true) {
+                    binding.wxSearch.startAnimation(searchOut)
+                }
+
+                mAdapter.getItemData(position)?.let { article ->
+                    requireContext().alert(
+                        if (article.collect) "「${article.title}」已收藏"
+                        else " 是否收藏 「${article.title}」"
+                    ) {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewMode.chapters?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            binding.errorReload = ErrorReload {
+                fetchWxChapterList(id, mSearchKeyword)
+            }
+
+            binding.gesture = DoubleClickListener(null, {
+                binding.chapterList.scrollToTop()
+            })
+
+            binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                    fetchWxChapterList(id, v.text.toString(), isRefresh = false)
+                    binding.wxChapter = v.text.toString()
+                    binding.wxSearch.hideSoftInput()
+                    binding.wxSearch.startAnimation(searchOut)
+                }
+                true
+            }
+
+            binding.searchGesture = DoubleClickListener({
+                if (binding.searchMode == false || binding.searchMode == null) {
+                    binding.wxSearch.clearText()
+                    binding.wxSearch.startAnimation(searchIn)
+                }
+            }, null)
         }
-
-        mBinding.adapter = mAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
-            if (mBinding.searchMode == true) {
-                mBinding.wxSearch.startAnimation(searchOut)
-            }
-
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_wxChapterListFragment_to_websiteDetailFragment,
-                    it.link
-                )
-            }
-        }
-        mBinding.longClickListener = OnItemLongClickListener { position, _ ->
-            if (mBinding.searchMode == true) {
-                mBinding.wxSearch.startAnimation(searchOut)
-            }
-
-            mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(
-                    if (article.collect) "「${article.title}」已收藏"
-                    else " 是否收藏 「${article.title}」"
-                ) {
-                    yesButton {
-                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mViewMode.chapters?.value?.get(position)?.collect = true
-                            requireContext().toast("收藏成功")
-                        }, { message ->
-                            requireContext().toast(message)
-                        })
-                    }
-                    if (!article.collect) noButton { }
-                }.show()
-            }
-            true
-        }
-
-        mBinding.errorReload = ErrorReload {
-            fetchWxChapterList(id, mSearchKeyword)
-        }
-
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.chapterList.scrollToTop()
-        })
-
-        mBinding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
-                fetchWxChapterList(id, v.text.toString(), isRefresh = false)
-                mBinding.wxChapter = v.text.toString()
-                mBinding.wxSearch.hideSoftInput()
-                mBinding.wxSearch.startAnimation(searchOut)
-            }
-            true
-        }
-
-        mBinding.searchGesture = DoubleClickListener({
-            if (mBinding.searchMode == false || mBinding.searchMode == null) {
-                mBinding.wxSearch.clearText()
-                mBinding.wxSearch.startAnimation(searchIn)
-            }
-        }, null)
-
-        fetchWxChapterList(id, isRefresh = false)
     }
 
     private fun fetchWxChapterList(id: Int?, keyword: String = "", isRefresh: Boolean = true) {
         if (mSearchKeyword != keyword) mSearchKeyword = keyword
 
         mViewMode.fetchWxArticles(id ?: 0, keyword) {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewMode.netState?.observe(this, Observer {
@@ -190,9 +194,11 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 
     override fun onDestroy() {

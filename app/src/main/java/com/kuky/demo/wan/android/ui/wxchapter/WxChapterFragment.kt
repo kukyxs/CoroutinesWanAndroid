@@ -23,30 +23,34 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
     }
     private val mAdapter by lazy { WxChapterAdapter(null) }
 
+    override fun actionsOnViewInflate() {
+        fetchWxChapter(false)
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchWxChapter()
-        }
-
-        mBinding.adapter = mAdapter
-        mBinding.listener = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
+        mBinding?.let { binding->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchWxChapter()
             }
+
+            binding.adapter = mAdapter
+            binding.listener = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
+                }
+            }
+
+            binding.errorReload = ErrorReload {
+                fetchWxChapter()
+            }
+
+            binding.gesture = DoubleClickListener(null, {
+                binding.rcvChapter.scrollToTop()
+            })
         }
-
-        mBinding.errorReload = ErrorReload {
-            fetchWxChapter()
-        }
-
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.rcvChapter.scrollToTop()
-        })
-
-        fetchWxChapter(false)
     }
 
     private fun fetchWxChapter(isRefresh: Boolean = true) {
@@ -58,22 +62,24 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                 State.SUCCESS -> injectStates()
 
                 State.FAILED -> {
-                    mBinding.wxChapterType.text = resources.getText(R.string.text_place_holder)
+                    mBinding?.wxChapterType?.text = resources.getText(R.string.text_place_holder)
                     injectStates(error = true)
                 }
             }
         })
 
         mViewModel.mData.observe(this, Observer {
-            mBinding.emptyStatus = it.isNullOrEmpty()
+            mBinding?.emptyStatus = it.isNullOrEmpty()
             mAdapter.update(it)
-            mBinding.wxChapterType.text = resources.getText(R.string.wx_chapter)
+            mBinding?.wxChapterType?.text = resources.getText(R.string.wx_chapter)
         })
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

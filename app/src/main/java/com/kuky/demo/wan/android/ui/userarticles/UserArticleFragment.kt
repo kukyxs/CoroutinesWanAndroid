@@ -59,53 +59,8 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     private var isFirstObserver = true
 
-    override fun getLayoutId(): Int = R.layout.fragment_user_articles
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-
-        mBinding.refreshColor = R.color.colorAccent
-        mBinding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-            fetchSharedArticles()
-        }
-
-        mBinding.adapter = mAdapter
-        mBinding.itemClick = OnItemClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_mainFragment_to_websiteDetailFragment,
-                    it.link
-                )
-            }
-        }
-        mBinding.itemLongClick = OnItemLongClickListener { position, _ ->
-            mAdapter.getItemData(position)?.let { article ->
-                requireContext().alert(
-                    if (article.collect) "「${article.title}」已收藏"
-                    else " 是否收藏 「${article.title}」"
-                ) {
-                    yesButton {
-                        if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                            mViewModel.userArticles?.value?.get(position)?.collect = true
-                            requireContext().toast("收藏成功")
-                        }, { message ->
-                            requireContext().toast(message)
-                        })
-                    }
-                    if (!article.collect) noButton { }
-                }.show()
-            }
-            true
-        }
-
-        // 双击回顶部
-        mBinding.gesture = DoubleClickListener(null, {
-            mBinding.articleList.scrollToTop()
-        })
-
-        mBinding.errorReload = ErrorReload {
-            fetchSharedArticles()
-        }
+    override fun actionsOnViewInflate() {
+        fetchSharedArticles(false)
 
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
@@ -122,13 +77,61 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                 fetchSharedArticles()
             }
         })
+    }
 
-        fetchSharedArticles(false)
+    override fun getLayoutId(): Int = R.layout.fragment_user_articles
+
+    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+        mBinding?.let { binding->
+            binding.refreshColor = R.color.colorAccent
+            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+                fetchSharedArticles()
+            }
+
+            binding.adapter = mAdapter
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        it.link
+                    )
+                }
+            }
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { article ->
+                    requireContext().alert(
+                        if (article.collect) "「${article.title}」已收藏"
+                        else " 是否收藏 「${article.title}」"
+                    ) {
+                        yesButton {
+                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
+                                mViewModel.userArticles?.value?.get(position)?.collect = true
+                                requireContext().toast("收藏成功")
+                            }, { message ->
+                                requireContext().toast(message)
+                            })
+                        }
+                        if (!article.collect) noButton { }
+                    }.show()
+                }
+                true
+            }
+
+            // 双击回顶部
+            binding.gesture = DoubleClickListener(null, {
+                binding.articleList.scrollToTop()
+            })
+
+            binding.errorReload = ErrorReload {
+                fetchSharedArticles()
+            }
+        }
     }
 
     private fun fetchSharedArticles(isRefresh: Boolean = true) {
         mViewModel.fetchSharedArticles {
-            mBinding.emptyStatus = true
+            mBinding?.emptyStatus = true
         }
 
         mViewModel.netState?.observe(this, Observer {
@@ -138,7 +141,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                 State.SUCCESS -> injectStates()
 
                 State.FAILED -> {
-                    mBinding.indicator = resources.getString(R.string.text_place_holder)
+                    mBinding?.indicator = resources.getString(R.string.text_place_holder)
                     if (it.code == ERROR_CODE_INIT) injectStates(error = true)
                     else requireContext().toast(R.string.no_net_on_loading)
                 }
@@ -147,13 +150,15 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
         mViewModel.userArticles?.observe(this, Observer<PagedList<UserArticleDetail>> {
             mAdapter.submitList(it)
-            mBinding.indicator = resources.getString(R.string.share_articles)
+            mBinding?.indicator = resources.getString(R.string.share_articles)
         })
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding.refreshing = refreshing
-        mBinding.loadingStatus = loading
-        mBinding.errorStatus = error
+        mBinding?.let { binding->
+            binding.refreshing = refreshing
+            binding.loadingStatus = loading
+            binding.errorStatus = error
+        }
     }
 }

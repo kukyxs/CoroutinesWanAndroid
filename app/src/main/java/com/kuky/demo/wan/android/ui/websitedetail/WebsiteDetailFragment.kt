@@ -42,16 +42,16 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
     }
 
     private val scrollAnim: ObjectAnimator by lazy {
-        ObjectAnimator.ofInt(mBinding.content, scrollProperty, 0).setDuration(500)
+        ObjectAnimator.ofInt(mBinding?.content, scrollProperty, 0).setDuration(500)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_wesite_detail
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.url = url
+        mBinding?.url = url
 
-        mBinding.content.let {
+        mBinding?.content?.let {
             it.settings.apply {
                 javaScriptEnabled = true
                 javaScriptCanOpenWindowsAutomatically = true
@@ -85,14 +85,14 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
                 override fun onProgressChanged(web: WebView?, newProgress: Int) {
                     super.onProgressChanged(web, newProgress)
                     if (newProgress > 85) {
-                        mBinding.loading.isVisible = false
-                        mBinding.shareLink.isVisible = true
+                        mBinding?.loading?.isVisible = false
+                        mBinding?.shareLink?.isVisible = true
                     }
                 }
             }
         }
 
-        mBinding.gesture = DoubleClickListener({
+        mBinding?.gesture = DoubleClickListener({
             val shareItems = arrayListOf(
                 resources.getString(R.string.copy_link),
                 resources.getString(R.string.share_links),
@@ -128,7 +128,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             }
         }, null)
 
-        mBinding.scrollGesture = DoubleClickListener(null, {
+        mBinding?.scrollGesture = DoubleClickListener(null, {
             scrollAnim.start()
         })
     }

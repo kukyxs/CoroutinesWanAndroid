@@ -12,8 +12,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
+import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
@@ -60,97 +60,107 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             .get(MainViewModel::class.java)
     }
 
+    private val mHeaderBinding by lazy {
+        DataBindingUtil.inflate<UserProfileHeaderBinding>(
+            layoutInflater, R.layout.user_profile_header, mBinding?.userProfileDrawer, false
+        )
+    }
+
+    override fun actionsOnViewInflate() {
+        mBinding?.let { binding ->
+            binding.adapter = mAdapter
+            binding.limit = mAdapter.count
+            binding.transformer = GalleryTransformer()
+
+            mHeaderBinding.holder = this@MainFragment
+            binding.userProfileDrawer?.addHeaderView(mHeaderBinding.root)
+        }
+
+        mViewModel.getBanners()
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_main
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@MainFragment
-        mBinding.viewModel = mViewModel
-        mBinding.listener = OnBannerListener { position ->
-            mViewModel.banners.value?.let {
-                WebsiteDetailFragment.viewDetail(
-                    mNavController,
-                    R.id.action_mainFragment_to_websiteDetailFragment,
-                    it[position].url
-                )
-            }
-        }
-
-        mBinding.banner.let {
-            it.layoutParams = it.layoutParams.apply {
-                width = ScreenUtils.getScreenWidth(requireContext())
-                height = (width * 0.45f).toInt()
-            }
-        }
-
-        val headerBinding = DataBindingUtil.inflate<UserProfileHeaderBinding>(
-            layoutInflater, R.layout.user_profile_header, mBinding.userProfileDrawer, false
-        )
-        headerBinding.holder = this@MainFragment
-        mBinding.userProfileDrawer.addHeaderView(headerBinding.root)
-
-        mBinding.adapter = mAdapter
-        mBinding.limit = mAdapter.count
-        mBinding.transformer = GalleryTransformer()
-
-        mViewModel.getBanners()
-
-        mViewModel.hasLogin.observe(this, Observer<Boolean> {
-            mBinding.userProfileDrawer.menu.let { menus ->
-                menus.findItem(R.id.user_collections).isVisible = it
-                menus.findItem(R.id.login_out).isVisible = it
-                menus.findItem(R.id.todo_group).isVisible = it
-                menus.findItem(R.id.share).isVisible = it
-            }
-
-            headerBinding.userCoins.isVisible = it
-            headerBinding.loginState = it
-            headerBinding.name = if (it) PreferencesHelper.fetchUserName(requireContext()) else requireContext().getString(R.string.click_to_login)
-            headerBinding.avatarKey = PreferencesHelper.fetchUserName(requireContext()).run {
-                if (isNullOrBlank()) "A" else toCharArray()[0].toString().toUpperCase(Locale.getDefault())
-            }
-
-            if (it) mViewModel.getCoins()
-        })
-
-        // 设置积分
-        mViewModel.coins.observe(this, Observer {
-            it?.let {
-                headerBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
-                    setSpan(
-                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
-                        0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                    )
-
-                    setSpan(
-                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorPrimary)),
-                        run {
-                            append("\t/\t\t")
-                            length
-                        }, run {
-                            append("Lv${it.level}")
-                            length
-                        }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                    )
-
-                    setSpan(
-                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
-                        run {
-                            append("\t\t/\t\t")
-                            length
-                        }, run {
-                            append("R${it.rank}")
-                            length
-                        }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+        mBinding?.let { binding ->
+            binding.holder = this@MainFragment
+            binding.viewModel = mViewModel
+            binding.listener = OnBannerListener { position ->
+                mViewModel.banners.value?.let {
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        it[position].url
                     )
                 }
             }
-        })
 
-        handleUserProfile()
+            binding.banner.let {
+                it.layoutParams = it.layoutParams.apply {
+                    width = ScreenUtils.getScreenWidth(requireContext())
+                    height = (width * 0.45f).toInt()
+                }
+            }
+
+            mViewModel.hasLogin.observe(this, Observer<Boolean> {
+                binding.userProfileDrawer.menu.let { menus ->
+                    menus.findItem(R.id.user_collections).isVisible = it
+                    menus.findItem(R.id.login_out).isVisible = it
+                    menus.findItem(R.id.todo_group).isVisible = it
+                    menus.findItem(R.id.share).isVisible = it
+                }
+
+                mHeaderBinding.userCoins.isVisible = it
+                mHeaderBinding.loginState = it
+                mHeaderBinding.name =
+                    if (it) PreferencesHelper.fetchUserName(requireContext()) else requireContext().getString(R.string.click_to_login)
+                mHeaderBinding.avatarKey = PreferencesHelper.fetchUserName(requireContext()).run {
+                    if (isNullOrBlank()) "A" else toCharArray()[0].toString().toUpperCase(Locale.getDefault())
+                }
+
+                if (it) mViewModel.getCoins()
+            })
+
+            // 设置积分
+            mViewModel.coins.observe(this, Observer {
+                it?.let {
+                    mHeaderBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
+                        setSpan(
+                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
+                            0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                        )
+
+                        setSpan(
+                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorPrimary)),
+                            run {
+                                append("\t/\t\t")
+                                length
+                            }, run {
+                                append("Lv${it.level}")
+                                length
+                            }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                        )
+
+                        setSpan(
+                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
+                            run {
+                                append("\t\t/\t\t")
+                                length
+                            }, run {
+                                append("R${it.rank}")
+                                length
+                            }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                }
+            })
+
+            handleUserProfile()
+        }
     }
 
     private fun handleUserProfile() {
-        mBinding.userProfileDrawer.setNavigationItemSelectedListener { menu ->
+        mBinding?.userProfileDrawer?.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.favourite_article -> toFavourite(0)
 
@@ -192,17 +202,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             R.id.action_mainFragment_to_collectionFragment,
             position
         )
-        mBinding.drawer.closeDrawer(GravityCompat.START)
+        mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun toShare() {
         mNavController.navigate(R.id.action_mainFragment_to_userShareListFragment)
-        mBinding.drawer.closeDrawer(GravityCompat.START)
+        mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun launchTodoList() {
         mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
-        mBinding.drawer.closeDrawer(GravityCompat.START)
+        mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun showAboutUs() {
@@ -213,7 +223,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                     R.id.action_mainFragment_to_websiteDetailFragment,
                     url
                 )
-                mBinding.drawer.closeDrawer(GravityCompat.START)
+                mBinding?.drawer?.closeDrawer(GravityCompat.START)
             }
         }.showAllowStateLoss(childFragmentManager, "about")
     }
@@ -224,7 +234,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             R.id.action_mainFragment_to_websiteDetailFragment,
             "https://github.com/kukyxs/CoroutinesWanAndroid"
         )
-        mBinding.drawer.closeDrawer(GravityCompat.START)
+        mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     fun headerLogin(view: View) {
@@ -234,14 +244,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun userCoins(view: View) {
-        mBinding.floatMenu.close(false)
+        mBinding?.floatMenu?.close(false)
         mNavController.navigate(R.id.action_mainFragment_to_coinFragment)
-        mBinding.drawer.closeDrawer(GravityCompat.START)
+        mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     fun openSettings(view: View) {
-        mBinding.floatMenu.close(true)
-        mBinding.drawer.openDrawer(GravityCompat.START)
+        mBinding?.floatMenu?.close(true)
+        mBinding?.drawer?.openDrawer(GravityCompat.START)
         mViewModel.getCoins()
     }
 
@@ -250,7 +260,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun searchArticles(view: View) {
-        mBinding.floatMenu.close(false)
+        mBinding?.floatMenu?.close(false)
         mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
     }
 }

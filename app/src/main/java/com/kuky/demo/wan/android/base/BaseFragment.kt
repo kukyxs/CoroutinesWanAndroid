@@ -17,37 +17,54 @@ import kotlinx.coroutines.cancel
 
 /**
  * @author kuky.
- * @description Fragment 基类
+ * @description
  */
 abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope by MainScope() {
-    protected lateinit var mBinding: VB
+
+    protected var mBinding: VB? = null
     protected lateinit var mNavController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+        retainInstance = true
+
+        if (mBinding == null) {
+            mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+            actionsOnViewInflate()
+        }
+
         mNavController = NavHostFragment.findNavController(this)
-        return mBinding.root
+
+        return if (mBinding != null) {
+            mBinding!!.root.apply { (parent as? ViewGroup)?.removeView(this) }
+        } else super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mBinding.lifecycleOwner = this
+        mBinding?.lifecycleOwner = this
         initFragment(view, savedInstanceState)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         cancel()
-        mBinding.unbind()
+        mBinding?.unbind()
     }
+
+    /**
+     * 该方法完整走完一个生命周期只会走一次，可用于该页面进入时网络请求
+     */
+    open fun actionsOnViewInflate() {}
 
     abstract fun getLayoutId(): Int
 
     abstract fun initFragment(view: View, savedInstanceState: Bundle?)
 
-    fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProvider(this).get(clazz)
+    fun <T : ViewModel> getViewModel(clazz: Class<T>): T =
+        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(clazz)
 
-    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T = ViewModelProvider(requireActivity()).get(clazz)
+    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T =
+        ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory()).get(clazz)
 
     /**
      * 权限申请，依赖的 activity 需继承 [BaseActivity]
