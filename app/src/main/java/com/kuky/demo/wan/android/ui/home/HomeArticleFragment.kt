@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -13,12 +14,12 @@ import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
+import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.utils.LogUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -53,8 +54,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     private var hasCache = false
 
     override fun actionsOnViewInflate() {
-        LogUtils.error("0000000000001")
-        fetchHomeArticleCache()
+        fetchHomeArticleList()
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
@@ -68,7 +68,6 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                     arc.collect = false
                 }
             } else {
-                LogUtils.error("00000000000004")
                 mViewModel.refreshArticle()
             }
         })
@@ -76,13 +75,37 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_home_article
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
             // 绑定 SwipeRefreshLayout 属性
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                LogUtils.error("00000000002")
                 mViewModel.refreshArticle()
+            }
+
+            binding.adapter = mAdapter
+            binding.itemClick = OnItemClickListener { position, _ ->
+                mAdapter.getItemData(position)?.let { art ->
+                    (parentFragment as? MainFragment)?.closeMenu()
+                    WebsiteDetailFragment.viewDetail(
+                        mNavController,
+                        R.id.action_mainFragment_to_websiteDetailFragment,
+                        art.link
+                    )
+                }
+            }
+            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
+                mAdapter.getItemData(position)?.let { article ->
+                    showCollectDialog(article, position)
+                }
+                true
+            }
+
+            binding.articleList.setOnTouchListener { _, _ ->
+                (parentFragment as? MainFragment)?.closeMenu(true)
+                false
             }
 
             // 双击回顶部
@@ -91,7 +114,6 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             })
 
             binding.errorReload = ErrorReload {
-                LogUtils.error("0000000000003")
                 mViewModel.refreshArticle()
             }
         }
@@ -121,30 +143,16 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         mViewModel.netState?.observe(this, Observer {
             when (it.state) {
                 // 请求网络数据的时候先切回缓存数据，缓存数据会根据上次请求记录
-                State.RUNNING -> {
-                    mBinding?.adapter = mCacheAdapter
-                    injectStates(refreshing = true, loading = !hasCache)
-                }
+                State.RUNNING -> injectStates(refreshing = true, loading = true)
+
+                /*{
+//                    mBinding?.adapter = mCacheAdapter
+//                    injectStates(refreshing = true, loading = !hasCache)
+                }*/
 
                 // 请求成功后，切回 paging adapter，展示新数据，可解决 Paging Adapter 数据刷新引起短时间空白的问题
                 State.SUCCESS -> {
                     injectStates()
-                    mBinding?.adapter = mAdapter
-                    mBinding?.itemClick = OnItemClickListener { position, _ ->
-                        mAdapter.getItemData(position)?.let { art ->
-                            WebsiteDetailFragment.viewDetail(
-                                mNavController,
-                                R.id.action_mainFragment_to_websiteDetailFragment,
-                                art.link
-                            )
-                        }
-                    }
-                    mBinding?.itemLongClick = OnItemLongClickListener { position, _ ->
-                        mAdapter.getItemData(position)?.let { article ->
-                            showCollectDialog(article, position)
-                        }
-                        true
-                    }
                     mBinding?.indicator = resources.getString(R.string.blog_articles)
                 }
 

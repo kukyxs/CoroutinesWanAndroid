@@ -3,8 +3,8 @@ package com.kuky.demo.wan.android.ui.coins
 import android.os.Bundle
 import android.view.View
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
 

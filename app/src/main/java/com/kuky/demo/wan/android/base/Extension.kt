@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.viewpager.widget.ViewPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -85,4 +86,23 @@ fun EditText.showSoftInput() {
 
 fun EditText.clearText() {
     setText("")
+}
+
+fun ViewPager.onChange(
+    stateChange: ((Int) -> Unit)? = null, scrolled: ((Int, Float, Int) -> Unit)? = null,
+    selected: ((Int) -> Unit)? = null
+) {
+    addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
+            stateChange?.invoke(state)
+        }
+
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            scrolled?.invoke(position, positionOffset, positionOffsetPixels)
+        }
+
+        override fun onPageSelected(position: Int) {
+            selected?.invoke(position)
+        }
+    })
 }

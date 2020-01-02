@@ -22,6 +22,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.LogUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -48,7 +49,9 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
         UserSharedArticleAdapter()
     }
 
-    private var userId = 0
+    private val userId by lazy {
+        arguments?.getInt("user") ?: 0
+    }
 
     override fun actionsOnViewInflate() {
         fetchUserInfo()
@@ -58,8 +61,6 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_shared_user
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        userId = arguments?.getInt("user") ?: 0
-
         mBinding?.let { binding ->
             arguments?.getString("name")?.let {
                 binding.nick = it
@@ -124,6 +125,7 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
                 State.SUCCESS -> injectStates()
 
                 State.FAILED -> {
+                    LogUtils.error(it.msg)
                     if (it.code == ERROR_CODE_INIT) injectStates(error = true)
                     else requireContext().toast(R.string.no_net_on_loading)
                 }

@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.userarticles
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -13,6 +14,7 @@ import com.kuky.demo.wan.android.entity.UserArticleDetail
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
+import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
@@ -81,8 +83,9 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_user_articles
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchSharedArticles()
@@ -90,6 +93,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
             binding.adapter = mAdapter
             binding.itemClick = OnItemClickListener { position, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
                         mNavController,
@@ -99,6 +103,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                 }
             }
             binding.itemLongClick = OnItemLongClickListener { position, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let { article ->
                     requireContext().alert(
                         if (article.collect) "「${article.title}」已收藏"
@@ -116,6 +121,10 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                     }.show()
                 }
                 true
+            }
+            binding.articleList.setOnTouchListener { _, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
+                false
             }
 
             // 双击回顶部
@@ -155,7 +164,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshing = refreshing
             binding.loadingStatus = loading
             binding.errorStatus = error

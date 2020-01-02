@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.hotproject
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -15,6 +16,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.ProjectCategoryDialog
+import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
@@ -75,6 +77,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_hot_project
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding->
             binding.refreshColor = R.color.colorAccent
@@ -86,6 +89,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             binding.holder = this@HotProjectFragment
             binding.itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
+                    (parentFragment as? MainFragment)?.closeMenu()
                     WebsiteDetailFragment.viewDetail(
                         mNavController,
                         R.id.action_mainFragment_to_websiteDetailFragment,
@@ -96,6 +100,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
             binding.itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
+                    (parentFragment as? MainFragment)?.closeMenu()
                     // 根据是否收藏显示不同信息
                     requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                         yesButton {
@@ -110,6 +115,11 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     }.show()
                 }
                 true
+            }
+
+            binding.projectList.setOnTouchListener { _, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
+                false
             }
 
             binding.gesture = DoubleClickListener({

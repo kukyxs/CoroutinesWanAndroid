@@ -36,7 +36,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val mResultAdapter: SearchArticleAdapter by lazy { SearchArticleAdapter() }
 
-    private val mHistoryAdapter: HistoryAdapter by lazy { HistoryAdapter() }
+    private val mHistoryAdapter: HistoryAdapter by lazy {
+        HistoryAdapter().apply {
+            onKeyRemove = { mViewModel.updateHistory() }
+        }
+    }
 
     private val mViewModel: SearchViewModel by lazy {
         ViewModelProvider(this, SearchModelFactory(SearchRepository()))
@@ -145,6 +149,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         })
 
         mViewModel.history.observe(this, Observer<List<String>> {
+            mBinding?.hasHistory = it.isNotEmpty()
             mHistoryAdapter.updateHistory(it as MutableList<String>)
         })
 

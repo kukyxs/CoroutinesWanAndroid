@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.wxchapter
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -8,6 +9,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
+import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 
@@ -29,8 +31,9 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchWxChapter()
@@ -38,9 +41,14 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
             binding.adapter = mAdapter
             binding.listener = OnItemClickListener { position, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let {
                     WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
                 }
+            }
+            binding.rcvChapter.setOnTouchListener { _, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
+                false
             }
 
             binding.errorReload = ErrorReload {
@@ -76,7 +84,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshing = refreshing
             binding.loadingStatus = loading
             binding.errorStatus = error

@@ -31,10 +31,14 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     fun fetchKeys() {
         viewModelScope.safeLaunch({
             keyNetState.postValue(NetworkState.LOADING)
-            hotKeys.value = repository.hotKeys()
-            history.value = SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance)
+            hotKeys.postValue(repository.hotKeys())
+            updateHistory()
             keyNetState.postValue(NetworkState.LOADED)
         }, { keyNetState.postValue(NetworkState.error(it.message)) })
+    }
+
+    fun updateHistory() {
+        history.postValue(SearchHistoryUtils.fetchHistoryKeys(WanApplication.instance))
     }
 
     fun fetchResult(key: String, empty: () -> Unit) {

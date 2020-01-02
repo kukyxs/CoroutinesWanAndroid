@@ -12,8 +12,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
+import com.kuky.demo.wan.android.base.onChange
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
@@ -71,6 +72,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             binding.adapter = mAdapter
             binding.limit = mAdapter.count
             binding.transformer = GalleryTransformer()
+            binding.mainPage.onChange(scrolled = { _, _, _ -> closeMenu() })
 
             mHeaderBinding.holder = this@MainFragment
             binding.userProfileDrawer?.addHeaderView(mHeaderBinding.root)
@@ -159,6 +161,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        closeMenu()
+    }
+
     private fun handleUserProfile() {
         mBinding?.userProfileDrawer?.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
@@ -244,13 +251,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun userCoins(view: View) {
-        mBinding?.floatMenu?.close(false)
+        closeMenu()
         mNavController.navigate(R.id.action_mainFragment_to_coinFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     fun openSettings(view: View) {
-        mBinding?.floatMenu?.close(true)
+        closeMenu()
         mBinding?.drawer?.openDrawer(GravityCompat.START)
         mViewModel.getCoins()
     }
@@ -260,7 +267,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun searchArticles(view: View) {
-        mBinding?.floatMenu?.close(false)
+        closeMenu()
         mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
+    }
+
+    fun closeMenu(animate: Boolean = true) {
+        mBinding?.floatMenu?.close(animate)
     }
 }

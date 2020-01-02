@@ -47,6 +47,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     }
 
     private var mSearchKeyword = ""
+    private val name by lazy { arguments?.getString("name") ?: "" }
     private val mAdapter by lazy { WxChapterListAdapter() }
     private val mViewMode by lazy {
         ViewModelProvider(requireActivity(), WxChapterListModelFactory(WxChapterListRepository()))
@@ -96,7 +97,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         val id = arguments?.getInt("articleId")
 
         mBinding?.let { binding ->
-            binding.wxChapter = arguments?.getString("name") ?: ""
+            binding.wxChapter = name
 
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
@@ -150,9 +151,9 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             })
 
             binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     fetchWxChapterList(id, v.text.toString(), isRefresh = false)
-                    binding.wxChapter = v.text.toString()
+                    binding.wxChapter = if (v.text.isEmpty()) name else v.text.toString()
                     binding.wxSearch.hideSoftInput()
                     binding.wxSearch.startAnimation(searchOut)
                 }

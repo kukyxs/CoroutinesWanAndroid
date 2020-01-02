@@ -14,7 +14,10 @@ import com.kuky.demo.wan.android.databinding.RecyclerHistoryBinding
  * @author kuky.
  * @description
  */
+typealias OnKeyRemove = () -> Unit
+
 class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<String>(list) {
+    var onKeyRemove: OnKeyRemove? = null
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_history
 
@@ -25,6 +28,7 @@ class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<St
                 SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
                 val last = mData?.size ?: 0
                 mData?.remove(data)
+                onKeyRemove?.invoke()
                 notifyItemRangeChanged(0, last)
             }
         }

@@ -82,7 +82,7 @@ object SearchHistoryUtils {
 
         return when {
             content.contains(",") -> content.split(",") as ArrayList<String>
-            content.isBlank() -> null
+            content.isBlank() -> arrayListOf()
             else -> arrayListOf(content)
         }
     }

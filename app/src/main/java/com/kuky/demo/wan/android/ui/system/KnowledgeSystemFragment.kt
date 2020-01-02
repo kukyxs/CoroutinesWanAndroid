@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.ui.system
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -12,6 +13,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.dialog.KnowledgeSystemDialogFragment
+import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
@@ -73,6 +75,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
@@ -85,6 +88,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             binding.adapter = mAdapter
             binding.itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
+                    (parentFragment as? MainFragment)?.closeMenu()
                     WebsiteDetailFragment.viewDetail(
                         mNavController,
                         R.id.action_mainFragment_to_websiteDetailFragment,
@@ -94,6 +98,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             }
             binding.itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
+                    (parentFragment as? MainFragment)?.closeMenu()
                     requireContext().alert(
                         if (article.collect) "「${article.title}」已收藏"
                         else " 是否收藏 「${article.title}」"
@@ -110,6 +115,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     }.show()
                 }
                 true
+            }
+
+            binding.projectList.setOnTouchListener { _, _ ->
+                (parentFragment as? MainFragment)?.closeMenu()
+                false
             }
 
             // 单击弹出选择框，双击返回顶部
@@ -193,7 +203,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshing = refreshing
             binding.loadingStatus = loading
             binding.errorStatus = error

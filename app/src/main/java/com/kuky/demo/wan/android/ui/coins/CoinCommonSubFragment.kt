@@ -92,7 +92,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
             mBinding?.emptyStatus = true
         }
 
-        mViewModel.rankNetState?.observe(this, Observer {
+        mViewModel.recordNetState?.observe(this, Observer {
             when (it.state) {
                 State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
 
