@@ -1,6 +1,6 @@
 ### 大概介绍
 该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口，整体采用 MVVM, Android Jectpack, Retrofit, Kotlin 协程进行编写。
-该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成，目前已完成所有的开发功能，细节有待调整。
+该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成，目前已完成所有的开发功能。
 
 ### 目前已完成功能
 - 首页最新博文
@@ -17,7 +17,6 @@
 - 积分功能
 
 ### 目前存在问题
-- `androidx` 包下 `Navigation` 存在 `Fragment` 重新创建的问题，目前参考的方案只使用于 `support` 包下的 `Navigation`(不要问我 `androidx` 和 `support` 能共存，我也懵...)，有解决方案请提 issue
 - `Paging` 刷新数据的时候，调用 `liveData.value.dataSource.invalidate()` 方法会造成界面空白，目前通过两个 `adapter` 进行处理，处理方式参考 `home` 模块，如果有更好的方式请提 issue
 - `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理，只能通过普通方式处理，如果有解决方案请提 issue
 
