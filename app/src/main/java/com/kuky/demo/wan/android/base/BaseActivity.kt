@@ -17,7 +17,6 @@ import kotlinx.coroutines.cancel
  * @description Activity 基类
  */
 abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), CoroutineScope by MainScope() {
-    private var mPermissionListener: PermissionListener? = null
 
     protected val mBinding: VB by lazy {
         DataBindingUtil.setContentView(this, getLayoutId()) as VB

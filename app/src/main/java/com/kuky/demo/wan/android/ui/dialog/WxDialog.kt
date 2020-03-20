@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.kuky.demo.wan.android.ui.dialog
 
 import android.Manifest
@@ -34,8 +36,11 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
         val file = ImageSaveUtils.getNewFile(requireContext(), "wx_taonce")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requireActivity().requestPermissions {
-                putPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestPermissions {
+                putPermissions(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
 
                 onAllPermissionsGranted {
                     saveQrCode(file)
