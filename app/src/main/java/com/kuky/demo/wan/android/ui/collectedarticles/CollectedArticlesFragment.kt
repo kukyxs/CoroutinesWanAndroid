@@ -91,7 +91,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshing = refreshing
             binding.loadingStatus = loading
             binding.errorStatus = error

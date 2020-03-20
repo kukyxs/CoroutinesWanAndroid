@@ -41,22 +41,32 @@ class CollectedArticlesDataSources(
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UserCollectDetail>) {
-        safeLaunch({
-            initState.postValue(NetworkState.LOADING)
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
 
-            repo.getCollectedArticleList(0)?.let {
-                callback.onResult(it, null, 1)
-                initState.postValue(NetworkState.LOADED)
+                repo.getCollectedArticleList(0)?.let {
+                    callback.onResult(it, null, 1)
+                    initState.postValue(NetworkState.LOADED)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {
-        safeLaunch({
-            repo.getCollectedArticleList(params.key)?.let {
-                callback.onResult(it, params.key + 1)
+        safeLaunch {
+            block = {
+                repo.getCollectedArticleList(params.key)?.let {
+                    callback.onResult(it, params.key + 1)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UserCollectDetail>) {}

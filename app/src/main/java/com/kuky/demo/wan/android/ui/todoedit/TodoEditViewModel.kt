@@ -35,26 +35,39 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
     }
 
     fun addTodo(param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.addTodo(param).let {
-                if (it.errorCode == 0) success() else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                repository.addTodo(param).let {
+                    if (it.errorCode == 0) success() else fail(it.errorMsg)
+                }
             }
-        }, { fail("网络出错啦~请检查网络") })
+            onError = {
+                fail("网络出错啦~请检查网络")
+            }
+        }
     }
 
     fun updateTodo(id: Int, param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.updateTodo(id, param).let {
-                if (it.errorCode == 0) success() else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                repository.updateTodo(id, param).let {
+                    if (it.errorCode == 0) success() else fail(it.errorMsg)
+                }
             }
-        }, { fail("网络出错啦~请检查网络") })
+            onError = { fail("网络出错啦~请检查网络") }
+        }
     }
 
     fun deleteTodo(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.deleteTodo(id).let {
-                if (it.errorCode == 0) success() else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                repository.deleteTodo(id).let {
+                    if (it.errorCode == 0) success() else fail(it.errorMsg)
+                }
             }
-        }, { fail("网络出错啦~请检查网络") })
+            onError = {
+                fail("网络出错啦~请检查网络")
+            }
+        }
     }
 }

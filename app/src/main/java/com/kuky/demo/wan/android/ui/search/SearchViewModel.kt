@@ -29,12 +29,17 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     }
 
     fun fetchKeys() {
-        viewModelScope.safeLaunch({
-            keyNetState.postValue(NetworkState.LOADING)
-            hotKeys.postValue(repository.hotKeys())
-            updateHistory()
-            keyNetState.postValue(NetworkState.LOADED)
-        }, { keyNetState.postValue(NetworkState.error(it.message)) })
+        viewModelScope.safeLaunch {
+            block = {
+                keyNetState.postValue(NetworkState.LOADING)
+                hotKeys.postValue(repository.hotKeys())
+                updateHistory()
+                keyNetState.postValue(NetworkState.LOADED)
+            }
+            onError = {
+                keyNetState.postValue(NetworkState.error(it.message))
+            }
+        }
     }
 
     fun updateHistory() {

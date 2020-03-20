@@ -28,64 +28,83 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     fun getBanners() {
-        viewModelScope.safeLaunch({
-            banners.value = repository.getHomeBanners().apply {
-                PreferencesHelper.saveBannerCache(WanApplication.instance, Gson().toJson(this))
+        viewModelScope.safeLaunch {
+            block = {
+                banners.value = repository.getHomeBanners().apply {
+                    PreferencesHelper.saveBannerCache(WanApplication.instance, Gson().toJson(this))
+                }
             }
-        })
+        }
     }
 
     fun getCoins() {
-        viewModelScope.safeLaunch({ coins.value = repository.getCoins() })
+        viewModelScope.safeLaunch {
+            block = { coins.value = repository.getCoins() }
+        }
     }
 
     fun login(username: String, password: String, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.login(username, password).let {
-                if (it.body()?.errorCode == 0) {
-                    saveUser(it)
-                    success()
-                    hasLogin.value = true
-                } else {
-                    fail(it.body()?.errorMsg ?: "登录失败~")
-                    hasLogin.value = false
+        viewModelScope.safeLaunch {
+            block = {
+                repository.login(username, password).let {
+                    if (it.body()?.errorCode == 0) {
+                        saveUser(it)
+                        success()
+                        hasLogin.value = true
+                    } else {
+                        fail(it.body()?.errorMsg ?: "登录失败~")
+                        hasLogin.value = false
+                    }
                 }
             }
-        }, { fail("登录过程出错啦~请检查网络") })
+            onError = {
+                fail("登录过程出错啦~请检查网络")
+            }
+        }
     }
 
     fun register(
         username: String, password: String, repass: String,
         success: () -> Unit, fail: (String) -> Unit
     ) {
-        viewModelScope.safeLaunch({
-            repository.register(username, password, repass).let {
-                if (it.body()?.errorCode == 0) {
-                    saveUser(it)
-                    success()
-                    hasLogin.value = true
-                } else {
-                    fail(it.body()?.errorMsg ?: "注册失败~")
-                    hasLogin.value = false
+        viewModelScope.safeLaunch {
+            block = {
+                repository.register(username, password, repass).let {
+                    if (it.body()?.errorCode == 0) {
+                        saveUser(it)
+                        success()
+                        hasLogin.value = true
+                    } else {
+                        fail(it.body()?.errorMsg ?: "注册失败~")
+                        hasLogin.value = false
+                    }
                 }
             }
-        }, { fail("注册过程出错啦~请检查网络") })
+            onError = {
+                fail("注册过程出错啦~请检查网络")
+            }
+        }
     }
 
     fun loginOut(fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.loginOut().let {
-                if (it.errorCode == 0) {
-                    hasLogin.value = false
-                    PreferencesHelper.saveUserId(WanApplication.instance, 0)
-                    PreferencesHelper.saveUserName(WanApplication.instance, "")
-                    PreferencesHelper.saveCookie(WanApplication.instance, "")
-                } else {
-                    hasLogin.value = true
-                    fail("退出账号失败~")
+        viewModelScope.safeLaunch {
+            block = {
+                repository.loginOut().let {
+                    if (it.errorCode == 0) {
+                        hasLogin.value = false
+                        PreferencesHelper.saveUserId(WanApplication.instance, 0)
+                        PreferencesHelper.saveUserName(WanApplication.instance, "")
+                        PreferencesHelper.saveCookie(WanApplication.instance, "")
+                    } else {
+                        hasLogin.value = true
+                        fail("退出账号失败~")
+                    }
                 }
             }
-        }, { fail("退出过程出错啦~请检查网络") })
+            onError = {
+                fail("退出过程出错啦~请检查网络")
+            }
+        }
     }
 
     // 存储用户信息

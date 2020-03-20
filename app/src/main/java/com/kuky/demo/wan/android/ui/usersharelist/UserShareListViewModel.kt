@@ -34,26 +34,36 @@ class UserShareListViewModel(private val repository: UserShareListRepository) : 
     }
 
     fun deleteAShare(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.deleteShare(id).let {
-                if (it.errorCode == 0) {
-                    articles?.value?.dataSource?.invalidate()
-                    success()
-                } else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                repository.deleteShare(id).let {
+                    if (it.errorCode == 0) {
+                        articles?.value?.dataSource?.invalidate()
+                        success()
+                    } else fail(it.errorMsg)
+                }
             }
-        }, { fail("删除出错啦~请检查网络") })
+            onError = {
+                fail("删除出错啦~请检查网络")
+            }
+        }
     }
 
     fun putAShare(title: String, link: String, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            if (title.isBlank() || link.isBlank())
-                fail("请填写必要信息")
-            else repository.shareArticle(title, link).let {
-                if (it.errorCode == 0) {
-                    articles?.value?.dataSource?.invalidate()
-                    success()
-                } else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                if (title.isBlank() || link.isBlank())
+                    fail("请填写必要信息")
+                else repository.shareArticle(title, link).let {
+                    if (it.errorCode == 0) {
+                        articles?.value?.dataSource?.invalidate()
+                        success()
+                    } else fail(it.errorMsg)
+                }
             }
-        }, { fail("分享出错啦~请检查网络") })
+            onError = {
+                fail("分享出错啦~请检查网络")
+            }
+        }
     }
 }

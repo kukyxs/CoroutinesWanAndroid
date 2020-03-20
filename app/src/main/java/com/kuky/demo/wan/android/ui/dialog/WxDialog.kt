@@ -42,19 +42,13 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 )
 
-                onAllPermissionsGranted {
-                    saveQrCode(file)
-                }
+                onAllPermissionsGranted = { saveQrCode(file) }
 
-                onPermissionsNeverAsked {
-                    toAppSettings()
-                }
+                onPermissionsNeverAsked = { toAppSettings() }
 
-                onPermissionsDenied {
-                    toAppSettings()
-                }
+                onPermissionsDenied = { toAppSettings() }
 
-                onShowRationale { request ->
+                onShowRationale = { request ->
                     requireContext().alert("必要权限，请务必同意o(╥﹏╥)o", "温馨提示") {
                         positiveButton("行，给你~") { request.retryRequestPermissions() }
                         negativeButton("不，我不玩了！") {}
@@ -97,8 +91,10 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
             if (result) {
                 requireContext().toast("保存图片成功，即将打开微信")
                 delayLaunch(1000) {
-                    ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
-                    dialog?.dismiss()
+                    block = {
+                        ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
+                        dialog?.dismiss()
+                    }
                 }
             } else {
                 requireContext().toast("保存图片出错啦~")

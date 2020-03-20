@@ -18,9 +18,14 @@ class WxChapterViewModel(private val repository: WxChapterRepository) : ViewMode
     val mData = MutableLiveData<MutableList<WxChapterData>?>()
 
     fun getWxChapter() =
-        viewModelScope.safeLaunch({
-            netState.postValue(NetworkState.LOADING)
-            mData.value = repository.getWxChapter()
-            netState.postValue(NetworkState.LOADED)
-        }, { netState.postValue(NetworkState.error(it.message)) })
+        viewModelScope.safeLaunch {
+            block = {
+                netState.postValue(NetworkState.LOADING)
+                mData.value = repository.getWxChapter()
+                netState.postValue(NetworkState.LOADED)
+            }
+            onError = {
+                netState.postValue(NetworkState.error(it.message))
+            }
+        }
 }

@@ -43,21 +43,31 @@ class CoinRecordDataSource(
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRecordDetail>) {
-        safeLaunch({
-            initState.postValue(NetworkState.LOADING)
-            repository.getCoinRecord(1)?.let {
-                callback.onResult(it, null, 2)
-                initState.postValue(NetworkState.LOADED)
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
+                repository.getCoinRecord(1)?.let {
+                    callback.onResult(it, null, 2)
+                    initState.postValue(NetworkState.LOADED)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRecordDetail>) {
-        safeLaunch({
-            repository.getCoinRecord(params.key)?.let {
-                callback.onResult(it, params.key + 1)
+        safeLaunch {
+            block = {
+                repository.getCoinRecord(params.key)?.let {
+                    callback.onResult(it, params.key + 1)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRecordDetail>) {}
@@ -107,21 +117,31 @@ class CoinRankDataSource(
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, CoinRankDetail>) {
-        safeLaunch({
-            initState.postValue(NetworkState.LOADING)
-            repository.getCoinRanks(1)?.let {
-                callback.onResult(it, null, 2)
-                initState.postValue(NetworkState.LOADED)
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
+                repository.getCoinRanks(1)?.let {
+                    callback.onResult(it, null, 2)
+                    initState.postValue(NetworkState.LOADED)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRankDetail>) {
-        safeLaunch({
-            repository.getCoinRanks(params.key)?.let {
-                callback.onResult(it, params.key + 1)
+        safeLaunch {
+            block = {
+                repository.getCoinRanks(params.key)?.let {
+                    callback.onResult(it, params.key + 1)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, CoinRankDetail>) {}

@@ -34,11 +34,13 @@ class TodoListViewModel(private val repository: TodoRepository) : ViewModel() {
     }
 
     fun updateTodoState(id: Int, state: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch({
-            repository.updateTodoState(id, state).let {
-                if (it.errorCode == 0) success()
-                else fail(it.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                repository.updateTodoState(id, state).let {
+                    if (it.errorCode == 0) success()
+                    else fail(it.errorMsg)
+                }
             }
-        })
+        }
     }
 }

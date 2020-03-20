@@ -79,7 +79,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchProjects(mId, mTitle)
@@ -193,7 +193,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding->
+        mBinding?.let { binding ->
             binding.refreshing = refreshing
             binding.loadingStatus = loading
             binding.errorStatus = error

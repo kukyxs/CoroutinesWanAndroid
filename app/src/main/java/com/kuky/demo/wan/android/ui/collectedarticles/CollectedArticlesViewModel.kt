@@ -39,16 +39,19 @@ class CollectedArticlesViewModel(private val repo: CollectedArticlesRepository) 
         articleId: Int, originId: Int,
         onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit
     ) {
-        viewModelScope.safeLaunch({
-            val result = repo.deleteCollectedArticle(articleId, originId)
-            if (result.errorCode == 0) {
-                // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
-                mArticles?.value?.dataSource?.invalidate()
-                onSuccess()
-            } else {
-                onFailed(result.errorMsg)
+        viewModelScope.safeLaunch {
+            block = {
+                val result = repo.deleteCollectedArticle(articleId, originId)
+                if (result.errorCode == 0) {
+                    // TODO("目前根据官方文档，通过 dataSource.invalidate 刷新 Paging 数据")
+                    mArticles?.value?.dataSource?.invalidate()
+                    onSuccess()
+                } else {
+                    onFailed(result.errorMsg)
+                }
             }
-        }, { onFailed("网络出错啦~请检查网络") })
+            onError = { onFailed("网络出错啦~请检查网络") }
+        }
     }
 }
 

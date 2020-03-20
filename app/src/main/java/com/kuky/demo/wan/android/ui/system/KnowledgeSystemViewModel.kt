@@ -34,11 +34,16 @@ class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository
     }
 
     fun fetchType() {
-        viewModelScope.safeLaunch({
-            typeNetState.postValue(NetworkState.LOADING)
-            mType.value = repository.loadSystemType()
-            typeNetState.postValue(NetworkState.LOADED)
-        }, { typeNetState.postValue(NetworkState.error(it.message)) })
+        viewModelScope.safeLaunch {
+            block = {
+                typeNetState.postValue(NetworkState.LOADING)
+                mType.value = repository.loadSystemType()
+                typeNetState.postValue(NetworkState.LOADED)
+            }
+            onError = {
+                typeNetState.postValue(NetworkState.error(it.message))
+            }
+        }
     }
 
     fun fetchArticles(cid: Int, empty: () -> Unit) {

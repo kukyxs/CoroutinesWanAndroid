@@ -44,37 +44,45 @@ class HomeArticleDataSource(
     val initState = MutableLiveData<NetworkState>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, HomeArticleDetail>) {
-        safeLaunch({
-            initState.postValue(NetworkState.LOADING)
-            val tops = repository.loadTops()
-            val data = repository.loadPageData(0)
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
+                val tops = repository.loadTops()
+                val data = repository.loadPageData(0)
 
-            withContext(Dispatchers.IO) {
-                WanDatabaseUtils.homeArticleCacheDao.clearHomeCache()
-                tops?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
-                data?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
+                withContext(Dispatchers.IO) {
+                    WanDatabaseUtils.homeArticleCacheDao.clearHomeCache()
+                    tops?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
+                    data?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
+                }
+
+                callback.onResult(arrayListOf<HomeArticleDetail>().apply {
+                    addAll(tops ?: arrayListOf())
+                    addAll(data ?: arrayListOf())
+                }, null, 1)
+                initState.postValue(NetworkState.LOADED)
             }
-
-            callback.onResult(arrayListOf<HomeArticleDetail>().apply {
-                addAll(tops ?: arrayListOf())
-                addAll(data ?: arrayListOf())
-            }, null, 1)
-            initState.postValue(NetworkState.LOADED)
-        }, {
-            initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
-        })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, HomeArticleDetail>) {
-        safeLaunch({
-            repository.loadPageData(params.key)?.let {
-                withContext(Dispatchers.IO) {
-                    WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it)
-                }
+        safeLaunch {
+            block = {
+                repository.loadPageData(params.key)?.let {
+                    withContext(Dispatchers.IO) {
+                        WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it)
+                    }
 
-                callback.onResult(it, params.key + 1)
+                    callback.onResult(it, params.key + 1)
+                }
             }
-        }, { initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE)) })
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, HomeArticleDetail>) {}

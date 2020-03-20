@@ -17,14 +17,12 @@ private const val K_FRAGMENT_TAG = "base.k.permission.fragment.tag"
 private const val K_REQUEST_CODE = 0xFF
 
 fun FragmentActivity.requestPermissions(init: PermissionCallback.() -> Unit) {
-    val callback = PermissionCallback()
-    callback.init()
+    val callback = PermissionCallback().apply(init)
     onRuntimePermissionsRequest(callback)
 }
 
 fun Fragment.requestPermissions(init: PermissionCallback.() -> Unit) {
-    val callback = PermissionCallback()
-    callback.init()
+    val callback = PermissionCallback().apply(init)
     requireActivity().onRuntimePermissionsRequest(callback)
 }
 
@@ -35,7 +33,7 @@ private fun FragmentActivity.permissionGranted(permission: String) =
 
 // 请求权限
 private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCallback) {
-    val permissions = callback.permissionList()
+    val permissions = callback.permissions
 
     if (permissions.isEmpty()) return
 
@@ -155,32 +153,14 @@ data class PermissionRequest(
  * 权限申请回调
  */
 class PermissionCallback {
-    private var permissions: Array<out String> = arrayOf()
-    private var onAllPermissionsGranted: () -> Unit = {}
-    private var onPermissionsDenied: (MutableList<String>) -> Unit = {}
-    private var onPermissionsNeverAsked: (MutableList<String>) -> Unit = {}
-    private var onShowRationale: (PermissionRequest) -> Unit = { it.retryRequestPermissions() }
-
-    fun permissionList() = permissions
+    var permissions: Array<out String> = arrayOf()
+    var onAllPermissionsGranted: () -> Unit = {}
+    var onPermissionsDenied: (MutableList<String>) -> Unit = {}
+    var onPermissionsNeverAsked: (MutableList<String>) -> Unit = {}
+    var onShowRationale: (PermissionRequest) -> Unit = { it.retryRequestPermissions() }
 
     fun putPermissions(vararg ps: String) {
         permissions = ps
-    }
-
-    fun onAllPermissionsGranted(granted: () -> Unit) {
-        onAllPermissionsGranted = granted
-    }
-
-    fun onPermissionsDenied(denied: (MutableList<String>) -> Unit) {
-        onPermissionsDenied = denied
-    }
-
-    fun onPermissionsNeverAsked(neverAsked: (MutableList<String>) -> Unit) {
-        onPermissionsNeverAsked = neverAsked
-    }
-
-    fun onShowRationale(showRationale: (PermissionRequest) -> Unit) {
-        onShowRationale = showRationale
     }
 
     internal fun granted() = onAllPermissionsGranted.invoke()

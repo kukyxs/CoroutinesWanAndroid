@@ -25,11 +25,16 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
     }
 
     fun fetchCategories() {
-        viewModelScope.safeLaunch({
-            typeNetState.postValue(NetworkState.LOADING)
-            categories.value = repository.loadProjectCategories()
-            typeNetState.postValue(NetworkState.LOADED)
-        }, { typeNetState.postValue(NetworkState.error(it.message)) })
+        viewModelScope.safeLaunch {
+            block = {
+                typeNetState.postValue(NetworkState.LOADING)
+                categories.value = repository.loadProjectCategories()
+                typeNetState.postValue(NetworkState.LOADED)
+            }
+            onError = {
+                typeNetState.postValue(NetworkState.error(it.message))
+            }
+        }
     }
 
     fun fetchDiffCategoryProjects(pid: Int, empty: () -> Unit) {

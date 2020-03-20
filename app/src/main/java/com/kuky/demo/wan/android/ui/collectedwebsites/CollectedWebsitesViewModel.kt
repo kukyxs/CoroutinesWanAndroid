@@ -16,11 +16,16 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
     val mWebsitesData = MutableLiveData<List<WebsiteData>?>()
 
     fun fetchWebSitesData() {
-        viewModelScope.safeLaunch({
-            netState.postValue(NetworkState.LOADING)
-            mWebsitesData.value = repo.getCollectedWebsites()
-            netState.postValue(NetworkState.LOADED)
-        }, { netState.postValue(NetworkState.error(it.message)) })
+        viewModelScope.safeLaunch {
+            block = {
+                netState.postValue(NetworkState.LOADING)
+                mWebsitesData.value = repo.getCollectedWebsites()
+                netState.postValue(NetworkState.LOADED)
+            }
+            onError = {
+                netState.postValue(NetworkState.error(it.message))
+            }
+        }
     }
 
     fun addWebsites(
@@ -30,12 +35,17 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
         if (name.isNullOrBlank() || link.isNullOrBlank()) {
             fail("输入不可为空!", false)
         } else {
-            viewModelScope.safeLaunch({
-                repo.addWebsite(name, link).let {
-                    if (it.errorCode == 0) success()
-                    else fail(it.errorMsg, true)
+            viewModelScope.safeLaunch {
+                block = {
+                    repo.addWebsite(name, link).let {
+                        if (it.errorCode == 0) success()
+                        else fail(it.errorMsg, true)
+                    }
                 }
-            }, { fail("网络出错啦~请检查网络", false) })
+                onError = {
+                    fail("网络出错啦~请检查网络", false)
+                }
+            }
         }
     }
 
@@ -46,21 +56,31 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
         if (name.isBlank() || link.isBlank()) {
             fail("输入不可为空", false)
         } else {
-            viewModelScope.safeLaunch({
-                repo.editWebsite(id, name, link).let {
-                    if (it.errorCode == 0) success()
-                    else fail(it.errorMsg, true)
+            viewModelScope.safeLaunch {
+                block = {
+                    repo.editWebsite(id, name, link).let {
+                        if (it.errorCode == 0) success()
+                        else fail(it.errorMsg, true)
+                    }
                 }
-            }, { fail("网络出错啦~请检查网络", false) })
+                onError = {
+                    fail("网络出错啦~请检查网络", false)
+                }
+            }
         }
     }
 
     fun deleteWebsite(id: Int, onSuccess: () -> Unit, onFailed: (errorMsg: String) -> Unit) {
-        viewModelScope.safeLaunch({
-            val result = repo.deleteWebsite(id)
-            if (result.errorCode == 0) {
-                onSuccess()
-            } else onFailed(result.errorMsg)
-        }, { onFailed("网络出错啦~请检查网络") })
+        viewModelScope.safeLaunch {
+            block = {
+                val result = repo.deleteWebsite(id)
+                if (result.errorCode == 0) {
+                    onSuccess()
+                } else onFailed(result.errorMsg)
+            }
+            onError = {
+                onFailed("网络出错啦~请检查网络")
+            }
+        }
     }
 }
