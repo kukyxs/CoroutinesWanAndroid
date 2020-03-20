@@ -65,15 +65,4 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
 
     fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T =
         ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory()).get(clazz)
-
-    /**
-     * 权限申请，依赖的 activity 需继承 [BaseActivity]
-     */
-    fun onRuntimePermissionRequest(
-        permissions: Array<String>, listener: PermissionListener
-    ) = if (activity != null && activity is BaseActivity<*>) {
-        (activity as BaseActivity<*>).onRuntimePermissionsAsk(permissions, listener)
-    } else {
-        throw RuntimeException("Attached activity is not [com.kuky.demo.wan.android.base.BaseActivity], check it")
-    }
 }

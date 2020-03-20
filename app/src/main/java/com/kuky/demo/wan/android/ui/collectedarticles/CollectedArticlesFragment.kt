@@ -61,7 +61,6 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                     }
                     noButton { }
                 }.show()
-                true
             }
 
             binding.errorReload = ErrorReload { fetchCollectedArticleList() }

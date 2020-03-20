@@ -79,6 +79,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
+    @Suppress("LABEL_NAME_CLASH")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
             binding.holder = this@TodoListFragment
@@ -113,7 +114,6 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                         noButton { }
                     }.show()
                 }
-                true
             }
             binding.scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

@@ -38,9 +38,8 @@ abstract class BaseRecyclerAdapter<T>(var mData: MutableList<T>?) :
         holder.binding.executePendingBindings()
         holder.binding.root.setOnClickListener { v -> itemListener?.onItemClick(position, v) }
         holder.binding.root.setOnLongClickListener { v ->
-            return@setOnLongClickListener itemLongListener?.onItemLongClick(
-                position, v
-            ) ?: false
+            itemLongListener?.onItemLongClick(position, v)
+            false
         }
     }
 

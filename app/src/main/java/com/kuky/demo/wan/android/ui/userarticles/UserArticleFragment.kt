@@ -120,7 +120,6 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                         if (!article.collect) noButton { }
                     }.show()
                 }
-                true
             }
             binding.articleList.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()

@@ -99,7 +99,6 @@ class SharedUserFragment : BaseFragment<FragmentSharedUserBinding>() {
                         if (!article.collect) noButton { }
                     }.show()
                 }
-                true
             }
 
             // 双击回顶部

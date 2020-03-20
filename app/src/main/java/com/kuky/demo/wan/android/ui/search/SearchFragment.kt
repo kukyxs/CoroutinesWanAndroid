@@ -96,7 +96,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                         mResultAdapter.getItemData(position)?.let { article ->
                             showCollectionDialog(article, position)
                         }
-                        true
                     }
                 } else {
                     binding.enable = false

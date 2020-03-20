@@ -74,7 +74,6 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                         }
                     }
                 }
-                true
             }
 
             binding.errorReload = ErrorReload { fetchWebSitesData() }

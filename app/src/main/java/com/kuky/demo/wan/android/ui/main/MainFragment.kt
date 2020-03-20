@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.kuky.demo.wan.android.ui.main
 
 import android.os.Bundle
@@ -75,7 +77,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             binding.mainPage.onChange(scrolled = { _, _, _ -> closeMenu() })
 
             mHeaderBinding.holder = this@MainFragment
-            binding.userProfileDrawer?.addHeaderView(mHeaderBinding.root)
+            binding.userProfileDrawer.addHeaderView(mHeaderBinding.root)
         }
 
         mViewModel.getBanners()

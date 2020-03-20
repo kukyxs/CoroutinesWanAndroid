@@ -43,9 +43,8 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
         holder.binding.executePendingBindings()
         holder.binding.root.setOnClickListener { v -> itemListener?.onItemClick(position, v) }
         holder.binding.root.setOnLongClickListener { v ->
-            return@setOnLongClickListener itemLongListener?.onItemLongClick(
-                position, v
-            ) ?: false
+            itemLongListener?.onItemLongClick(position, v)
+            false
         }
     }
 

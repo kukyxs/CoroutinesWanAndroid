@@ -114,7 +114,6 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                         if (!article.collect) noButton { }
                     }.show()
                 }
-                true
             }
 
             binding.projectList.setOnTouchListener { _, _ ->

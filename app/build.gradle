@@ -25,6 +25,13 @@ android {
     dataBinding {
         enabled = true
     }
+
+    // solve build error
+    // `Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.`
+    // `Please specify proper '-jvm-target' option`
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 dependencies {
@@ -38,15 +45,15 @@ dependencies {
 
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
 
-    implementation "androidx.core:core-ktx:1.1.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc03"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc03"
+    implementation "androidx.core:core-ktx:1.2.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.1.0"
-    implementation "androidx.navigation:navigation-ui-ktx:2.1.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.2.1"
+    implementation "androidx.navigation:navigation-ui-ktx:2.2.1"
 
-    implementation "androidx.room:room-runtime:2.2.3"
-    kapt "androidx.room:room-compiler:2.2.3"
+    implementation "androidx.room:room-runtime:2.2.4"
+    kapt "androidx.room:room-compiler:2.2.4"
 
     implementation "androidx.paging:paging-runtime:2.1.1"
     implementation "com.google.android:flexbox:1.1.0"

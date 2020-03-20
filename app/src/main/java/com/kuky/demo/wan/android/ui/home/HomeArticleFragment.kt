@@ -100,7 +100,6 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                 mAdapter.getItemData(position)?.let { article ->
                     showCollectDialog(article, position)
                 }
-                true
             }
 
             binding.articleList.setOnTouchListener { _, _ ->

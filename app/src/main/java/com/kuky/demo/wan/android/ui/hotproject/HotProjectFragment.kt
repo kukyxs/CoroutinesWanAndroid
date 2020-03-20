@@ -114,7 +114,6 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                         if (!article.collect) noButton { }
                     }.show()
                 }
-                true
             }
 
             binding.projectList.setOnTouchListener { _, _ ->

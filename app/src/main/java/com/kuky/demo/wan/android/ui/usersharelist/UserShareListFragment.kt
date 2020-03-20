@@ -68,7 +68,6 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
                         noButton { }
                     }.show()
                 }
-                true
             }
 
             // 双击回顶部

@@ -8,5 +8,5 @@ import android.view.View;
  * @description RecyclerList的长按事件
  */
 public interface OnItemLongClickListener {
-    boolean onItemLongClick(int position, View view);
+    void onItemLongClick(int position, View view);
 }
