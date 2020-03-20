@@ -136,9 +136,11 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 }
             }
 
-            binding.gesture = DoubleClickListener(null, {
-                binding.todoListPage.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    binding.todoListPage.scrollToTop()
+                }
+            }
 
             mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
                 if (it) fetchTodoList(true)

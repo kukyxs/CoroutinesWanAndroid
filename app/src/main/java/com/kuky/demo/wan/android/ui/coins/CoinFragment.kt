@@ -32,9 +32,11 @@ class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
         mBinding?.let { binding ->
             binding.adapter = mAdapter
             binding.coinIndicator.setupWithViewPager(binding.coinVp)
-            binding.gesture = DoubleClickListener(null, {
-                (childFragmentManager.fragments[binding.coinVp.currentItem] as? CoinCommonSubFragment)?.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    (childFragmentManager.fragments[binding.coinVp.currentItem] as? CoinCommonSubFragment)?.scrollToTop()
+                }
+            }
         }
     }
 }

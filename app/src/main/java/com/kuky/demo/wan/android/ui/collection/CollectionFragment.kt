@@ -38,13 +38,15 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
             binding.current = arguments?.getInt("position", 0) ?: 0
             binding.collectionIndicator.setupWithViewPager(binding.collectionVp)
 
-            binding.gesture = DoubleClickListener(null, {
-                when (binding.collectionVp.currentItem) {
-                    0 -> (childFragmentManager.fragments[0] as? CollectedArticlesFragment)?.scrollToTop()
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    when (binding.collectionVp.currentItem) {
+                        0 -> (childFragmentManager.fragments[0] as? CollectedArticlesFragment)?.scrollToTop()
 
-                    1 -> (childFragmentManager.fragments[1] as? CollectedWebsitesFragment)?.scrollToTop()
+                        1 -> (childFragmentManager.fragments[1] as? CollectedWebsitesFragment)?.scrollToTop()
+                    }
                 }
-            })
+            }
         }
     }
 

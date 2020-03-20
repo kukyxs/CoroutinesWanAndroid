@@ -145,9 +145,11 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                 fetchWxChapterList(id, mSearchKeyword)
             }
 
-            binding.gesture = DoubleClickListener(null, {
-                binding.chapterList.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    binding.chapterList.scrollToTop()
+                }
+            }
 
             binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -159,12 +161,14 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                 true
             }
 
-            binding.searchGesture = DoubleClickListener({
-                if (binding.searchMode == false || binding.searchMode == null) {
-                    binding.wxSearch.clearText()
-                    binding.wxSearch.startAnimation(searchIn)
+            binding.searchGesture = DoubleClickListener {
+                singleTap = {
+                    if (binding.searchMode == false || binding.searchMode == null) {
+                        binding.wxSearch.clearText()
+                        binding.wxSearch.startAnimation(searchIn)
+                    }
                 }
-            }, null)
+            }
         }
     }
 

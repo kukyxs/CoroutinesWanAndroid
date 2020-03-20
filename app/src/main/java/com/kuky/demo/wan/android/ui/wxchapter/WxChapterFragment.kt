@@ -55,9 +55,11 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                 fetchWxChapter()
             }
 
-            binding.gesture = DoubleClickListener(null, {
-                binding.rcvChapter.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    binding.rcvChapter.scrollToTop()
+                }
+            }
         }
     }
 

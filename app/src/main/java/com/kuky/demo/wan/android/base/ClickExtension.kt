@@ -10,16 +10,17 @@ import android.view.View
  * @description
  */
 
-typealias OnSingleTap = () -> Unit
-
-typealias OnDoubleTap = () -> Unit
-
 private const val INTERVAL = 300L
 
+data class ClickCallback(
+    var singleTap: () -> Unit = {},
+    var doubleTap: () -> Unit = {}
+)
+
 class DoubleClickListener(
-    private val singleTap: OnSingleTap? = null,
-    private val doubleTap: OnDoubleTap? = null
+    init: ClickCallback.() -> Unit
 ) : View.OnTouchListener {
+    private val callback = ClickCallback().apply(init)
     private var count = 0
     private val handler = Handler()
 
@@ -28,8 +29,8 @@ class DoubleClickListener(
         if (event?.action == MotionEvent.ACTION_DOWN) {
             count++
             handler.postDelayed({
-                if (count == 1) singleTap?.invoke()
-                else if (count == 2) doubleTap?.invoke()
+                if (count == 1) callback.singleTap()
+                else if (count == 2) callback.doubleTap()
                 handler.removeCallbacksAndMessages(0)
                 count = 0
             }, INTERVAL)

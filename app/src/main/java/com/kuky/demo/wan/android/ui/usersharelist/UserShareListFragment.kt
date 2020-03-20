@@ -71,13 +71,17 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
             }
 
             // 双击回顶部
-            binding.gesture = DoubleClickListener(null, {
-                binding.articleList.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    binding.articleList.scrollToTop()
+                }
+            }
 
-            binding.shareGesture = DoubleClickListener({
-                ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
-            }, null)
+            binding.shareGesture = DoubleClickListener {
+                singleTap = {
+                    ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
+                }
+            }
 
             binding.errorReload = ErrorReload {
                 fetchSharedArticles()

@@ -122,16 +122,19 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             }
 
             // 单击弹出选择框，双击返回顶部
-            binding.gesture = DoubleClickListener({
-                KnowledgeSystemDialogFragment().apply {
-                    mOnClick = { dialog, first, sec, cid ->
-                        updateSystemArticles(first, sec, cid)
-                        dialog.dismiss()
-                    }
-                }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
-            }, {
-                binding.projectList.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                singleTap = {
+                    KnowledgeSystemDialogFragment().apply {
+                        mOnClick = { dialog, first, sec, cid ->
+                            updateSystemArticles(first, sec, cid)
+                            dialog.dismiss()
+                        }
+                    }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
+                }
+                doubleTap = {
+                    binding.projectList.scrollToTop()
+                }
+            }
 
             binding.errorReload = ErrorReload {
                 if (errorOnTypes) fetchSystemTypes()

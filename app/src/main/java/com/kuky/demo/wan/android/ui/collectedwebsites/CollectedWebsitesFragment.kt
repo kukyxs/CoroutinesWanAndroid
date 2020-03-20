@@ -78,12 +78,14 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
             binding.errorReload = ErrorReload { fetchWebSitesData() }
 
-            binding.gesture = DoubleClickListener({
-                CollectedWebsiteDialogFragment().apply {
-                    editMode = false
-                    injectWebsiteData()
-                }.showAllowStateLoss(childFragmentManager, "new_website")
-            }, null)
+            binding.gesture = DoubleClickListener {
+                singleTap = {
+                    CollectedWebsiteDialogFragment().apply {
+                        editMode = false
+                        injectWebsiteData()
+                    }.showAllowStateLoss(childFragmentManager, "new_website")
+                }
+            }
         }
     }
 

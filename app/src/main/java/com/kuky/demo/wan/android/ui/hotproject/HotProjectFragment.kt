@@ -121,16 +121,19 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                 false
             }
 
-            binding.gesture = DoubleClickListener({
-                ProjectCategoryDialog().apply {
-                    onSelectedListener = { dialog, category ->
-                        mId = category.id
-                        mTitle = category.name
-                        fetchProjects(category.id, category.name)
-                        dialog?.dismiss()
-                    }
-                }.showAllowStateLoss(childFragmentManager, "category")
-            }, { binding.projectList.scrollToTop() })
+            binding.gesture = DoubleClickListener {
+                singleTap = {
+                    ProjectCategoryDialog().apply {
+                        onSelectedListener = { dialog, category ->
+                            mId = category.id
+                            mTitle = category.name
+                            fetchProjects(category.id, category.name)
+                            dialog?.dismiss()
+                        }
+                    }.showAllowStateLoss(childFragmentManager, "category")
+                }
+                doubleTap = { binding.projectList.scrollToTop() }
+            }
 
             binding.errorReload = ErrorReload {
                 if (errorOnCategories) fetchCategories()

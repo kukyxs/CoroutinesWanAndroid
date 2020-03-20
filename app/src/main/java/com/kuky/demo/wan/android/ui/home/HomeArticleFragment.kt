@@ -108,9 +108,11 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             }
 
             // 双击回顶部
-            binding.gesture = DoubleClickListener(null, {
-                binding.articleList.scrollToTop()
-            })
+            binding.gesture = DoubleClickListener {
+                doubleTap = {
+                    binding.articleList.scrollToTop()
+                }
+            }
 
             binding.errorReload = ErrorReload {
                 mViewModel.refreshArticle()

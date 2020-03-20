@@ -92,45 +92,49 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
             }
         }
 
-        mBinding?.gesture = DoubleClickListener({
-            val shareItems = arrayListOf(
-                resources.getString(R.string.copy_link),
-                resources.getString(R.string.share_links),
-                resources.getString(R.string.open_in_browser)
-            )
+        mBinding?.gesture = DoubleClickListener {
+            singleTap = {
+                val shareItems = arrayListOf(
+                    resources.getString(R.string.copy_link),
+                    resources.getString(R.string.share_links),
+                    resources.getString(R.string.open_in_browser)
+                )
 
-            requireContext().selector(items = shareItems) { _, i ->
-                when (i) {
-                    0 -> (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.let {
-                        it.setPrimaryClip(ClipData.newPlainText("", url))
-                        requireContext().toast("复制成功")
-                    }
-
-                    1 -> startActivity(
-                        Intent.createChooser(
-                            Intent().apply {
-                                putExtra(Intent.EXTRA_TEXT, url)
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }, resources.getString(R.string.share_links)
-                        )
-                    )
-
-                    2 -> startActivity(
-                        Intent().apply {
-                            action = Intent.ACTION_VIEW
-                            data = Uri.parse(url)
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                requireContext().selector(items = shareItems) { _, i ->
+                    when (i) {
+                        0 -> (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.let {
+                            it.setPrimaryClip(ClipData.newPlainText("", url))
+                            requireContext().toast("复制成功")
                         }
-                    )
+
+                        1 -> startActivity(
+                            Intent.createChooser(
+                                Intent().apply {
+                                    putExtra(Intent.EXTRA_TEXT, url)
+                                    action = Intent.ACTION_SEND
+                                    type = "text/plain"
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }, resources.getString(R.string.share_links)
+                            )
+                        )
+
+                        2 -> startActivity(
+                            Intent().apply {
+                                action = Intent.ACTION_VIEW
+                                data = Uri.parse(url)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                        )
+                    }
                 }
             }
-        }, null)
+        }
 
-        mBinding?.scrollGesture = DoubleClickListener(null, {
-            scrollAnim.start()
-        })
+        mBinding?.scrollGesture = DoubleClickListener {
+            doubleTap = {
+                scrollAnim.start()
+            }
+        }
     }
 
     override fun onDestroy() {

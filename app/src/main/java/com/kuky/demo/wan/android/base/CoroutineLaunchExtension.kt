@@ -11,21 +11,17 @@ const val ERROR_CODE_NORM = 0xFF00
 const val ERROR_CODE_INIT = 0xFF10
 const val ERROR_CODE_MORE = 0xFF11
 
-class CoroutineCallback {
-    var block: suspend () -> Unit = {}
+data class CoroutineCallback(
+    var block: suspend () -> Unit = {},
     var onError: (Throwable) -> Unit = {}
-
-    internal suspend fun onSucceed() = block()
-
-    internal fun onFailed(throwable: Throwable) = onError.invoke(throwable)
-}
+)
 
 fun CoroutineScope.safeLaunch(init: CoroutineCallback.() -> Unit): Job {
     val callback = CoroutineCallback().apply { this.init() }
     return launch(CoroutineExceptionHandler { _, throwable ->
-        callback.onFailed(throwable)
+        callback.onError(throwable)
     } + GlobalScope.coroutineContext) {
-        callback.onSucceed()
+        callback.block()
     }
 }
 
@@ -33,10 +29,10 @@ fun CoroutineScope.delayLaunch(timeMills: Long, init: CoroutineCallback.() -> Un
     check(timeMills >= 0) { "timeMills must be positive" }
     val callback = CoroutineCallback().apply(init)
     return launch(CoroutineExceptionHandler { _, throwable ->
-        callback.onFailed(throwable)
+        callback.onError(throwable)
     } + GlobalScope.coroutineContext) {
         delay(timeMills)
-        callback.onSucceed()
+        callback.block()
     }
 }
 
