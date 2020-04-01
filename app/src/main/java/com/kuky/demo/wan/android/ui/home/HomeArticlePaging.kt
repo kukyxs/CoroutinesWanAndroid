@@ -50,17 +50,18 @@ class HomeArticleDataSource(
                 val tops = repository.loadTops()
                 val data = repository.loadPageData(0)
 
+                callback.onResult(arrayListOf<HomeArticleDetail>().apply {
+                    addAll(tops ?: arrayListOf())
+                    addAll(data ?: arrayListOf())
+                }, null, 1)
+
+                initState.postValue(NetworkState.LOADED)
+
                 withContext(Dispatchers.IO) {
                     WanDatabaseUtils.homeArticleCacheDao.clearHomeCache()
                     tops?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
                     data?.let { WanDatabaseUtils.homeArticleCacheDao.cacheHomeArticles(it) }
                 }
-
-                callback.onResult(arrayListOf<HomeArticleDetail>().apply {
-                    addAll(tops ?: arrayListOf())
-                    addAll(data ?: arrayListOf())
-                }, null, 1)
-                initState.postValue(NetworkState.LOADED)
             }
             onError = {
                 initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))

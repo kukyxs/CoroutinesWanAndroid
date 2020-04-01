@@ -32,6 +32,11 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -52,10 +57,10 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.2.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.2.1"
 
-    implementation "androidx.room:room-runtime:2.2.4"
-    kapt "androidx.room:room-compiler:2.2.4"
+    implementation "androidx.room:room-runtime:2.2.5"
+    kapt "androidx.room:room-compiler:2.2.5"
 
-    implementation "androidx.paging:paging-runtime:2.1.1"
+    implementation "androidx.paging:paging-runtime:2.1.2"
     implementation "com.google.android:flexbox:1.1.0"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0"
@@ -65,8 +70,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.7.0'
     implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
 
-    implementation "com.github.bumptech.glide:glide:4.10.0"
-    kapt "com.github.bumptech.glide:compiler:4.10.0"
+    implementation "com.github.bumptech.glide:glide:4.11.0"
+    kapt "com.github.bumptech.glide:compiler:4.11.0"
 
     implementation "com.youth.banner:banner:1.4.10"
     implementation "com.github.clans:fab:1.6.4"

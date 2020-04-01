@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
@@ -33,8 +32,6 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
 
-    private val mCacheAdapter: HomeArticleCacheAdapter by lazy { HomeArticleCacheAdapter() }
-
     private val mViewModel: HomeArticleViewModel by lazy {
         ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
             .get(HomeArticleViewModel::class.java)
@@ -51,10 +48,22 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     }
 
     private var isFirstObserver = true
-    private var hasCache = false
+    private var hasCache = true
+    private var onInflated = true
 
     override fun actionsOnViewInflate() {
+        mViewModel.fetchCache {
+            hasCache = false
+        }
+
         fetchHomeArticleList()
+
+        mViewModel.cache?.observe(this, Observer {
+            if (onInflated) {
+                onInflated = false
+                mAdapter.submitList(it)
+            }
+        })
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
@@ -117,23 +126,9 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             binding.errorReload = ErrorReload {
                 mViewModel.refreshArticle()
             }
+
+            binding.indicator = resources.getString(R.string.blog_articles)
         }
-    }
-
-    /**
-     * 获取本地缓存，优先加载缓存数据
-     * 缓存数据通过 RecyclerView.Adapter 加载，
-     * 网络数据加载成功后切回 Paging Adapter，目前未找到较好的方式，有更好方式可提 issue
-     */
-    private fun fetchHomeArticleCache() {
-        mViewModel.fetchCache()
-        mBinding?.adapter = mCacheAdapter
-        mViewModel.cache?.observe(this, Observer {
-            hasCache = it.isNotEmpty()
-            mCacheAdapter.injectAdapterData(it as MutableList<HomeArticleDetail>)
-        })
-
-        fetchHomeArticleList()
     }
 
     private fun fetchHomeArticleList() {
@@ -144,18 +139,10 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         mViewModel.netState?.observe(this, Observer {
             when (it.state) {
                 // 请求网络数据的时候先切回缓存数据，缓存数据会根据上次请求记录
-                State.RUNNING -> injectStates(refreshing = true, loading = true)
-
-                /*{
-//                    mBinding?.adapter = mCacheAdapter
-//                    injectStates(refreshing = true, loading = !hasCache)
-                }*/
+                State.RUNNING -> injectStates(refreshing = true, loading = !hasCache)
 
                 // 请求成功后，切回 paging adapter，展示新数据，可解决 Paging Adapter 数据刷新引起短时间空白的问题
-                State.SUCCESS -> {
-                    injectStates()
-                    mBinding?.indicator = resources.getString(R.string.blog_articles)
-                }
+                State.SUCCESS -> injectStates()
 
                 // 加载失败如果有缓存加载缓存页面，否则显示出错界面，提示用户点击刷新，重新加载
                 State.FAILED -> {
@@ -167,7 +154,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             }
         })
 
-        mViewModel.articles?.observe(this, Observer<PagedList<HomeArticleDetail>> {
+        mViewModel.articles?.observe(this, Observer {
             mAdapter.submitList(it)
         })
     }

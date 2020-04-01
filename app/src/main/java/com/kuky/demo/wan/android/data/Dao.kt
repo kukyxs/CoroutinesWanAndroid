@@ -1,6 +1,6 @@
 package com.kuky.demo.wan.android.data
 
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -19,7 +19,7 @@ interface HomeArticleCacheDao {
     fun cacheHomeArticles(articles: List<HomeArticleDetail>): List<Long>
 
     @Query("select * from home_article_cache")
-    fun fetchAllCache(): LiveData<List<HomeArticleDetail>>
+    fun fetchAllCache(): DataSource.Factory<Int, HomeArticleDetail>
 
     @Query("delete from home_article_cache")
     fun clearHomeCache(): Int

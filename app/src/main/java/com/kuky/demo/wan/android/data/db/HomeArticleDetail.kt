@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.data.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -9,7 +10,10 @@ import androidx.room.PrimaryKey
  * @description
  */
 
-@Entity(tableName = "home_article_cache")
+@Entity(
+    tableName = "home_article_cache",
+    indices = [Index(value = ["article_id", "link"], unique = true)]
+)
 data class HomeArticleDetail(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val cache_id: Long = 0,
     @ColumnInfo(name = "author") val author: String,
