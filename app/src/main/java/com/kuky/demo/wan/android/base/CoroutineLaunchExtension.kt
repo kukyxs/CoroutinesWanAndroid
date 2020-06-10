@@ -12,6 +12,7 @@ const val ERROR_CODE_INIT = 0xFF10
 const val ERROR_CODE_MORE = 0xFF11
 
 data class CoroutineCallback(
+    var initDispatcher: CoroutineDispatcher? = null,
     var block: suspend () -> Unit = {},
     var onError: (Throwable) -> Unit = {}
 )
@@ -20,7 +21,7 @@ fun CoroutineScope.safeLaunch(init: CoroutineCallback.() -> Unit): Job {
     val callback = CoroutineCallback().apply { this.init() }
     return launch(CoroutineExceptionHandler { _, throwable ->
         callback.onError(throwable)
-    } + GlobalScope.coroutineContext) {
+    } + (callback.initDispatcher ?: GlobalScope.coroutineContext)) {
         callback.block()
     }
 }
@@ -30,7 +31,7 @@ fun CoroutineScope.delayLaunch(timeMills: Long, init: CoroutineCallback.() -> Un
     val callback = CoroutineCallback().apply(init)
     return launch(CoroutineExceptionHandler { _, throwable ->
         callback.onError(throwable)
-    } + GlobalScope.coroutineContext) {
+    } + (callback.initDispatcher ?: GlobalScope.coroutineContext)) {
         delay(timeMills)
         callback.block()
     }

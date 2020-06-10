@@ -42,6 +42,10 @@ interface ApiService {
     @GET("/tree/json")
     suspend fun knowledgeSystem(): AndroidSystemEntity
 
+    // 问答
+    @GET("/wenda/list/{page}/json")
+    suspend fun askAndAnswers(@Path("page") page: Int): ResponseBody
+
     /**
      * 体系下的文章，cid 查看 [SystemCategory] #id
      * 返回数据同首页文章列表
