@@ -22,7 +22,7 @@
 
         <variable
             name="adapter"
-            type="androidx.paging.PagedListAdapter" />
+            type="androidx.recyclerview.widget.MergeAdapter" />
 
         <variable
             name="divider"

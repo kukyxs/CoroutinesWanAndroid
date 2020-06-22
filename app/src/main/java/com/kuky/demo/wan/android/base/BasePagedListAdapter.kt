@@ -7,13 +7,52 @@ import androidx.databinding.ViewDataBinding
 import androidx.paging.AsyncPagedListDiffer
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 
 /**
  * @author kuky.
- * @description paging adapter 基类
+ * @description paging adapter 基类, 如果需要多布局, 请使用 MergeAdapter
  */
-abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffUtil.ItemCallback<T>) :
+abstract class BasePagingDataAdapter<T : Any, VB : ViewDataBinding>(val callback: DiffUtil.ItemCallback<T>) :
+    PagingDataAdapter<T, BaseViewHolder<VB>>(callback) {
+
+    var itemListener: OnItemClickListener? = null
+    var itemLongClickListener: OnItemLongClickListener? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
+        return BaseViewHolder(
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context), getLayoutId(), parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
+        val data = getItem(position) ?: return
+        setVariable(data, position, holder)
+        holder.binding.executePendingBindings()
+        holder.binding.root.run {
+            setOnClickListener { itemListener?.onItemClick(position, it) }
+            setOnLongClickListener {
+                itemLongClickListener?.onItemLongClick(position, it)
+                false
+            }
+        }
+    }
+
+    abstract fun getLayoutId(): Int
+
+    abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)
+}
+
+//region deprecated paging2 adapter
+@Deprecated(
+    message = "has migrated to paging3",
+    replaceWith = ReplaceWith(
+        expression = "use BasePagingDataAdapter replaced",
+        imports = ["BasePagingDataAdapter"]
+    ), level = DeprecationLevel.WARNING
+)
+abstract class BasePagedListAdapter<T : Any, VB : ViewDataBinding>(val callback: DiffUtil.ItemCallback<T>) :
     PagedListAdapter<T, BaseViewHolder<VB>>(callback) {
 
     private var itemListener: OnItemClickListener? = null
@@ -75,8 +114,15 @@ abstract class BasePagedListAdapter<T, VB : ViewDataBinding>(val callback: DiffU
  * 部分 recyclerView 存在列表网上推的动画，消除可通过设置 `recyclerView.itemAnimator = null` 实现
  * 部分 recyclerView 不设置 `itemAnimator = null` 刷新时也不会闪动
  */
+@Deprecated(
+    message = "has migrated to paging3",
+    replaceWith = ReplaceWith(
+        expression = "use BasePagingDataAdapter replaced",
+        imports = ["BasePagingDataAdapter"]
+    ), level = DeprecationLevel.WARNING
+)
 @Suppress("LeakingThis")
-abstract class BaseNoBlinkingPagedListAdapter<T, VB : ViewDataBinding>(cb: DiffUtil.ItemCallback<T>) :
+abstract class BaseNoBlinkingPagedListAdapter<T : Any, VB : ViewDataBinding>(cb: DiffUtil.ItemCallback<T>) :
     BasePagedListAdapter<T, VB>(cb) {
 
     private var mDiffer: AsyncPagedListDiffer<T>? = null
@@ -106,6 +152,7 @@ abstract class BaseNoBlinkingPagedListAdapter<T, VB : ViewDataBinding>(cb: DiffU
     abstract fun generateItemId(differ: AsyncPagedListDiffer<T>?, position: Int): Long
 }
 
+@Deprecated(message = "has migrate to paging3")
 abstract class BasePagedListCallback : PagedList.Callback() {
     override fun onChanged(position: Int, count: Int) {
 
@@ -119,3 +166,4 @@ abstract class BasePagedListCallback : PagedList.Callback() {
 
     }
 }
+//endregion

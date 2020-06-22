@@ -14,17 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseRecyclerAdapter<T>(var mData: MutableList<T>?) :
     RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>() {
 
+    var itemListener: OnItemClickListener? = null
+    var itemLongListener: OnItemLongClickListener? = null
+
     protected var mSelectionPosition = -1
-    private var itemListener: OnItemClickListener? = null
-    private var itemLongListener: OnItemLongClickListener? = null
-
-    fun setOnItemListener(listener: OnItemClickListener?) {
-        this.itemListener = listener
-    }
-
-    fun setOnItemLongListener(listener: OnItemLongClickListener?) {
-        this.itemLongListener = listener
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<ViewDataBinding> {
         return BaseViewHolder(

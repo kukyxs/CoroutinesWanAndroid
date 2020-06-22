@@ -12,10 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
@@ -104,9 +101,40 @@ fun bindViewGesture(view: View, doubleClickListener: DoubleClickListener) {
 }
 
 /**
+ * 绑定 paging3 adapter 点击
+ */
+@BindingAdapter(value = ["bind:pagingItemClick", "bind:pagingItemLongClick"], requireAll = false)
+fun bindPagingItemClickV2(recyclerView: RecyclerView, listener: OnItemClickListener?, longListener: OnItemLongClickListener?) {
+    val adapter = recyclerView.adapter ?: return
+
+    val tarAdapter = when (adapter) {
+        is BasePagingDataAdapter<*, *> -> adapter
+        is MergeAdapter -> findBasePagingAdapterInMergeAdapter(adapter)
+        else -> null
+    }
+
+    tarAdapter?.run {
+        itemListener = listener
+        itemLongClickListener = longListener
+    } ?: return
+}
+
+private fun findBasePagingAdapterInMergeAdapter(mergeAdapter: MergeAdapter): BasePagingDataAdapter<*, *>? {
+    val adapterList = mergeAdapter.adapters
+
+    for (i in adapterList.indices) {
+        val adapter = adapterList[i]
+        if (adapter is BasePagingDataAdapter<*, *>) return adapter
+    }
+    return null
+}
+
+//region deprecated paging2 adapter binding
+/**
  * 绑定 paging adapter 点击事件
  * @param listener 点击事件，[OnItemClickListener]
  */
+@Deprecated(message = "migrate to paging3", level = DeprecationLevel.WARNING)
 @BindingAdapter("bind:pageItemClick")
 fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
     val adapter = recyclerView.adapter
@@ -120,6 +148,7 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListene
  * 绑定 paging adapter 长按事件
  * @param listener 点击事件，[OnItemLongClickListener]
  */
+@Deprecated(message = "migrate to paging3", level = DeprecationLevel.WARNING)
 @BindingAdapter("bind:pageItemLongClick")
 fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
     val adapter = recyclerView.adapter
@@ -128,31 +157,36 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickLis
 
     adapter.setOnItemLongListener(listener)
 }
+//endregion
 
 /**
  * 绑定 RecyclerView 的点击事件
  * @param listener 点击事件，[OnItemClickListener]
  */
-@BindingAdapter("bind:listItemClick")
-fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
-    val adapter = recyclerView.adapter
+@BindingAdapter(value = ["bind:listItemClick", "bind:listItemLongClick"], requireAll = false)
+fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?, longListener: OnItemLongClickListener?) {
+    val adapter = recyclerView.adapter ?: return
 
-    if (adapter == null || adapter !is BaseRecyclerAdapter<*>) return
+    val tarAdapter = when (adapter) {
+        is BaseRecyclerAdapter<*> -> adapter
+        is MergeAdapter -> findBaseRecyclerAdapterInMergeAdapter(adapter)
+        else -> null
+    }
 
-    adapter.setOnItemListener(listener)
+    tarAdapter?.run {
+        itemListener = listener
+        itemLongListener = longListener
+    } ?: return
 }
 
-/**
- * 绑定 RecyclerView 的长按事件
- * @param listener 点击事件，[OnItemLongClickListener]
- */
-@BindingAdapter("bind:listItemLongClick")
-fun bindRecyclerItemLOngClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
-    val adapter = recyclerView.adapter
+private fun findBaseRecyclerAdapterInMergeAdapter(mergeAdapter: MergeAdapter): BaseRecyclerAdapter<*>? {
+    val adapterList = mergeAdapter.adapters
 
-    if (adapter == null || adapter !is BaseRecyclerAdapter<*>) return
-
-    adapter.setOnItemLongListener(listener)
+    for (i in adapterList.indices) {
+        val adapter = adapterList[i]
+        if (adapter is BaseRecyclerAdapter<*>) return adapter
+    }
+    return null
 }
 
 /**
