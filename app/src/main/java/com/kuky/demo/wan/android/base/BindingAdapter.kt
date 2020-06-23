@@ -165,28 +165,9 @@ fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickLis
  */
 @BindingAdapter(value = ["bind:listItemClick", "bind:listItemLongClick"], requireAll = false)
 fun bindRecyclerItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?, longListener: OnItemLongClickListener?) {
-    val adapter = recyclerView.adapter ?: return
-
-    val tarAdapter = when (adapter) {
-        is BaseRecyclerAdapter<*> -> adapter
-        is MergeAdapter -> findBaseRecyclerAdapterInMergeAdapter(adapter)
-        else -> null
-    }
-
-    tarAdapter?.run {
-        itemListener = listener
-        itemLongListener = longListener
-    } ?: return
-}
-
-private fun findBaseRecyclerAdapterInMergeAdapter(mergeAdapter: MergeAdapter): BaseRecyclerAdapter<*>? {
-    val adapterList = mergeAdapter.adapters
-
-    for (i in adapterList.indices) {
-        val adapter = adapterList[i]
-        if (adapter is BaseRecyclerAdapter<*>) return adapter
-    }
-    return null
+    val adapter = recyclerView.adapter as? BaseRecyclerAdapter<*> ?: return
+    adapter.itemListener = listener
+    adapter.itemLongListener = longListener
 }
 
 /**

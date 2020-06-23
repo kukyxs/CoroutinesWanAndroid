@@ -4,11 +4,6 @@
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="adapter"
-            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
-
         <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
@@ -44,12 +39,20 @@
             app:tabRippleColor="#FFEFEFEF"
             app:tabSelectedTextColor="@color/colorAccent" />
 
-        <androidx.viewpager.widget.ViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/coin_vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
             android:overScrollMode="never"
-            bind:adapter="@{adapter}" />
+            android:scrollbars="none"/>
+
+        <!--        <androidx.viewpager.widget.ViewPager-->
+        <!--            android:id="@+id/coin_vp"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_marginTop="2dp"-->
+        <!--            android:overScrollMode="never"-->
+        <!--            bind:adapter="@{adapter}" />-->
     </LinearLayout>
 </layout>

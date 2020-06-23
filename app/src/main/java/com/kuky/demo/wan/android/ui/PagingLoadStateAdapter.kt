@@ -8,6 +8,7 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.databinding.RecyclerLoadFooterBinding
+import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.
@@ -36,6 +37,7 @@ class PagingLoadStateViewHolder(
     }
 
     fun bind(loadState: LoadState) {
+        LogUtils.error(loadState)
         binding.loadMore.isVisible = loadState is LoadState.Loading
         binding.retryLoadData.isVisible = loadState !is LoadState.Loading
     }
