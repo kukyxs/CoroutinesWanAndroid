@@ -6,13 +6,9 @@
         android:title="@string/collection">
         <menu>
             <item
-                android:id="@+id/favourite_article"
+                android:id="@+id/favourites"
                 android:icon="@drawable/ic_favorite_outline_24dp"
-                android:title="@string/collected_articles" />
-            <item
-                android:id="@+id/favourite_website"
-                android:icon="@drawable/ic_web_black_24dp"
-                android:title="@string/collected_websites" />
+                android:title="@string/collections" />
         </menu>
     </item>
 

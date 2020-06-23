@@ -2,14 +2,19 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.OnItemClickListener
+import com.kuky.demo.wan.android.base.OnItemLongClickListener
+import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
+import com.kuky.demo.wan.android.ui.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
@@ -26,11 +31,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             .get(CollectedArticlesViewModel::class.java)
     }
 
-    private val mAdapter by lazy { CollectedArticlesAdapter() }
-
-    override fun actionsOnViewInflate() {
-        fetchCollectedArticleList(false)
-    }
+    private val mAdapter by lazy { CollectedArticlesPagingAdapter() }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
 
@@ -38,10 +39,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                fetchCollectedArticleList()
+                mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
+
             binding.listener = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { data ->
                     WebsiteDetailFragment.viewDetail(
@@ -51,50 +53,36 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                     )
                 }
             }
+
             binding.longListener = OnItemLongClickListener { position, _ ->
                 requireActivity().alert("是否删除本条收藏？") {
                     okButton {
                         mAdapter.getItemData(position)?.let { data ->
-                            mViewModel.deleteCollectedArticle(data.id, data.originId,
-                                { requireContext().toast("删除成功") }, { requireContext().toast(it) })
+                            mViewModel.removeCollectedArticle(data.id, data.originId,
+                                {
+                                    requireContext().toast("删除成功")
+                                    mAdapter.refresh()
+                                }, { requireContext().toast(it) })
                         }
                     }
                     noButton { }
                 }.show()
             }
 
-            binding.errorReload = ErrorReload { fetchCollectedArticleList() }
+            mAdapter.addLoadStateListener { loadState ->
+                binding.refreshing = loadState.refresh is LoadState.Loading
+                binding.loadingStatus = loadState.refresh is LoadState.Loading
+                binding.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            launch {
+                mViewModel.articleList.collect {
+                    binding.refreshing = false
+                    mAdapter.submitData(it)
+                }
+            }
         }
     }
 
     fun scrollToTop() = mBinding?.collectedArticleList?.scrollToTop()
-
-    private fun fetchCollectedArticleList(isRefresh: Boolean = true) {
-        mViewModel.fetchCollectedArticleList { mBinding?.emptyStatus = true }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewModel.mArticles?.observe(requireActivity(), Observer {
-            mAdapter.submitList(it)
-        })
-    }
-
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
-    }
 }

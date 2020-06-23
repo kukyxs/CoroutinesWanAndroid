@@ -39,6 +39,12 @@ abstract class BasePagingDataAdapter<T : Any, VB : ViewDataBinding>(val callback
         }
     }
 
+    /**
+     * 获取对应 position 下的数据
+     * @param position
+     */
+    open fun getItemData(position: Int): T? = getItem(position)
+
     abstract fun getLayoutId(): Int
 
     abstract fun setVariable(data: T, position: Int, holder: BaseViewHolder<VB>)

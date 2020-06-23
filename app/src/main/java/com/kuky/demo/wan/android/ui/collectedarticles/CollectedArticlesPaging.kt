@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.WanApplication
@@ -18,23 +19,52 @@ import kotlinx.coroutines.withContext
 
 
 /**
- * Author: Taonce
- * Date: 2019/7/19
- * Project: CoroutinesWanAndroid
- * Desc:
+ * @author kuky.
+ * @description
  */
-class CollectedArticlesRepository {
-    private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
+class CollectedArticlesPagingSource(private val repository: CollectedArticlesRepository) :
+    PagingSource<Int, UserCollectDetail>() {
 
-    suspend fun getCollectedArticleList(page: Int): List<UserCollectDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.userCollectedArticles(page, getCookie()).data.datas
-    }
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserCollectDetail> {
+        val page = params.key ?: 0
 
-    suspend fun deleteCollectedArticle(articleId: Int, originId: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.unCollectCollection(articleId, originId, getCookie())
+        return try {
+            val collectedArticles = repository.getCollectedArticleList(page)
+
+            LoadResult.Page(
+                data = collectedArticles ?: mutableListOf(),
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (collectedArticles.isNullOrEmpty()) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 }
 
+class CollectedArticlesPagingAdapter : BasePagingDataAdapter<UserCollectDetail, RecyclerCollectedArticleBinding>(DIFF_CALLBACK) {
+    override fun getLayoutId() = R.layout.recycler_collected_article
+
+    override fun setVariable(
+        data: UserCollectDetail, position: Int,
+        holder: BaseViewHolder<RecyclerCollectedArticleBinding>
+    ) {
+        holder.binding.data = data
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<UserCollectDetail>() {
+            override fun areItemsTheSame(oldItem: UserCollectDetail, newItem: UserCollectDetail): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: UserCollectDetail, newItem: UserCollectDetail): Boolean =
+                oldItem == newItem
+        }
+    }
+}
+
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CollectedArticlesDataSources(
     private val repo: CollectedArticlesRepository
 ) : PageKeyedDataSource<Int, UserCollectDetail>(), CoroutineScope by IOScope() {
@@ -77,6 +107,7 @@ class CollectedArticlesDataSources(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CollectedArticlesDataSourceFactory(
     private val repo: CollectedArticlesRepository
 ) : DataSource.Factory<Int, UserCollectDetail>() {
@@ -87,6 +118,7 @@ class CollectedArticlesDataSourceFactory(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CollectedArticlesAdapter :
     BasePagedListAdapter<UserCollectDetail, RecyclerCollectedArticleBinding>(DIFF_CALLBACK) {
     override fun getLayoutId(viewType: Int) = R.layout.recycler_collected_article
@@ -109,6 +141,4 @@ class CollectedArticlesAdapter :
         }
     }
 }
-
-
-
+//endregion

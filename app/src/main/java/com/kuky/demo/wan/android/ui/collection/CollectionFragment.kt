@@ -2,13 +2,11 @@ package com.kuky.demo.wan.android.ui.collection
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.IdRes
-import androidx.core.os.bundleOf
-import androidx.navigation.NavController
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
 import com.kuky.demo.wan.android.base.DoubleClickListener
+import com.kuky.demo.wan.android.base.setupWithViewPager2
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
@@ -19,25 +17,22 @@ import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
  */
 class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
 
-    private val mAdapter: BaseFragmentPagerAdapter by lazy {
-        BaseFragmentPagerAdapter(
-            childFragmentManager,
-            arrayListOf(
-                CollectedArticlesFragment(),
-                CollectedWebsitesFragment()
-            ),
-            arrayOf("文章", "网址")
-        )
+    private val mPagerAdapter by lazy {
+        object : FragmentStateAdapter(this) {
+            override fun getItemCount() = 2
+
+            override fun createFragment(position: Int) =
+                if (position == 0) CollectedArticlesFragment()
+                else CollectedWebsitesFragment()
+        }
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
-            binding.adapter = mAdapter
-            binding.current = arguments?.getInt("position", 0) ?: 0
-            binding.collectionIndicator.setupWithViewPager(binding.collectionVp)
-
+            binding.collectionVp.adapter = mPagerAdapter
+            binding.collectionIndicator.setupWithViewPager2(binding.collectionVp, mutableListOf("文章", "网址"))
             binding.gesture = DoubleClickListener {
                 doubleTap = {
                     when (binding.collectionVp.currentItem) {
@@ -47,12 +42,6 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
                     }
                 }
             }
-        }
-    }
-
-    companion object {
-        fun viewCollections(controller: NavController, @IdRes navId: Int, position: Int = 0) {
-            controller.navigate(navId, bundleOf(Pair("position", position)))
         }
     }
 }

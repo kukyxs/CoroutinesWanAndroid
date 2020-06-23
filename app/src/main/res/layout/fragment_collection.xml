@@ -6,14 +6,6 @@
     <data>
 
         <variable
-            name="adapter"
-            type="com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter" />
-
-        <variable
-            name="current"
-            type="Integer" />
-
-        <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
@@ -47,14 +39,11 @@
             app:tabRippleColor="#FFEFEFEF"
             app:tabSelectedTextColor="@color/colorAccent" />
 
-        <androidx.viewpager.widget.ViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/collection_vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
-            android:overScrollMode="never"
-            bind:adapter="@{adapter}"
-            bind:currentItem="@{current}"
-            bind:smoothScroll="@{false}" />
+            android:overScrollMode="never" />
     </LinearLayout>
 </layout>

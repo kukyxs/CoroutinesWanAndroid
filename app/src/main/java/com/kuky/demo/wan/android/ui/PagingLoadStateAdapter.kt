@@ -37,7 +37,6 @@ class PagingLoadStateViewHolder(
     }
 
     fun bind(loadState: LoadState) {
-        LogUtils.error(loadState)
         binding.loadMore.isVisible = loadState is LoadState.Loading
         binding.retryLoadData.isVisible = loadState !is LoadState.Loading
     }
@@ -48,8 +47,7 @@ class PagingLoadStateViewHolder(
                 R.layout.recycler_load_footer, parent, false
             )
             return PagingLoadStateViewHolder(
-                RecyclerLoadFooterBinding.bind(view),
-                retry
+                RecyclerLoadFooterBinding.bind(view), retry
             )
         }
     }

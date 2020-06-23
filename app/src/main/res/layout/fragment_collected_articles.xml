@@ -30,7 +30,7 @@
 
         <variable
             name="adapter"
-            type="androidx.paging.PagedListAdapter" />
+            type="androidx.recyclerview.widget.MergeAdapter" />
 
         <variable
             name="errorStatus"
@@ -71,8 +71,8 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
-                bind:pageItemClick="@{listener}"
-                bind:pageItemLongClick="@{longListener}"
+                bind:pagingItemClick="@{listener}"
+                bind:pagingItemLongClick="@{longListener}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_collected_article" />
 

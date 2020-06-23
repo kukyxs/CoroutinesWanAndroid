@@ -11,33 +11,18 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCoinRankBinding
 import com.kuky.demo.wan.android.databinding.RecyclerCoinRecordBinding
 import com.kuky.demo.wan.android.entity.CoinRankDetail
 import com.kuky.demo.wan.android.entity.CoinRecordDetail
-import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
  * @description
  */
-class CoinRepository {
-    suspend fun getCoinRecord(page: Int): List<CoinRecordDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.fetchCoinsRecord(page, PreferencesHelper.fetchCookie(WanApplication.instance)).data.datas
-    }
-
-    suspend fun getCoinRanks(page: Int): List<CoinRankDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.fetchCoinRanks(page).data.datas
-    }
-}
-
 class CoinRecordPagingSource(private val repository: CoinRepository) :
     PagingSource<Int, CoinRecordDetail>() {
 
@@ -108,13 +93,9 @@ class CoinRankPagingAdapter : BasePagingDataAdapter<CoinRankDetail, RecyclerCoin
             )
             setSpan(
                 ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary)),
-                run {
-                    append("\t/\t")
-                    length
-                }, run {
-                    append("Lv${data.level}")
-                    length
-                }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                run { append("\t/\t");length },
+                run { append("Lv${data.level}");length },
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
         }
 
@@ -139,6 +120,8 @@ class CoinRankPagingAdapter : BasePagingDataAdapter<CoinRankDetail, RecyclerCoin
     }
 }
 
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRecordDataSource(
     private val repository: CoinRepository
 ) : PageKeyedDataSource<Int, CoinRecordDetail>(), CoroutineScope by IOScope() {
@@ -180,6 +163,7 @@ class CoinRecordDataSource(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRecordDataSourceFactory(
     private val repository: CoinRepository
 ) : DataSource.Factory<Int, CoinRecordDetail>() {
@@ -191,6 +175,7 @@ class CoinRecordDataSourceFactory(
         }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRecordAdapter : BaseNoBlinkingPagedListAdapter<CoinRecordDetail, RecyclerCoinRecordBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_coin_record
@@ -213,6 +198,7 @@ class CoinRecordAdapter : BaseNoBlinkingPagedListAdapter<CoinRecordDetail, Recyc
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRankDataSource(
     private val repository: CoinRepository
 ) : PageKeyedDataSource<Int, CoinRankDetail>(), CoroutineScope by IOScope() {
@@ -254,6 +240,7 @@ class CoinRankDataSource(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRankDataSourceFactory(
     private val repository: CoinRepository
 ) : DataSource.Factory<Int, CoinRankDetail>() {
@@ -265,6 +252,7 @@ class CoinRankDataSourceFactory(
         }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class CoinRankAdapter : BaseNoBlinkingPagedListAdapter<CoinRankDetail, RecyclerCoinRankBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_coin_rank
@@ -313,3 +301,4 @@ class CoinRankAdapter : BaseNoBlinkingPagedListAdapter<CoinRankDetail, RecyclerC
         }
     }
 }
+//endregion

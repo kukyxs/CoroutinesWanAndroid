@@ -22,6 +22,7 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
                 mWebsitesData.value = repo.getCollectedWebsites()
                 netState.postValue(NetworkState.LOADED)
             }
+
             onError = {
                 netState.postValue(NetworkState.error(it.message))
             }
@@ -42,6 +43,7 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
                         else fail(it.errorMsg, true)
                     }
                 }
+
                 onError = {
                     fail("网络出错啦~请检查网络", false)
                 }
@@ -63,6 +65,7 @@ class CollectedWebsitesViewModel(private val repo: CollectedWebsitesRepository) 
                         else fail(it.errorMsg, true)
                     }
                 }
+
                 onError = {
                     fail("网络出错啦~请检查网络", false)
                 }

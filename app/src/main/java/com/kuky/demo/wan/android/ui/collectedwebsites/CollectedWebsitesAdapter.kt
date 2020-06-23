@@ -3,40 +3,15 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
-import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * @author Taonce.
  * @description
  */
-class CollectedWebsitesRepository {
-    private fun getCookie() = PreferencesHelper.fetchCookie(WanApplication.instance)
-
-    suspend fun getCollectedWebsites(): List<WebsiteData>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.collectWebsiteList(getCookie()).data
-    }
-
-    suspend fun addWebsite(name: String, link: String) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.addWebsite(name, link, getCookie())
-    }
-
-    suspend fun editWebsite(id: Int, name: String, link: String) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.editWebsite(id, name, link, PreferencesHelper.fetchCookie(WanApplication.instance))
-    }
-
-    suspend fun deleteWebsite(id: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.deleteWebsite(id, getCookie())
-    }
-}
-
 class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
 
     override fun setVariable(data: WebsiteData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
@@ -50,11 +25,10 @@ class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
      */
     fun update(newData: MutableList<WebsiteData>?) {
         val result = DiffUtil.calculateDiff(CollectedDiffUtil(newData, getAdapterData()), true)
-        if (mData == null) {
-            mData = mutableListOf()
+        mData = (mData ?: mutableListOf()).also {
+            it.clear()
+            it.addAll(newData ?: mutableListOf())
         }
-        mData?.clear()
-        mData?.addAll(newData ?: mutableListOf())
         result.dispatchUpdatesTo(this)
     }
 }

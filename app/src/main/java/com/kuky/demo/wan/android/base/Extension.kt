@@ -11,16 +11,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager.widget.ViewPager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.*
 import kotlin.math.min
 
 /**
  * @author kuky.
  * @description
  */
+suspend fun <T> workOnMain(block: suspend CoroutineScope.() -> T) {
+    withContext(Dispatchers.Main) { block() }
+}
+
+suspend fun <T> workOnIO(block: suspend CoroutineScope.() -> T) {
+    withContext(Dispatchers.IO) { block() }
+}
+
+fun TabLayout.setupWithViewPager2(viewPager2: ViewPager2, titles: MutableList<String>): TabLayoutMediator =
+    TabLayoutMediator(this, viewPager2) { tab, position ->
+        tab.text = titles[position]
+    }.apply { attach() }
 
 fun RecyclerView.scrollToTop(sizeOneLine: Int = 2, threshold: Int = 10) {
 

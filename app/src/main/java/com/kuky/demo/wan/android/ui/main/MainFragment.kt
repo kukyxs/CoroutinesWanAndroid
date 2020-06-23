@@ -20,7 +20,6 @@ import com.kuky.demo.wan.android.base.onChange
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
-import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
 import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
 import com.kuky.demo.wan.android.ui.dialog.WxDialog
@@ -171,9 +170,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     private fun handleUserProfile() {
         mBinding?.userProfileDrawer?.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
-                R.id.favourite_article -> toFavourite(0)
-
-                R.id.favourite_website -> toFavourite(1)
+                R.id.favourites -> toFavourite()
 
                 R.id.share_list -> toShare()
 
@@ -205,12 +202,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
-    private fun toFavourite(position: Int) {
-        CollectionFragment.viewCollections(
-            mNavController,
-            R.id.action_mainFragment_to_collectionFragment,
-            position
-        )
+    private fun toFavourite() {
+        mNavController.navigate(R.id.action_mainFragment_to_collectionFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
