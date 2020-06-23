@@ -43,7 +43,6 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                 fetchWebSitesData()
             }
 
-            binding.fragment = this
             binding.adapter = mAdapter
             binding.listener = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {

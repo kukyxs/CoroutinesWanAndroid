@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
+import com.kuky.demo.wan.android.ui.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -19,6 +22,8 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -30,7 +35,20 @@ import org.jetbrains.anko.yesButton
  */
 class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
-    private val mAdapter: HomeArticleAdapter by lazy { HomeArticleAdapter() }
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter: HomeArticlePagingAdapter by lazy {
+        HomeArticlePagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
 
     private val mViewModel: HomeArticleViewModel by lazy {
         ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
@@ -48,22 +66,13 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     }
 
     private var isFirstObserver = true
-    private var hasCache = true
-    private var onInflated = true
 
     override fun actionsOnViewInflate() {
-        mViewModel.fetchCache {
-            hasCache = false
-        }
-
-        fetchHomeArticleList()
-
-        mViewModel.cache?.observe(this, Observer {
-            if (onInflated) {
-                onInflated = false
-                mAdapter.submitList(it)
+        launch {
+            mViewModel.homeArticleList.collect {
+                mAdapter.submitData(it)
             }
-        })
+        }
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
@@ -73,11 +82,11 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             }
 
             if (!it) {
-                mViewModel.articles?.value?.forEach { arc ->
-                    arc.collect = false
+                for (index in 0 until mAdapter.itemCount) {
+                    mAdapter.getItemData(index)?.collect = false
                 }
             } else {
-                mViewModel.refreshArticle()
+                mAdapter.refresh()
             }
         })
     }
@@ -87,13 +96,15 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
-            // 绑定 SwipeRefreshLayout 属性
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                mViewModel.refreshArticle()
+                mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+
             binding.itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { art ->
                     (parentFragment as? MainFragment)?.closeMenu()
@@ -104,6 +115,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                     )
                 }
             }
+
             binding.itemLongClick = OnItemLongClickListener { position, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let { article ->
@@ -123,40 +135,10 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
                 }
             }
 
-            binding.errorReload = ErrorReload {
-                mViewModel.refreshArticle()
-            }
-
             binding.indicator = resources.getString(R.string.blog_articles)
+
+            binding.errorReload = ErrorReload { mAdapter.refresh() }
         }
-    }
-
-    private fun fetchHomeArticleList() {
-        mViewModel.fetchHomeArticle {
-            mBinding?.emptyStatus = !hasCache
-        }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                // 请求网络数据的时候先切回缓存数据，缓存数据会根据上次请求记录
-                State.RUNNING -> injectStates(refreshing = true, loading = !hasCache)
-
-                // 请求成功后，切回 paging adapter，展示新数据，可解决 Paging Adapter 数据刷新引起短时间空白的问题
-                State.SUCCESS -> injectStates()
-
-                // 加载失败如果有缓存加载缓存页面，否则显示出错界面，提示用户点击刷新，重新加载
-                State.FAILED -> {
-                    if (it.code == ERROR_CODE_INIT) {
-                        injectStates(error = !hasCache)
-                        mBinding?.indicator = resources.getString(if (hasCache) R.string.blog_articles else R.string.text_place_holder)
-                    } else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewModel.articles?.observe(this, Observer {
-            mAdapter.submitList(it)
-        })
     }
 
     private fun showCollectDialog(article: HomeArticleDetail, position: Int) =
@@ -166,7 +148,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         ) {
             yesButton {
                 if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                    mViewModel.articles?.value?.get(position)?.collect = true
+                    mAdapter.getItemData(position)?.collect = true
                     requireContext().toast("收藏成功")
                 }, { message ->
                     requireContext().toast(message)
@@ -174,12 +156,4 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             }
             if (!article.collect) noButton { }
         }.show()
-
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
-    }
 }

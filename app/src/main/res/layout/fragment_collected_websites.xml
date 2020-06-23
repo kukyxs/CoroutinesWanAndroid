@@ -33,10 +33,6 @@
             type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
 
         <variable
-            name="fragment"
-            type="com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment" />
-
-        <variable
             name="errorStatus"
             type="Boolean" />
 

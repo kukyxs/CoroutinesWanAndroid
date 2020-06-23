@@ -14,7 +14,7 @@
 
         <variable
             name="adapter"
-            type="androidx.recyclerview.widget.RecyclerView.Adapter" />
+            type="androidx.recyclerview.widget.MergeAdapter" />
 
         <variable
             name="itemClick"
@@ -100,8 +100,8 @@
                 app:layout_constraintTop_toBottomOf="@id/project_type"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
-                bind:pageItemClick="@{itemClick}"
-                bind:pageItemLongClick="@{itemLongClick}"
+                bind:pagingItemClick="@{itemClick}"
+                bind:pagingItemLongClick="@{itemLongClick}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_home_article" />
 

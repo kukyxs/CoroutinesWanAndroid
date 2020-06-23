@@ -80,6 +80,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
 
         mViewModel.getBanners()
+
+        mViewModel.getCoins()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_main
@@ -254,7 +256,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     fun openSettings(view: View) {
         closeMenu()
         mBinding?.drawer?.openDrawer(GravityCompat.START)
-        mViewModel.getCoins()
     }
 
     fun showWxDialog(view: View) {

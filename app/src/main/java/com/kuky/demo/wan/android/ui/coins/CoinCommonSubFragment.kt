@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,16 +27,54 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
             .get(CoinViewModel::class.java)
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     private val mRankAdapter: CoinRankPagingAdapter by lazy {
-        CoinRankPagingAdapter()
+        CoinRankPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     private val mRecordAdapter: CoinRecordPagingAdapter by lazy {
-        CoinRecordPagingAdapter()
+        CoinRecordPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
     }
 
     private val type by lazy(mode = LazyThreadSafetyMode.NONE) {
         arguments?.getInt("type", 0) ?: 0
+    }
+
+    override fun actionsOnViewInflate() {
+        launch {
+            if (type == 0) {
+                mViewModel.coinRecordList.collect {
+                    mRecordAdapter.submitData(it)
+                    mBinding?.emptyStatus = mRecordAdapter.itemCount == 0
+                }
+            } else {
+                mViewModel.coinRankList.collect {
+                    mRankAdapter.submitData(it)
+                    mBinding?.emptyStatus = mRankAdapter.itemCount == 0
+                }
+            }
+        }
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_common_coin_sub
@@ -47,43 +86,13 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
                 if (type == 0) mRecordAdapter.refresh() else mRankAdapter.refresh()
             }
 
-            binding.refreshing = true
             binding.adapter = if (type == 0) mRecordAdapter.withLoadStateFooter(
-                PagingLoadStateAdapter {
-                    mRecordAdapter.retry()
-                }) else mRankAdapter.withLoadStateFooter(
-                PagingLoadStateAdapter {
-                    mRankAdapter.retry()
-                })
+                PagingLoadStateAdapter { mRecordAdapter.retry() }
+            ) else mRankAdapter.withLoadStateFooter(
+                PagingLoadStateAdapter { mRankAdapter.retry() }
+            )
+
             binding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-
-            launch {
-                if (type == 0) {
-                    mViewModel.coinRecordList.collect {
-                        binding.refreshing = false
-                        mRecordAdapter.submitData(it)
-                    }
-                } else {
-                    mViewModel.coinRankList.collect {
-                        binding.refreshing = false
-                        mRankAdapter.submitData(it)
-                    }
-                }
-            }
-
-            if (type == 0) {
-                mRecordAdapter.addLoadStateListener { loadState ->
-                    binding.refreshing = loadState.refresh is LoadState.Loading
-                    binding.loadingStatus = loadState.refresh is LoadState.Loading
-                    binding.errorStatus = loadState.refresh is LoadState.Error
-                }
-            } else {
-                mRankAdapter.addLoadStateListener { loadState ->
-                    binding.refreshing = loadState.refresh is LoadState.Loading
-                    binding.loadingStatus = loadState.refresh is LoadState.Loading
-                    binding.errorStatus = loadState.refresh is LoadState.Error
-                }
-            }
         }
     }
 

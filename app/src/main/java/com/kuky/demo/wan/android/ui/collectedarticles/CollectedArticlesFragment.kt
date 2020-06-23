@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -31,7 +32,28 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             .get(CollectedArticlesViewModel::class.java)
     }
 
-    private val mAdapter by lazy { CollectedArticlesPagingAdapter() }
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter by lazy {
+        CollectedArticlesPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
+
+    override fun actionsOnViewInflate() {
+        launch {
+            mViewModel.articleList.collect {
+                mAdapter.submitData(it)
+            }
+        }
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
 
@@ -55,31 +77,21 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             }
 
             binding.longListener = OnItemLongClickListener { position, _ ->
-                requireActivity().alert("是否删除本条收藏？") {
+                requireActivity().alert("是否删除本条收藏?") {
                     okButton {
                         mAdapter.getItemData(position)?.let { data ->
                             mViewModel.removeCollectedArticle(data.id, data.originId,
                                 {
                                     requireContext().toast("删除成功")
+                                    // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
+//                                    mAdapter.notifyItemRemoved(position)
+//                                    mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
                                     mAdapter.refresh()
                                 }, { requireContext().toast(it) })
                         }
                     }
                     noButton { }
                 }.show()
-            }
-
-            mAdapter.addLoadStateListener { loadState ->
-                binding.refreshing = loadState.refresh is LoadState.Loading
-                binding.loadingStatus = loadState.refresh is LoadState.Loading
-                binding.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            launch {
-                mViewModel.articleList.collect {
-                    binding.refreshing = false
-                    mAdapter.submitData(it)
-                }
             }
         }
     }

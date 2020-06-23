@@ -31,6 +31,9 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
+            // when display with navigation, set `viewPager2.isSaveEnabled = false` to resolve
+            // IllegalException("Expected the adapter to be 'fresh' while restoring state.")
+            binding.collectionVp.isSaveEnabled = false
             binding.collectionVp.adapter = mPagerAdapter
             binding.collectionIndicator.setupWithViewPager2(binding.collectionVp, mutableListOf("文章", "网址"))
             binding.gesture = DoubleClickListener {

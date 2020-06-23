@@ -9,7 +9,6 @@ import androidx.paging.PagingConfig
  * @description
  */
 class CoinViewModel(private val repository: CoinRepository) : ViewModel() {
-
     val coinRankList = Pager(
         config = PagingConfig(pageSize = 20, enablePlaceholders = true, prefetchDistance = 5)
     ) { CoinRankPagingSource(repository) }.flow
