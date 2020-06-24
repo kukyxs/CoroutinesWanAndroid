@@ -6,15 +6,17 @@ import com.kuky.demo.wan.android.base.safeLaunch
 
 
 /**
- * Author: Taonce
- * Date: 2019/8/1
- * Desc: 收藏文章VM
+ * @author kuky.
+ * @description
  */
-class CollectionViewModel(private val repo: CollectionRepository) : ViewModel() {
+class CollectionViewModel(private val repository: CollectionRepository) : ViewModel() {
+
+    fun collectArticle(id: Int) = repository.getCollectArticleResultStream(id)
+
     fun collectArticle(id: Int, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch {
             block = {
-                repo.collectArticle(id).let {
+                repository.collectArticle(id).let {
                     if (it.errorCode == 0) success()
                     else fail(it.errorMsg)
                 }

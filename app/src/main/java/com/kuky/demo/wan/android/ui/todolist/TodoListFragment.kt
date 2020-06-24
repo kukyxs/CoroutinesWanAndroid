@@ -21,7 +21,7 @@ import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.utils.AssetsLoader
+import com.kuky.demo.wan.android.utils.loadTextFromAssets
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -53,7 +53,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     private val mChoiceAdapter: TodoChoiceAdapter by lazy {
         TodoChoiceAdapter(
             Gson().fromJson(
-                AssetsLoader.getTextFromAssets(requireContext(), "todo_choices.json"),
+                context?.loadTextFromAssets("todo_choices.json"),
                 object : TypeToken<List<TodoChoiceGroup>>() {}.type
             ) ?: arrayListOf()
         )

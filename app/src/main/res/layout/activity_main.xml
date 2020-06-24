@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             app:defaultNavHost="true"
             app:navGraph="@navigation/wan_navigation"
-            tools:context=".ui.MainActivity" />
+            tools:context=".ui.app.MainActivity" />
 
         <TextView
             android:layout_width="match_parent"

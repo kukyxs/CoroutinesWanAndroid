@@ -4,13 +4,7 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class CoinRecord(
-    val `data`: CoinrRecordData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
-data class CoinrRecordData(
+data class CoinRecordData(
     val curPage: Int,
     val datas: List<CoinRecordDetail>,
     val offset: Int,

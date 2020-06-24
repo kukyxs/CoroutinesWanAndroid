@@ -27,15 +27,21 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
         }
     }
 
+    override fun actionsOnViewInflate() {
+        mBinding?.let { binding ->
+            // when display with navigation, set `viewPager2.isSaveEnabled = false` to resolve
+            // IllegalException("Expected the adapter to be 'fresh' while restoring state.")
+            // but it will make fragment destroyed and recreated
+            binding.collectionVp.isSaveEnabled = false
+            binding.collectionVp.adapter = mPagerAdapter
+            binding.collectionIndicator.setupWithViewPager2(binding.collectionVp, mutableListOf("文章", "网址"))
+        }
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
-            // when display with navigation, set `viewPager2.isSaveEnabled = false` to resolve
-            // IllegalException("Expected the adapter to be 'fresh' while restoring state.")
-            binding.collectionVp.isSaveEnabled = false
-            binding.collectionVp.adapter = mPagerAdapter
-            binding.collectionIndicator.setupWithViewPager2(binding.collectionVp, mutableListOf("文章", "网址"))
             binding.gesture = DoubleClickListener {
                 doubleTap = {
                     when (binding.collectionVp.currentItem) {

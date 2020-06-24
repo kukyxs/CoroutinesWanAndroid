@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED_PARAMETER")
 
-package com.kuky.demo.wan.android.ui.dialog
+package com.kuky.demo.wan.android.ui.main
 
 import android.Manifest
 import android.content.Intent
@@ -14,8 +14,8 @@ import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.base.requestPermissions
 import com.kuky.demo.wan.android.databinding.DialogWxBinding
-import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.ImageSaveUtils
+import com.kuky.demo.wan.android.utils.starApp
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.toast
 import java.io.File
@@ -24,42 +24,46 @@ import java.io.File
  * @author kuky.
  * @description
  */
-class WxDialog : BaseDialogFragment<DialogWxBinding>() {
+class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
 
-    override fun getLayoutId(): Int = R.layout.dialog_wx
+    override fun layoutId(): Int = R.layout.dialog_wx
 
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@WxDialog
+    override fun initDialog(view: View, savedInstanceState: Bundle?) {
+        mBinding.holder = this@WxDialogFragment
     }
 
     fun saveImg(view: View): Boolean {
         val file = ImageSaveUtils.getNewFile(requireContext(), "wx_taonce")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions {
-                putPermissions(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-
-                onAllPermissionsGranted = { saveQrCode(file) }
-
-                onPermissionsNeverAsked = { toAppSettings() }
-
-                onPermissionsDenied = { toAppSettings() }
-
-                onShowRationale = { request ->
-                    requireContext().alert("必要权限，请务必同意o(╥﹏╥)o", "温馨提示") {
-                        positiveButton("行，给你~") { request.retryRequestPermissions() }
-                        negativeButton("不，我不玩了！") {}
-                    }.show()
-                }
-            }
+            requestNecessaryPermissions(file)
         } else {
             saveQrCode(file)
         }
 
         return true
+    }
+
+    private fun requestNecessaryPermissions(file: File?) {
+        requestPermissions {
+            putPermissions(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+
+            onAllPermissionsGranted = { saveQrCode(file) }
+
+            onPermissionsNeverAsked = { toAppSettings() }
+
+            onPermissionsDenied = { toAppSettings() }
+
+            onShowRationale = { request ->
+                requireContext().alert("必要权限，请务必同意o(╥﹏╥)o", "温馨提示") {
+                    positiveButton("行，给你~") { request.retryRequestPermissions() }
+                    negativeButton("不，我不玩了！") {}
+                }.show()
+            }
+        }
     }
 
     private fun toAppSettings() {
@@ -75,7 +79,6 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
         }.show()
     }
 
-    @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun saveQrCode(file: File?) {
         file?.let {
             if (it.parentFile?.exists() == false) {
@@ -89,13 +92,13 @@ class WxDialog : BaseDialogFragment<DialogWxBinding>() {
                 else false
 
             if (result) {
-                requireContext().toast("保存图片成功，即将打开微信")
                 delayLaunch(1000) {
                     block = {
-                        ApplicationUtils.starApp(requireContext(), "com.tencent.mm") { requireContext().toast("未安装微信") }
+                        context?.starApp("com.tencent.mm") { requireContext().toast("未安装微信") }
                         dialog?.dismiss()
                     }
                 }
+                requireContext().toast("保存图片成功，即将打开微信")
             } else {
                 requireContext().toast("保存图片出错啦~")
             }

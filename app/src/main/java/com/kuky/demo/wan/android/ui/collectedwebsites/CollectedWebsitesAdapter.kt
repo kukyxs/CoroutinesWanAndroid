@@ -9,7 +9,7 @@ import com.kuky.demo.wan.android.databinding.RecyclerCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description
  */
 class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
@@ -24,7 +24,7 @@ class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
      * 利用diffutil更新数据
      */
     fun update(newData: MutableList<WebsiteData>?) {
-        val result = DiffUtil.calculateDiff(CollectedDiffUtil(newData, getAdapterData()), true)
+        val result = DiffUtil.calculateDiff(CollectedWebSiteDiffUtil(newData, getAdapterData()), true)
         mData = (mData ?: mutableListOf()).also {
             it.clear()
             it.addAll(newData ?: mutableListOf())
@@ -33,7 +33,7 @@ class CollectedWebsitesAdapter : BaseRecyclerAdapter<WebsiteData>(null) {
     }
 }
 
-class CollectedDiffUtil(
+class CollectedWebSiteDiffUtil(
     private val newData: MutableList<WebsiteData>?,
     private val oldData: MutableList<WebsiteData>?
 ) : DiffUtil.Callback() {

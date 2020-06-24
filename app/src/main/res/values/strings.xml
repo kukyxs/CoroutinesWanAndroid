@@ -9,6 +9,10 @@
     <string name="edit_website">编辑网址</string>
     <string name="collected_website_name">请输入网址名称</string>
     <string name="collected_website_link">请输入网址链接</string>
+    <string name="empty_input_content">缺少输入内容, 请检查</string>
+    <string name="add_favourite_succeed">添加收藏成功</string>
+    <string name="remove_favourite_succeed">成功移除收藏</string>
+    <string name="edit_info_succeed">修改信息成功</string>
 
     <string name="share">分享</string>
     <string name="user_shares">我的分享</string>
@@ -25,7 +29,7 @@
     <string name="statement">一些说明</string>
 
     <string name="long_save">长按保存并关注</string>
-    <string name="description">微信公众号 Taonce：专注于 Kotlin 和 Android 方面的知识，并且保持高频率、高质量的文章供大家一起学习交流。</string>
+    <string name="description">微信公众号 Taonce: 专注于 Kotlin 和 Android 方面的知识, 并且保持高频率, 高质量的文章供大家一起学习交流.</string>
 
     <string name="todo_title">TODO</string>
     <string name="todo_list">我的待办</string>
@@ -34,7 +38,12 @@
 
     <string name="star">支持一下</string>
     <string name="operate_title">使用说明</string>
-    <string name="operate_helper">当前版本：%s\n\n如何收藏文章和项目：<b>长按</b>当前文章或者项目进行收藏\n\n如何取消收藏：在<b>「我的收藏」</b>里，可以通过<b>长按</b>文章或者网址进行取消收藏\n\n如何更新待办状态：在<b>「我的待办」</b>里，<b>长按</b>待办项目，可以进行快速完成/取消完成待办\n\n如何筛选待办：将待办列表<b>底部区域上拉</b>，即可出现待办筛选条件，点击即可筛选\n\n<b>所有列表均可通过双击顶部快速回顶部</b>\n\n<b>如果有问题请提 issue</b></string>
+    <string name="operate_helper">当前版本: %s\n\n如何收藏文章和项目:
+        <b>长按</b>当前文章或者项目进行收藏\n\n
+        如何取消收藏: 在<b>「我的收藏」</b>里, 可以通过<b>长按</b>文章或者网址进行取消收藏\n\n
+        如何更新待办状态: 在<b>「我的待办」</b>里, <b>长按</b>待办项目, 可以进行快速完成/取消完成待办\n\n
+        如何筛选待办: 将待办列表<b>底部区域上拉</b>, 即可出现待办筛选条件, 点击即可筛选\n\n
+        <b>所有列表均可通过双击顶部快速回顶部</b>\n\n<b>如有问题或较好的处理方案请提 issue, 感谢!</b></string>
 
     <string name="login_out">退出登录</string>
     <string name="click_to_login">点此登录</string>
@@ -65,6 +74,7 @@
     <string name="on_loading_more">正在努力加载更多..</string>
     <string name="retry_load_hint">加载出错, 点击重新加载..</string>
 
+    <string name="no_network">请求数据出错啦!</string>
     <string name="text_place_holder">--</string>
     <string name="net_disconnected">当前网络连接不可用</string>
     <string name="empty_data">未查找到任何数据~</string>

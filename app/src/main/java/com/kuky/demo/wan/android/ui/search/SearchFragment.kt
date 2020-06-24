@@ -21,6 +21,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.ScreenUtils
+import com.kuky.demo.wan.android.utils.dp2px
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -204,8 +205,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
      * 添加热词
      */
     private fun addLabel(hotKeys: List<HotKeyData>) {
-        val marginValue = ScreenUtils.dip2px(requireContext(), 8f).toInt()
-        val paddingValue = ScreenUtils.dip2px(requireContext(), 6f).toInt()
+        val marginValue = 8f.dp2px().toInt()
+        val paddingValue = 6f.dp2px().toInt()
         mBinding?.keysBox?.removeAllViews()
 
         hotKeys.forEach {

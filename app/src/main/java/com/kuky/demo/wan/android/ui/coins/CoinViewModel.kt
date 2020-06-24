@@ -1,19 +1,16 @@
 package com.kuky.demo.wan.android.ui.coins
 
 import androidx.lifecycle.ViewModel
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 
 /**
  * @author kuky.
  * @description
  */
 class CoinViewModel(private val repository: CoinRepository) : ViewModel() {
-    val coinRankList = Pager(
-        config = PagingConfig(pageSize = 20, enablePlaceholders = true, prefetchDistance = 5)
-    ) { CoinRankPagingSource(repository) }.flow
 
-    val coinRecordList = Pager(
-        config = PagingConfig(pageSize = 20, enablePlaceholders = true, prefetchDistance = 5)
-    ) { CoinRecordPagingSource(repository) }.flow
+    fun getCoinRankList() = repository.getRankStream().cachedIn(viewModelScope)
+
+    fun getCoinRecordList() = repository.getRecordStream().cachedIn(viewModelScope)
 }

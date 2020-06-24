@@ -7,7 +7,7 @@
 
         <variable
             name="fragment"
-            type="com.kuky.demo.wan.android.ui.dialog.ShareArticleDialogFragment" />
+            type="com.kuky.demo.wan.android.ui.usersharelist.ShareArticleDialogFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

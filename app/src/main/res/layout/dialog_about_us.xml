@@ -7,7 +7,7 @@
 
         <variable
             name="holder"
-            type="com.kuky.demo.wan.android.ui.dialog.AboutUsDialog" />
+            type="com.kuky.demo.wan.android.ui.main.AboutUsDialogFragment" />
 
         <variable
             name="kSpan"

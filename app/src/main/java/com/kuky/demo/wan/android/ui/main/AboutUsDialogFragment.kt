@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui.dialog
+package com.kuky.demo.wan.android.ui.main
 
 import android.os.Bundle
 import android.text.Spannable
@@ -14,15 +14,16 @@ import com.kuky.demo.wan.android.databinding.DialogAboutUsBinding
  * @author kuky.
  * @description
  */
-class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
+class AboutUsDialogFragment : BaseDialogFragment<DialogAboutUsBinding>() {
 
     var aboutUsHandler: ((String) -> Unit)? = null
 
-    override fun getLayoutId(): Int = R.layout.dialog_about_us
+    override fun layoutId(): Int = R.layout.dialog_about_us
 
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@AboutUsDialog
+    override fun initDialog(view: View, savedInstanceState: Bundle?) {
+        mBinding.holder = this@AboutUsDialogFragment
         mBinding.movementMethod = LinkMovementMethod.getInstance()
+
         mBinding.kSpan = SpannableStringBuilder("Kukyxs").apply {
             setSpan(object : ClickableSpan() {
                 override fun onClick(widget: View) {
@@ -33,6 +34,7 @@ class AboutUsDialog : BaseDialogFragment<DialogAboutUsBinding>() {
 
             append("：逗比码农一枚，主要做 Android，会写点 Flutter，Python，小程序和 Django 后台，传说中的样样通样样松~~")
         }
+
         mBinding.tSpan = SpannableStringBuilder("Taonce").apply {
             setSpan(object : ClickableSpan() {
                 override fun onClick(widget: View) {

@@ -9,9 +9,13 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.entity.WebsiteData
-import com.kuky.demo.wan.android.ui.dialog.CollectedWebsiteDialogFragment
+import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 
@@ -20,6 +24,8 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectedWebsitesModelFactory(CollectedWebsitesRepository()))
@@ -53,23 +59,17 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                     )
                 }
             }
+
             binding.longListener = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { data ->
                     requireContext().selector(items = editSelector) { _, i ->
                         when (i) {
-                            0 -> mViewModel.deleteWebsite(data.id, {
-                                requireContext().toast("删除成功")
-                                mAdapter.removeItem(position)
-                            }, {
-                                requireContext().toast(it)
-                            })
+                            0 -> launch { removeFavouriteWebsite(data.id) }
 
-                            1 -> {
-                                CollectedWebsiteDialogFragment().apply {
-                                    editMode = true
-                                    injectWebsiteData(data)
-                                }.show(childFragmentManager, "edit_website")
-                            }
+                            1 -> CollectedWebsiteDialogFragment().apply {
+                                editMode = true
+                                injectWebsiteData(data)
+                            }.show(childFragmentManager, "edit_website")
                         }
                     }
                 }
@@ -86,6 +86,21 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                 }
             }
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun removeFavouriteWebsite(id: Int) {
+        mAppViewModel.showLoading()
+        mViewModel.deleteFavouriteWebsite(id)
+            .catch {
+                mAppViewModel.dismissLoading()
+                context?.toast(R.string.no_network)
+            }.collectLatest {
+                mAppViewModel.dismissLoading()
+                it.handleResult {
+                    context?.toast(R.string.remove_favourite_succeed)
+                }
+            }
     }
 
     fun scrollToTop() = mBinding?.websiteList?.scrollToTop()

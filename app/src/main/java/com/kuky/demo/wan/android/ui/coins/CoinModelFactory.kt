@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModelProvider
  */
 
 @Suppress("UNCHECKED_CAST")
-class CoinModelFactory(private val repository: CoinRepository) : ViewModelProvider.NewInstanceFactory() {
+class CoinModelFactory(private val repository: CoinRepository) :
+    ViewModelProvider.NewInstanceFactory() {
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return CoinViewModel(repository) as T
     }

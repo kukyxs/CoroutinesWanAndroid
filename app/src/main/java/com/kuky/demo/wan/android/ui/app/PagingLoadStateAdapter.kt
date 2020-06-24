@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui
+package com.kuky.demo.wan.android.ui.app
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,6 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.databinding.RecyclerLoadFooterBinding
-import com.kuky.demo.wan.android.utils.LogUtils
 
 /**
  * @author kuky.

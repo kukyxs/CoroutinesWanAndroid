@@ -11,6 +11,14 @@ const val ERROR_CODE_NORM = 0xFF00
 const val ERROR_CODE_INIT = 0xFF10
 const val ERROR_CODE_MORE = 0xFF11
 
+suspend fun <T> workOnMain(block: suspend CoroutineScope.() -> T) {
+    withContext(Dispatchers.Main) { block() }
+}
+
+suspend fun <T> workOnIO(block: suspend CoroutineScope.() -> T) {
+    withContext(Dispatchers.IO) { block() }
+}
+
 data class CoroutineCallback(
     var initDispatcher: CoroutineDispatcher? = null,
     var block: suspend () -> Unit = {},

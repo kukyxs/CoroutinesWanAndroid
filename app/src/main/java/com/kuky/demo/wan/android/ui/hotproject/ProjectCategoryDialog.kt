@@ -1,7 +1,6 @@
-package com.kuky.demo.wan.android.ui.dialog
+package com.kuky.demo.wan.android.ui.hotproject
 
 import android.app.Dialog
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -13,17 +12,14 @@ import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
-import com.kuky.demo.wan.android.ui.hotproject.HotProjectModelFactory
-import com.kuky.demo.wan.android.ui.hotproject.HotProjectRepository
-import com.kuky.demo.wan.android.ui.hotproject.HotProjectViewModel
-import com.kuky.demo.wan.android.ui.hotproject.ProjectCategoryAdapter
-import com.kuky.demo.wan.android.utils.ScreenUtils
+import com.kuky.demo.wan.android.utils.screenWidth
 
 /**
  * @author kuky.
  * @description
  */
 class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>() {
+    var onSelectedListener: ((Dialog?, ProjectCategoryData) -> Unit)? = null
 
     private val mAdapter: ProjectCategoryAdapter by lazy { ProjectCategoryAdapter() }
 
@@ -32,26 +28,9 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
             .get(HotProjectViewModel::class.java)
     }
 
-    var onSelectedListener: ((Dialog?, ProjectCategoryData) -> Unit)? = null
+    override fun layoutId(): Int = R.layout.dialog_project_category
 
-    override fun onStart() {
-        super.onStart()
-
-        val attrs = dialog?.window?.attributes?.apply {
-            width = (ScreenUtils.getScreenWidth(requireContext()) * 0.8f).toInt()
-            height = width
-            gravity = Gravity.CENTER
-        }
-
-        dialog?.window?.apply {
-            setBackgroundDrawable(ColorDrawable(0))
-            attributes = attrs
-        }
-    }
-
-    override fun getLayoutId(): Int = R.layout.dialog_project_category
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+    override fun initDialog(view: View, savedInstanceState: Bundle?) {
         mBinding.adapter = mAdapter
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         mBinding.listener = OnItemClickListener { position, _ ->
@@ -59,7 +38,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
             mViewModel.selectedCategoryPosition.value = position
         }
 
-        mBinding.offset = (ScreenUtils.getScreenWidth(requireContext()) * 0.4f).toInt()
+        mBinding.offset = (screenWidth * 0.4f).toInt()
 
         mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> {
             mAdapter.setCategories(it as MutableList<ProjectCategoryData>?)
@@ -69,5 +48,11 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
             mAdapter.updateSelectedPosition(it)
             mBinding.position = it
         })
+    }
+
+    override fun dialogFragmentAttributes() = dialog?.window?.attributes?.apply {
+        width = (screenWidth * 0.8f).toInt()
+        height = width
+        gravity = Gravity.CENTER
     }
 }

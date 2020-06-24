@@ -7,14 +7,14 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
-import com.kuky.demo.wan.android.base.OnItemLongClickListener
-import com.kuky.demo.wan.android.base.scrollToTop
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
-import com.kuky.demo.wan.android.ui.PagingLoadStateAdapter
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -32,6 +32,8 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
             .get(CollectedArticlesViewModel::class.java)
     }
 
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {
         CollectedArticlesPagingAdapter().apply {
@@ -47,9 +49,10 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.articleList.collect {
+            mViewModel.getCollectedArticles().collectLatest {
                 mAdapter.submitData(it)
             }
         }
@@ -78,20 +81,32 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
 
             binding.longListener = OnItemLongClickListener { position, _ ->
                 requireActivity().alert("是否删除本条收藏?") {
-                    okButton {
-                        mAdapter.getItemData(position)?.let { data ->
-                            mViewModel.removeCollectedArticle(data.id, data.originId,
-                                {
-                                    requireContext().toast("删除成功")
-                                    // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
-//                                    mAdapter.notifyItemRemoved(position)
-//                                    mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
-                                    mAdapter.refresh()
-                                }, { requireContext().toast(it) })
-                        }
-                    }
+                    okButton { removeFavourite(position) }
                     noButton { }
                 }.show()
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun removeFavourite(position: Int) {
+        mAdapter.getItemData(position)?.let { data ->
+            launch {
+                mAppViewModel.showLoading()
+                mViewModel.removeCollectedArticle(data.id, data.originId)
+                    .catch {
+                        mAppViewModel.dismissLoading()
+                        requireContext().toast(R.string.no_network)
+                    }.collectLatest {
+                        mAppViewModel.dismissLoading()
+                        it.handleResult {
+                            requireContext().toast(R.string.remove_favourite_succeed)
+                            // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
+//                            mAdapter.notifyItemRemoved(position)
+//                            mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
+                            mAdapter.refresh()
+                        }
+                    }
             }
         }
     }

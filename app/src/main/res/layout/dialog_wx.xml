@@ -6,7 +6,7 @@
 
         <variable
             name="holder"
-            type="com.kuky.demo.wan.android.ui.dialog.WxDialog" />
+            type="com.kuky.demo.wan.android.ui.main.WxDialogFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

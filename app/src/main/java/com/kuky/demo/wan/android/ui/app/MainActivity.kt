@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui
+package com.kuky.demo.wan.android.ui.app
 
 import android.content.Context
 import android.content.Intent
@@ -6,17 +6,23 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.utils.ApplicationUtils
+import com.kuky.demo.wan.android.utils.getAppVersionName
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
+    private val mAppViewModel by lazy { getViewModel(AppViewModel::class.java) }
+
     private var availableCount = 0
+
+    private val mLoadingDialog by lazy { LoadingDialog() }
 
     private val manager: ConnectivityManager by lazy {
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -51,13 +57,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             alert(
                 String.format(
                     resources.getString(R.string.operate_helper),
-                    ApplicationUtils.getAppVersionName(this)
+                    getAppVersionName()
                 ), resources.getString(R.string.operate_title)
             ) {
                 isCancelable = false
                 yesButton { PreferencesHelper.saveFirstState(this@MainActivity, false) }
             }.show()
         }
+
+        mAppViewModel.showLoadingProgress.observe(this, Observer {
+            if (it) mLoadingDialog.showAllowStateLoss(supportFragmentManager, "loading")
+            else mLoadingDialog.dismiss()
+        })
     }
 
     override fun onDestroy() {
@@ -69,20 +80,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         mBinding.netAvailable = availableCount > 0
     }
 
-    override fun needTransparentStatus(): Boolean = true
-
     override fun onBackPressed() {
         supportFragmentManager.fragments.first()
             .childFragmentManager.fragments.last().let {
-            if (it is MainFragment) {
-                startActivity(Intent(Intent.ACTION_MAIN)
-                    .apply {
+                if (it is MainFragment) {
+                    startActivity(Intent(Intent.ACTION_MAIN).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         addCategory(Intent.CATEGORY_HOME)
-                    })
-                return
+                    });return
+                }
             }
-        }
 
         super.onBackPressed()
     }

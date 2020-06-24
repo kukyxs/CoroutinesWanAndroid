@@ -6,16 +6,11 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedArticleBinding
 import com.kuky.demo.wan.android.entity.UserCollectDetail
-import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 
 /**

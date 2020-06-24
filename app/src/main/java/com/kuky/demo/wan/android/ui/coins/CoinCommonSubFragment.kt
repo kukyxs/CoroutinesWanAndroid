@@ -12,8 +12,9 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
-import com.kuky.demo.wan.android.ui.PagingLoadStateAdapter
-import kotlinx.coroutines.flow.collect
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -61,15 +62,16 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
         arguments?.getInt("type", 0) ?: 0
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
             if (type == 0) {
-                mViewModel.coinRecordList.collect {
+                mViewModel.getCoinRecordList().collectLatest {
                     mRecordAdapter.submitData(it)
                     mBinding?.emptyStatus = mRecordAdapter.itemCount == 0
                 }
             } else {
-                mViewModel.coinRankList.collect {
+                mViewModel.getCoinRankList().collectLatest {
                     mRankAdapter.submitData(it)
                     mBinding?.emptyStatus = mRankAdapter.itemCount == 0
                 }

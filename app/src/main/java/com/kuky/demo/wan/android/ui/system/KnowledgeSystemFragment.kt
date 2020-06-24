@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
-import com.kuky.demo.wan.android.ui.dialog.KnowledgeSystemDialogFragment
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository

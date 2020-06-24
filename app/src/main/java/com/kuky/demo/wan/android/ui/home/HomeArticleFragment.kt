@@ -12,7 +12,8 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
-import com.kuky.demo.wan.android.ui.PagingLoadStateAdapter
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -22,7 +23,10 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -50,6 +54,8 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
     }
 
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     private val mViewModel: HomeArticleViewModel by lazy {
         ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
             .get(HomeArticleViewModel::class.java)
@@ -69,7 +75,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.homeArticleList.collect {
+            mViewModel.getHomeArticles().collect {
                 mAdapter.submitData(it)
             }
         }
@@ -147,13 +153,25 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             else " 是否收藏 「${article.title}」"
         ) {
             yesButton {
-                if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                    mAdapter.getItemData(position)?.collect = true
-                    requireContext().toast("收藏成功")
-                }, { message ->
-                    requireContext().toast(message)
-                })
+                if (!article.collect) launch { collectArticle(article.id, position) }
             }
+
             if (!article.collect) noButton { }
         }.show()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mAppViewModel.showLoading()
+        mCollectionViewModel.collectArticle(id)
+            .catch {
+                mAppViewModel.dismissLoading()
+                context?.toast(R.string.no_network)
+            }.collectLatest {
+                mAppViewModel.dismissLoading()
+                it.handleResult {
+                    mAdapter.getItemData(position)?.collect = true
+                    context?.toast(R.string.add_favourite_succeed)
+                }
+            }
+    }
 }

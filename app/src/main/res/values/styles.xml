@@ -21,4 +21,9 @@
         <item name="android:windowExitAnimation">@anim/dialog_push_out</item>
     </style>
 
+    <style name="DialogAlterWithNoAnimation">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+
 </resources>

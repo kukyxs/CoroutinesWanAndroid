@@ -4,17 +4,22 @@ import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 
 /**
- * Author: Taonce
- * Date: 2019/8/1
- * Desc: 收藏文章Repo
+ * @author: kuky
+ * @description
  */
 class CollectionRepository {
+    private val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+
     suspend fun collectArticle(id: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService
-            .collectArticleOrProject(id, PreferencesHelper.fetchCookie(WanApplication.instance))
+        RetrofitManager.apiService.collectArticleOrProject(id, cookie)
+    }
+
+    fun getCollectArticleResultStream(id: Int) = flow {
+        emit(collectArticle(id))
     }
 }

@@ -1,41 +1,39 @@
-package com.kuky.demo.wan.android.ui.dialog
+package com.kuky.demo.wan.android.ui.main
 
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.databinding.DialogLoginBinding
-import com.kuky.demo.wan.android.ui.main.MainModelFactory
-import com.kuky.demo.wan.android.ui.main.MainRepository
-import com.kuky.demo.wan.android.ui.main.MainViewModel
+import com.kuky.demo.wan.android.databinding.DialogRegisterBinding
 import org.jetbrains.anko.toast
 
 /**
  * @author kuky.
  * @description
  */
-class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
+class RegisterDialogFragment : BaseDialogFragment<DialogRegisterBinding>() {
 
     private val mViewModel: MainViewModel by lazy {
         ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
     }
 
-    override fun getLayoutId(): Int = R.layout.dialog_login
+    override fun layoutId(): Int = R.layout.dialog_register
 
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@LoginDialogFragment
+    override fun initDialog(view: View, savedInstanceState: Bundle?) {
+        mBinding.holder = this@RegisterDialogFragment
     }
 
-    fun login(view: View) {
+    fun register(view: View) {
         val username = mBinding.userName.text.toString()
         val password = mBinding.password.text.toString()
+        val repass = mBinding.repass.text.toString()
 
-        if (username.isBlank() || password.isBlank()) {
+        if (username.isBlank() || password.isBlank() || repass.isBlank()) {
             requireContext().toast("请输入完整")
         } else {
-            mViewModel.login(username, password, {
+            mViewModel.register(username, password, repass, {
                 requireContext().toast("登录成功")
                 dialog?.dismiss()
             }, { message ->
@@ -43,11 +41,6 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
                 dialog?.dismiss()
             })
         }
-    }
-
-    fun register(view: View) {
-        dialog?.dismiss()
-        RegisterDialogFragment().showAllowStateLoss(requireActivity().supportFragmentManager, "register")
     }
 
     fun close(view: View) {

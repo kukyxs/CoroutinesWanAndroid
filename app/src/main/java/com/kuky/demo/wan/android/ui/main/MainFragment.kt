@@ -20,18 +20,16 @@ import com.kuky.demo.wan.android.base.onChange
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
-import com.kuky.demo.wan.android.ui.dialog.AboutUsDialog
-import com.kuky.demo.wan.android.ui.dialog.LoginDialogFragment
-import com.kuky.demo.wan.android.ui.dialog.WxDialog
 import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
 import com.kuky.demo.wan.android.ui.userarticles.UserArticleFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
-import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.GalleryTransformer
 import com.kuky.demo.wan.android.utils.ScreenUtils
+import com.kuky.demo.wan.android.utils.getAppVersionName
+import com.kuky.demo.wan.android.utils.screenWidth
 import com.youth.banner.listener.OnBannerListener
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -102,7 +100,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
             binding.banner.let {
                 it.layoutParams = it.layoutParams.apply {
-                    width = ScreenUtils.getScreenWidth(requireContext())
+                    width = screenWidth
                     height = (width * 0.45f).toInt()
                 }
             }
@@ -186,7 +184,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                     .alert(
                         String.format(
                             resources.getString(R.string.operate_helper),
-                            ApplicationUtils.getAppVersionName(requireContext())
+                            context?.getAppVersionName()
                         ), resources.getString(R.string.operate_title)
                     ) {
                         yesButton { PreferencesHelper.saveFirstState(requireContext(), false) }
@@ -220,7 +218,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private fun showAboutUs() {
-        AboutUsDialog().apply {
+        AboutUsDialogFragment().apply {
             aboutUsHandler = { url ->
                 WebsiteDetailFragment.viewDetail(
                     mNavController,
@@ -259,7 +257,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun showWxDialog(view: View) {
-        WxDialog().showAllowStateLoss(childFragmentManager, "wx_code")
+        WxDialogFragment().showAllowStateLoss(childFragmentManager, "wx_code")
     }
 
     fun searchArticles(view: View) {

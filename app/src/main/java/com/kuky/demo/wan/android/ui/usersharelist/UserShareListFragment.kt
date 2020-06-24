@@ -10,7 +10,6 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentUserShareListBinding
 import com.kuky.demo.wan.android.entity.UserArticleDetail
-import com.kuky.demo.wan.android.ui.dialog.ShareArticleDialogFragment
 import com.kuky.demo.wan.android.ui.shareduser.UserSharedArticleAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
@@ -79,7 +78,8 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
 
             binding.shareGesture = DoubleClickListener {
                 singleTap = {
-                    ShareArticleDialogFragment().showAllowStateLoss(childFragmentManager, "share_art")
+                    ShareArticleDialogFragment()
+                        .showAllowStateLoss(childFragmentManager, "share_art")
                 }
             }
 

@@ -2,7 +2,8 @@ package com.kuky.demo.wan.android.data
 
 import android.content.Context
 import android.text.TextUtils
-import com.kuky.demo.wan.android.utils.SharePreferencesUtils
+import com.kuky.demo.wan.android.utils.getString
+import com.kuky.demo.wan.android.utils.saveString
 
 /**
  * @author kuky.
@@ -12,16 +13,13 @@ object SearchHistoryUtils {
     private const val SHARE_KEY_HISTORY = "wan.search.history"
 
     fun hasHistory(context: Context) =
-        SharePreferencesUtils.getString(context, SHARE_KEY_HISTORY).isNotEmpty()
+        context.getString(SHARE_KEY_HISTORY).isNotEmpty()
 
     /**
      * 添加搜索记录
      */
     fun saveHistory(context: Context, keyword: String) {
-        val content = SharePreferencesUtils.getString(
-            context,
-            SHARE_KEY_HISTORY
-        )
+        val content = context.getString(SHARE_KEY_HISTORY)
 
         val store = if (keyword.contains(",")) keyword.replace(",", " ") else keyword
 
@@ -49,10 +47,7 @@ object SearchHistoryUtils {
      * 删除搜索记录
      */
     fun removeKeyword(context: Context, keyword: String) {
-        val content = SharePreferencesUtils.getString(
-            context,
-            SHARE_KEY_HISTORY
-        )
+        val content = context.getString(SHARE_KEY_HISTORY)
 
         val list = when {
             content.contains(",") -> {
@@ -75,10 +70,7 @@ object SearchHistoryUtils {
      * 获取全部搜索记录
      */
     fun fetchHistoryKeys(context: Context): ArrayList<String>? {
-        val content = SharePreferencesUtils.getString(
-            context,
-            SHARE_KEY_HISTORY
-        )
+        val content = context.getString(SHARE_KEY_HISTORY)
 
         return when {
             content.contains(",") -> content.split(",") as ArrayList<String>
@@ -100,10 +92,6 @@ object SearchHistoryUtils {
                 sb.substring(0, sb.length - 1)
             else sb.toString()
 
-        SharePreferencesUtils.saveString(
-            context,
-            SHARE_KEY_HISTORY,
-            result
-        )
+        context.saveString(SHARE_KEY_HISTORY, result)
     }
 }

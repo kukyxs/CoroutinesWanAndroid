@@ -1,6 +1,5 @@
-package com.kuky.demo.wan.android.ui.dialog
+package com.kuky.demo.wan.android.ui.system
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -13,14 +12,16 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
-import com.kuky.demo.wan.android.ui.system.*
 import com.kuky.demo.wan.android.utils.ScreenUtils
+import com.kuky.demo.wan.android.utils.screenWidth
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description
  */
 class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBinding>() {
+    var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
+
     private val mFirstAdapter by lazy { KnowledgeSystemTypeAdapter() }
     private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
     private val mViewModel by lazy {
@@ -28,26 +29,10 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
             .get(KnowledgeSystemViewModel::class.java)
     }
     private var mFirstData: SystemData? = null
-    var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
 
-    override fun onStart() {
-        super.onStart()
+    override fun layoutId() = R.layout.dialog_knowledge_system
 
-        val attrs = dialog?.window?.attributes?.apply {
-            width = (ScreenUtils.getScreenWidth(requireContext()) * 0.8f).toInt()
-            height = width
-            gravity = Gravity.CENTER
-        }
-
-        dialog?.window?.apply {
-            setBackgroundDrawable(ColorDrawable(0))
-            attributes = attrs
-        }
-    }
-
-    override fun getLayoutId() = R.layout.dialog_knowledge_system
-
-    override fun initFragment(view: View, savedInstanceState: Bundle?) {
+    override fun initDialog(view: View, savedInstanceState: Bundle?) {
         mBinding.firstAdapter = mFirstAdapter
         mBinding.secAdapter = mSecAdapter
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -59,7 +44,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
                 mViewModel.secSelectedPosition.value = -1
             }
         }
-        mBinding.offset = (ScreenUtils.getScreenWidth(requireContext()) * 0.4f).toInt()
+        mBinding.offset = (screenWidth * 0.4f).toInt()
 
         mViewModel.children.observe(this, Observer<MutableList<SystemCategory>> {
             mSecAdapter.setNewData(it)
@@ -89,5 +74,11 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
             mSecAdapter.updateSelectedPosition(it)
             mBinding.secPosition = it
         })
+    }
+
+    override fun dialogFragmentAttributes() = dialog?.window?.attributes?.apply {
+        width = (screenWidth * 0.8f).toInt()
+        height = width
+        gravity = Gravity.CENTER
     }
 }

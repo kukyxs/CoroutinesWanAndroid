@@ -1,5 +1,6 @@
 package com.kuky.demo.wan.android.network
 
+import com.kuky.demo.wan.android.base.BaseResultData
 import com.kuky.demo.wan.android.entity.*
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -27,7 +28,7 @@ interface ApiService {
 
     // 常用网站
     @GET("/friend/json")
-    suspend fun commonlyUsedWebsite(): WebsiteEntity
+    suspend fun commonlyUsedWebsite(): BaseResultData<WebsiteData>
 
     // 热词搜索
     @GET("/hotkey/json")
@@ -109,7 +110,7 @@ interface ApiService {
 
     // 收藏文章，项目
     @POST("/lg/collect/{id}/json")
-    suspend fun collectArticleOrProject(@Path("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun collectArticleOrProject(@Path("id") id: Int, @Header("Cookie") cookie: String): BaseResultData<Any?>
 
     // 取消收藏，文章列表
     @POST("/lg/uncollect_originId/{articleId}/json")
@@ -121,11 +122,11 @@ interface ApiService {
     suspend fun unCollectCollection(
         @Path("articleId") articleId: Int, @Field("originId") originId: Int,
         @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // 收藏网站列表
     @GET("/lg/collect/usertools/json")
-    suspend fun collectWebsiteList(@Header("Cookie") cookie: String): WebsiteEntity
+    suspend fun collectWebsiteList(@Header("Cookie") cookie: String): BaseResultData<MutableList<WebsiteData>>
 
     // 收藏网站
     @POST("/lg/collect/addtool/json")
@@ -133,7 +134,7 @@ interface ApiService {
     suspend fun addWebsite(
         @Field("name") name: String, @Field("link") link: String,
         @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // 编辑收藏网址
     @POST("/lg/collect/updatetool/json")
@@ -141,12 +142,12 @@ interface ApiService {
     suspend fun editWebsite(
         @Field("id") id: Int, @Field("name") name: String,
         @Field("link") link: String, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
     @FormUrlEncoded
-    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): BaseResultData<Any?>
 
     // ===============================>
     // 搜索文章
@@ -176,7 +177,7 @@ interface ApiService {
 
     // 个人积分获取记录
     @GET("/lg/coin/list/{page}/json")
-    suspend fun fetchCoinsRecord(@Path("page") page: Int, @Header("Cookie") cookie: String): CoinRecord
+    suspend fun fetchCoinsRecord(@Path("page") page: Int, @Header("Cookie") cookie: String): BaseResultData<CoinRecordData>
 
     // ===============================>
     /**
