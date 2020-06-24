@@ -4,13 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class ProjectDetailEntity(
-    val `data`: ProjectDetailResult,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class ProjectDetailResult(
     val curPage: Int,
     val datas: List<ProjectDetailData>,

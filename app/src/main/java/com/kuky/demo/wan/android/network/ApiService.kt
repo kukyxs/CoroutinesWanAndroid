@@ -24,7 +24,7 @@ interface ApiService {
     // 首页第二个 Banner.同项目分类功能重复
     @Deprecated("同项目分类功能重复，勿调用")
     @GET("/article/listproject/{page}/json")
-    suspend fun homeProject(@Path("page") page: Int): ProjectDetailEntity
+    suspend fun homeProject(@Path("page") page: Int): BaseResultData<ProjectDetailResult>
 
     // 常用网站
     @GET("/friend/json")
@@ -56,13 +56,13 @@ interface ApiService {
 
     // 项目分类
     @GET("/project/tree/json")
-    suspend fun projectCategory(): ProjectCategoryEntity
+    suspend fun projectCategory(): BaseResultData<MutableList<ProjectCategoryData>>
 
     /**
      * 返回项目分类下的所有项目列表，cid 查看 [ProjectCategoryData] #id
      */
     @GET("/project/list/{page}/json")
-    suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): ProjectDetailEntity
+    suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): BaseResultData<ProjectDetailResult>
 
     // 广场分享文章列表
     @GET("/user_article/list/{page}/json")

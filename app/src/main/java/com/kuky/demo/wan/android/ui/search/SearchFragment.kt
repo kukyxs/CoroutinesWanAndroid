@@ -20,7 +20,6 @@ import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.kuky.demo.wan.android.utils.dp2px
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton

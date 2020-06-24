@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
-import com.kuky.demo.wan.android.entity.ProjectDetailData
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -21,6 +22,10 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -49,11 +54,26 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             .get(MainViewModel::class.java)
     }
 
+    private var mSearchJob: Job? = null
     private var errorOnCategories = false
     private var isFirstObserver = true
 
-    private val mAdapter: HomeProjectAdapter by lazy { HomeProjectAdapter() }
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter: HomeProjectPagingAdapter by lazy {
+        HomeProjectPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
 
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         fetchCategories()
 
@@ -65,11 +85,11 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             }
 
             if (!it) {
-                mViewModel.projects?.value?.forEach { arc ->
-                    arc.collect = false
+                for (index in 0 until mAdapter.itemCount) {
+                    mAdapter.getItemData(index)?.collect = false
                 }
             } else {
-                fetchProjects(mId, mTitle)
+                mAdapter.refresh()
             }
         })
     }
@@ -81,10 +101,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                fetchProjects(mId, mTitle)
+                mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
             binding.holder = this@HotProjectFragment
             binding.itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
@@ -104,7 +124,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
                         yesButton {
                             if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mViewModel.projects?.value?.get(position)?.collect = true
+                                mAdapter.getItemData(position)?.collect = true
                                 requireContext().toast("收藏成功")
                             }, { message ->
                                 requireContext().toast(message)
@@ -131,12 +151,12 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                         }
                     }.showAllowStateLoss(childFragmentManager, "category")
                 }
+
                 doubleTap = { binding.projectList.scrollToTop() }
             }
 
             binding.errorReload = ErrorReload {
-                if (errorOnCategories) fetchCategories()
-                else fetchProjects(mId, mTitle)
+                if (errorOnCategories) fetchCategories() else mAdapter.retry()
             }
         }
     }
@@ -161,37 +181,23 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             list[0].let {
                 mId = it.id
                 mTitle = it.name
-                fetchProjects(it.id, it.name, false)
+                fetchProjects(it.id, it.name)
             }
         })
     }
 
 
     // 获取分类下列表
-    private fun fetchProjects(id: Int, title: String, isRefresh: Boolean = true) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchProjects(id: Int, title: String) {
         mBinding?.projectType?.text = title.renderHtml()
 
-        mViewModel.fetchDiffCategoryProjects(id) {
-            mBinding?.emptyStatus = true
-        }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    errorOnCategories = false
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
+        mSearchJob?.cancel()
+        mSearchJob = launch {
+            mViewModel.getDiffCategoryProjects(id).collectLatest {
+                mAdapter.submitData(it)
             }
-        })
-
-        mViewModel.projects?.observe(this, Observer<PagedList<ProjectDetailData>> {
-            mAdapter.submitList(it)
-        })
+        }
     }
 
     private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {

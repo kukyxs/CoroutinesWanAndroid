@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.base.BaseActivity
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.utils.ApplicationUtils
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton

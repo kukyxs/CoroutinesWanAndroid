@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
-import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.kuky.demo.wan.android.utils.screenWidth
 
 /**

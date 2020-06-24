@@ -4,12 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class ProjectCategoryEntity(
-    val `data`: List<ProjectCategoryData>,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class ProjectCategoryData(
     val children: List<Any>,
     val courseId: Int,

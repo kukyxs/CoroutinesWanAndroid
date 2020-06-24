@@ -27,7 +27,6 @@ import com.kuky.demo.wan.android.ui.userarticles.UserArticleFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.GalleryTransformer
-import com.kuky.demo.wan.android.utils.ScreenUtils
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import com.kuky.demo.wan.android.utils.screenWidth
 import com.youth.banner.listener.OnBannerListener

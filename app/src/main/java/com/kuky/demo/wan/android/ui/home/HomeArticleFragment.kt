@@ -25,7 +25,6 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
@@ -73,9 +72,10 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private var isFirstObserver = true
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.getHomeArticles().collect {
+            mViewModel.getHomeArticles().collectLatest {
                 mAdapter.submitData(it)
             }
         }
