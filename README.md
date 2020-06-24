@@ -1,6 +1,6 @@
 ### 大概介绍
-该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口，整体采用 MVVM, Android Jectpack, Retrofit, Kotlin 协程进行编写。
-该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成，目前已完成所有的开发功能。
+该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口, 整体采用 MVVM, Android Jetpack, Retrofit, Kotlin 协程进行编写。
+该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成, 目前已完成所有的开发功能。
 
 ### 目前已完成功能
 - 首页最新博文
@@ -17,8 +17,8 @@
 - 积分功能
 
 ### 目前存在问题
-- `Paging` 刷新数据的时候，调用 `liveData.value.dataSource.invalidate()` 方法会造成界面空白，目前通过两个 `adapter` 进行处理，处理方式参考 `home` 模块，如果有更好的方式请提 issue
-- `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理，只能通过普通方式处理，如果有解决方案请提 issue
+- `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理, 只能通过普通方式处理, 如果有解决方案请提 issue
+- `Paging3` 踩坑阶段, 后期会有问题添加..
 
 ### 特此感谢（排名不分先后）
 - [玩 Android 洋神](https://www.wanandroid.com/)
@@ -33,7 +33,7 @@
 - [anko](https://github.com/Kotlin/anko)
 
 ### 支持一下
-如果该项目对你有帮助，请在右上角帮我们 **star** 一下。如果有什么问题，可以直接提 **issue**
+如果该项目对你有帮助, 请在右上角帮我们 **star** 一下。如果有什么问题, 可以直接提 **issue**
 
 ### 体验下载
 [在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.0/wan_2.0.apk)
