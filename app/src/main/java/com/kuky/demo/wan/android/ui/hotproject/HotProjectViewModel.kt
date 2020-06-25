@@ -23,6 +23,17 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
 
     private var currentPid: Int? = null
     var currentProResult: Flow<PagingData<ProjectDetailData>>? = null
+    var currentCategoriesResult: Flow<MutableList<ProjectCategoryData>>? = null
+
+    init {
+        selectedCategoryPosition.value = 0
+    }
+
+    fun getCategories(): Flow<MutableList<ProjectCategoryData>> {
+        val lastResult = currentCategoriesResult
+        if (lastResult != null) return lastResult
+        return repository.getProjectCategoriesStream().apply { currentCategoriesResult = this }
+    }
 
     fun getDiffCategoryProjects(pid: Int): Flow<PagingData<ProjectDetailData>> {
         val lastResult = currentProResult
@@ -31,9 +42,6 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
         return repository.getProjectsStream(pid).apply { currentProResult = this }.cachedIn(viewModelScope)
     }
 
-    init {
-        selectedCategoryPosition.value = 0
-    }
 
     fun fetchCategories() {
         viewModelScope.safeLaunch {

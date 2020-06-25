@@ -7,6 +7,7 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.ProjectDetailData
 import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 /**
@@ -27,6 +28,10 @@ class HotProjectRepository {
         withContext(Dispatchers.IO) {
             RetrofitManager.apiService.projectList(page, pid, cookie).data.datas
         }
+
+    fun getProjectCategoriesStream() = flow {
+        emit(loadProjectCategories())
+    }
 
     fun getProjectsStream(pid: Int) = Pager(
         config = PagingConfig(pageSize = 20)

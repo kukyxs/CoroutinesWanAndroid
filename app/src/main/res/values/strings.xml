@@ -19,6 +19,8 @@
     <string name="share_art">文章分享</string>
     <string name="shared_art_title">分享文章标题</string>
     <string name="shared_art_link">分享文章链接</string>
+    <string name="articles">文章</string>
+    <string name="websites">网址</string>
 
     <string name="coins">积分</string>
     <string name="coin_record">积分记录</string>

@@ -84,7 +84,6 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
                 mAppViewModel.dismissLoading()
                 it.handleResult {
                     context?.toast(R.string.add_favourite_succeed)
-                    mViewModel.fetchWebSitesData()
                     dismiss()
                 }
             }
@@ -106,7 +105,6 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
                 mAppViewModel.dismissLoading()
                 it.handleResult {
                     context?.toast(R.string.edit_info_succeed)
-                    mViewModel.fetchWebSitesData()
                     dismiss()
                 }
             }

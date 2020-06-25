@@ -11,7 +11,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
-import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
@@ -24,6 +23,7 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
@@ -54,6 +54,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             .get(MainViewModel::class.java)
     }
 
+    private var mCategoryJob: Job? = null
     private var mSearchJob: Job? = null
     private var errorOnCategories = false
     private var isFirstObserver = true
@@ -144,10 +145,8 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                 singleTap = {
                     ProjectCategoryDialog().apply {
                         onSelectedListener = { dialog, category ->
-                            mId = category.id
-                            mTitle = category.name
-                            fetchProjects(category.id, category.name)
-                            dialog?.dismiss()
+                            mId = category.id; mTitle = category.name
+                            fetchProjects(mId, mTitle); dialog?.dismiss()
                         }
                     }.showAllowStateLoss(childFragmentManager, "category")
                 }
@@ -162,30 +161,20 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     // 获取分类信息
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchCategories() {
-        mViewModel.fetchCategories()
-
-        mViewModel.typeNetState.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING, State.SUCCESS -> injectStates(refreshing = true, loading = true)
-
-                State.FAILED -> {
-                    errorOnCategories = true
-                    mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
-                    injectStates(error = true)
-                }
+        mCategoryJob?.cancel()
+        mCategoryJob = launch {
+            pageState(State.RUNNING)
+            mViewModel.getCategories().catch {
+                errorOnCategories = true
+                mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
+                pageState(State.FAILED)
+            }.collectLatest { cat ->
+                cat[0].let { mId = it.id; mTitle = it.name; fetchProjects(mId, mTitle) }
             }
-        })
-
-        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> { list ->
-            list[0].let {
-                mId = it.id
-                mTitle = it.name
-                fetchProjects(it.id, it.name)
-            }
-        })
+        }
     }
-
 
     // 获取分类下列表
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -200,11 +189,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         }
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
+    private fun pageState(state: State) = mBinding?.run {
+        refreshing = state == State.RUNNING
+        loadingStatus = state == State.RUNNING
+        errorStatus = state == State.FAILED
     }
 }

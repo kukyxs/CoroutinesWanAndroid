@@ -31,6 +31,10 @@ class CollectedWebsitesRepository {
         RetrofitManager.apiService.deleteWebsite(id, cookie)
     }
 
+    fun getCollectedWebsitesStream() = flow {
+        emit(getCollectedWebsites())
+    }
+
     fun getAddWebsiteResultStream(name: String, link: String) = flow {
         emit(addWebsite(name, link))
     }

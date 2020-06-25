@@ -17,6 +17,6 @@ data class NetworkState(
     companion object {
         val LOADED = NetworkState(State.SUCCESS)
         val LOADING = NetworkState(State.RUNNING)
-        fun error(msg: String?, code: Int = ERROR_CODE_NORM) = NetworkState(State.FAILED, msg ?: "unknown error", code)
+        fun error(msg: String? = "", code: Int = ERROR_CODE_NORM) = NetworkState(State.FAILED, msg ?: "unknown error", code)
     }
 }

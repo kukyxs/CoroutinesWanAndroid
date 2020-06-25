@@ -2,17 +2,16 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
-import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -32,12 +31,14 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             .get(CollectedWebsitesViewModel::class.java)
     }
 
+    private var mFavouriteJob: Job? = null
+
     private val mAdapter by lazy { CollectedWebsitesAdapter() }
 
     private val editSelector by lazy { arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website)) }
 
     override fun actionsOnViewInflate() {
-        fetchWebSitesData(false)
+        fetchWebSitesData()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_websites
@@ -50,6 +51,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }
 
             binding.adapter = mAdapter
+
             binding.listener = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
@@ -82,6 +84,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                     CollectedWebsiteDialogFragment().apply {
                         editMode = false
                         injectWebsiteData()
+                        onDialogFragmentDismissListener = { fetchWebSitesData() }
                     }.showAllowStateLoss(childFragmentManager, "new_website")
                 }
             }
@@ -105,32 +108,24 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
     fun scrollToTop() = mBinding?.websiteList?.scrollToTop()
 
-    private fun fetchWebSitesData(isRefresh: Boolean = true) {
-        mViewModel.fetchWebSitesData()
-        mViewModel.netState.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                // 非 paging 加载情况直接设置 error status
-                State.FAILED -> injectStates(error = true)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchWebSitesData() {
+        mFavouriteJob?.cancel()
+        mFavouriteJob = launch {
+            pageState(State.RUNNING)
+            mViewModel.getWebsites().catch {
+                pageState(State.FAILED)
+            }.collectLatest {
+                pageState(State.SUCCESS)
+                mBinding?.emptyStatus = it.isNullOrEmpty()
+                mAdapter.update(it)
             }
-        })
-
-        mBinding?.errorStatus = false
-        mBinding?.refreshing = true
-        mViewModel.mWebsitesData.observe(this, Observer {
-            mBinding?.emptyStatus = it.isNullOrEmpty()
-            mAdapter.update(it as MutableList<WebsiteData>?)
-        })
+        }
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
+    private fun pageState(state: State) = mBinding?.run {
+        refreshing = state == State.RUNNING
+        loadingStatus = state == State.RUNNING
+        errorStatus = state == State.FAILED
     }
 }
