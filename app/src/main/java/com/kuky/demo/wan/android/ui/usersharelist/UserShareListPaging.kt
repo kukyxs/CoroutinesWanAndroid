@@ -8,6 +8,7 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,15 +21,15 @@ import kotlinx.coroutines.withContext
 class UserShareListRepository {
 
     suspend fun fetchUserShareList(page: Int): List<UserArticleDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.userShareList(page, PreferencesHelper.fetchCookie(WanApplication.instance)).data.shareArticles.datas
+        RetrofitManager.apiService.userShareList(page, cookie).data.shareArticles.datas
     }
 
     suspend fun deleteShare(id: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.deleteAShare(id, PreferencesHelper.fetchCookie(WanApplication.instance))
+        RetrofitManager.apiService.deleteAShare(id, cookie)
     }
 
     suspend fun shareArticle(title: String, link: String) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.putAShare(title, link, PreferencesHelper.fetchCookie(WanApplication.instance))
+        RetrofitManager.apiService.putAShare(title, link, cookie)
     }
 }
 

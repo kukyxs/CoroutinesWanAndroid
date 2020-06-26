@@ -15,6 +15,8 @@ import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -27,12 +29,12 @@ import org.jetbrains.anko.toast
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
 
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), CollectedArticlesModelFactory(CollectedArticlesRepository()))
             .get(CollectedArticlesViewModel::class.java)
     }
-
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {
@@ -92,21 +94,21 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     private fun removeFavourite(position: Int) {
         mAdapter.getItemData(position)?.let { data ->
             launch {
-                mAppViewModel.showLoading()
-                mViewModel.removeCollectedArticle(data.id, data.originId)
-                    .catch {
-                        mAppViewModel.dismissLoading()
-                        requireContext().toast(R.string.no_network)
-                    }.collectLatest {
-                        mAppViewModel.dismissLoading()
-                        it.handleResult {
-                            requireContext().toast(R.string.remove_favourite_succeed)
-                            // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
-//                            mAdapter.notifyItemRemoved(position)
-//                            mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
-                            mAdapter.refresh()
-                        }
+                mViewModel.removeCollectedArticle(data.id, data.originId).catch {
+                    requireContext().toast(R.string.no_network)
+                }.onStart {
+                    mAppViewModel.showLoading()
+                }.onCompletion {
+                    mAppViewModel.dismissLoading()
+                }.collectLatest {
+                    it.handleResult {
+                        requireContext().toast(R.string.remove_favourite_succeed)
+                        // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
+//                        mAdapter.notifyItemRemoved(position)
+//                        mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
+                        mAdapter.refresh()
                     }
+                }
             }
         }
     }

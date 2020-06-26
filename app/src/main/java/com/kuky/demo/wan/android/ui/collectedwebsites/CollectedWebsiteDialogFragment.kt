@@ -12,6 +12,8 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
 
@@ -75,18 +77,19 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
             return
         }
 
-        mAppViewModel.showLoading()
-        mViewModel.addWebsites(websiteTitle, websiteLink)
-            .catch {
-                mAppViewModel.dismissLoading()
-                context?.toast(R.string.no_network)
-            }.collectLatest {
-                mAppViewModel.dismissLoading()
-                it.handleResult {
-                    context?.toast(R.string.add_favourite_succeed)
-                    dismiss()
-                }
+        mViewModel.addWebsites(websiteTitle, websiteLink).catch {
+            mAppViewModel.dismissLoading()
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                context?.toast(R.string.add_favourite_succeed)
+                dismiss()
             }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -97,17 +100,16 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         }
 
         mAppViewModel.showLoading()
-        mViewModel.editWebsite(websiteId, websiteTitle, websiteLink)
-            .catch {
-                mAppViewModel.dismissLoading()
-                context?.toast(R.string.no_network)
-            }.collectLatest {
-                mAppViewModel.dismissLoading()
-                it.handleResult {
-                    context?.toast(R.string.edit_info_succeed)
-                    dismiss()
-                }
+        mViewModel.editWebsite(websiteId, websiteTitle, websiteLink).catch {
+            mAppViewModel.dismissLoading()
+            context?.toast(R.string.no_network)
+        }.collectLatest {
+            mAppViewModel.dismissLoading()
+            it.handleResult {
+                context?.toast(R.string.edit_info_succeed)
+                dismiss()
             }
+        }
     }
 }
 

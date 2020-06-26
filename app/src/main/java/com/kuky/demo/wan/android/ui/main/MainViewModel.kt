@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.BaseResultData
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
-import com.kuky.demo.wan.android.entity.CoinsData
-import com.kuky.demo.wan.android.entity.WanUserEntity
+import com.kuky.demo.wan.android.entity.WanUserData
+import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
 /**
@@ -20,7 +21,6 @@ import retrofit2.Response
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val hasLogin = MutableLiveData<Boolean>()
     val banners = MutableLiveData<List<BannerData>>()
-    val coins = MutableLiveData<CoinsData?>()
 
     init {
         hasLogin.value = PreferencesHelper.hasLogin(WanApplication.instance)
@@ -37,78 +37,30 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         }
     }
 
-    fun getCoins() {
-        viewModelScope.safeLaunch {
-            block = { coins.value = repository.getCoins() }
-        }
+    fun getCoinInfo() = flow {
+        emit(repository.getCoins())
     }
 
-    fun login(username: String, password: String, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.login(username, password).let {
-                    if (it.body()?.errorCode == 0) {
-                        saveUser(it)
-                        success()
-                        hasLogin.value = true
-                    } else {
-                        fail(it.body()?.errorMsg ?: "登录失败~")
-                        hasLogin.value = false
-                    }
-                }
-            }
-            onError = {
-                fail("登录过程出错啦~请检查网络")
-            }
-        }
+    fun login(username: String, password: String) = flow {
+        emit(repository.login(username, password))
     }
 
-    fun register(
-        username: String, password: String, repass: String,
-        success: () -> Unit, fail: (String) -> Unit
-    ) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.register(username, password, repass).let {
-                    if (it.body()?.errorCode == 0) {
-                        saveUser(it)
-                        success()
-                        hasLogin.value = true
-                    } else {
-                        fail(it.body()?.errorMsg ?: "注册失败~")
-                        hasLogin.value = false
-                    }
-                }
-            }
-            onError = {
-                fail("注册过程出错啦~请检查网络")
-            }
-        }
+    fun register(username: String, password: String, repass: String) = flow {
+        emit(repository.register(username, password, repass))
     }
 
-    fun loginOut(fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.loginOut().let {
-                    if (it.errorCode == 0) {
-                        hasLogin.value = false
-                        PreferencesHelper.saveUserId(WanApplication.instance, 0)
-                        PreferencesHelper.saveUserName(WanApplication.instance, "")
-                        PreferencesHelper.saveCookie(WanApplication.instance, "")
-                    } else {
-                        hasLogin.value = true
-                        fail("退出账号失败~")
-                    }
-                }
-            }
-            onError = {
-                fail("退出过程出错啦~请检查网络")
-            }
-        }
+    fun loginOut() = flow {
+        emit(repository.loginOut())
+    }
+
+    fun clearUserInfo() {
+        PreferencesHelper.saveUserId(WanApplication.instance, 0)
+        PreferencesHelper.saveUserName(WanApplication.instance, "")
+        PreferencesHelper.saveCookie(WanApplication.instance, "")
     }
 
     // 存储用户信息
-    private fun saveUser(info: Response<WanUserEntity>) {
+    fun saveUser(info: Response<BaseResultData<WanUserData>>) {
         if (info.body()?.errorCode == 0) {
             val cookies = StringBuilder()
 

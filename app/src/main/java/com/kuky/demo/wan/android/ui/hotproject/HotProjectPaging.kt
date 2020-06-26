@@ -27,10 +27,11 @@ class HotProjectPagingSource(private val repository: HotProjectRepository, priva
 
         return try {
             val projects = repository.loadProjects(page, pid) ?: mutableListOf()
+
             return LoadResult.Page(
                 data = projects,
                 prevKey = if (page == 0) null else page - 1,
-                nextKey = if (projects.isNullOrEmpty()) null else page + 1
+                nextKey = if (projects.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

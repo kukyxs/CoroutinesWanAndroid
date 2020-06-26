@@ -6,6 +6,7 @@ import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,28 +16,33 @@ import kotlinx.coroutines.withContext
  */
 class MainRepository {
 
-    fun getCachedBanners(): List<BannerData>? = Gson().fromJson(
+    fun getCachedBanners(): MutableList<BannerData>? = Gson().fromJson(
         PreferencesHelper.fetchBannerCache(WanApplication.instance),
-        object : TypeToken<List<BannerData>>() {}.type
+        object : TypeToken<MutableList<BannerData>>() {}.type
     )
 
-    suspend fun getCoins() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.fetchUserCoins(PreferencesHelper.fetchCookie(WanApplication.instance)).data
-    }
+    suspend fun getCoins() =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.fetchUserCoins(cookie).data
+        }
 
-    suspend fun getHomeBanners() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.homeBanner().data
-    }
+    suspend fun getHomeBanners() =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.homeBanner().data
+        }
 
-    suspend fun login(username: String, password: String) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.login(username, password)
-    }
+    suspend fun login(username: String, password: String) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.login(username, password)
+        }
 
-    suspend fun register(username: String, password: String, repass: String) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.register(username, password, repass)
-    }
+    suspend fun register(username: String, password: String, repass: String) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.register(username, password, repass)
+        }
 
-    suspend fun loginOut() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.loginOut()
-    }
+    suspend fun loginOut() =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.loginOut()
+        }
 }

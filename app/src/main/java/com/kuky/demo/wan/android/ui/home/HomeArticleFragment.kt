@@ -26,6 +26,8 @@ import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -148,7 +150,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     }
 
     private fun showCollectDialog(article: HomeArticleDetail, position: Int) =
-        requireContext().alert(
+        context?.alert(
             if (article.collect) "「${article.title}」已收藏"
             else " 是否收藏 「${article.title}」"
         ) {
@@ -157,21 +159,21 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
             }
 
             if (!article.collect) noButton { }
-        }.show()
+        }?.show()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun collectArticle(id: Int, position: Int) {
-        mAppViewModel.showLoading()
-        mCollectionViewModel.collectArticle(id)
-            .catch {
-                mAppViewModel.dismissLoading()
-                context?.toast(R.string.no_network)
-            }.collectLatest {
-                mAppViewModel.dismissLoading()
-                it.handleResult {
-                    mAdapter.getItemData(position)?.collect = true
-                    context?.toast(R.string.add_favourite_succeed)
-                }
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
             }
+        }
     }
 }

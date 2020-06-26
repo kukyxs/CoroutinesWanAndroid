@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.network
 
 import com.kuky.demo.wan.android.base.BaseResultData
+import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.entity.*
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -15,7 +16,7 @@ interface ApiService {
     // ===============================>
     // 首页文章
     @GET("/article/list/{page}/json")
-    suspend fun homeArticles(@Path("page") page: Int): HomeArticleEntity
+    suspend fun homeArticles(@Path("page") page: Int): BaseResultData<ArticleData>
 
     // 首页 Banner
     @GET("/banner/json")
@@ -36,7 +37,7 @@ interface ApiService {
 
     // 置顶文章
     @GET("/article/top/json")
-    suspend fun topArticle(@Header("Cookie") cookie: String): TopArticleEntity
+    suspend fun topArticle(@Header("Cookie") cookie: String): BaseResultData<MutableList<HomeArticleDetail>>
 
     // ==============================>
     // 体系
@@ -83,13 +84,17 @@ interface ApiService {
     // 添加分享
     @POST("/lg/user_article/add/json")
     @FormUrlEncoded
-    suspend fun putAShare(@Field("title") title: String, @Field("link") link: String, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun putAShare(
+        @Field("title") title: String, @Field("link") link: String, @Header("Cookie") cookie: String
+    ): BasicResultData
 
     // ================================>
     // 登录
     @POST("/user/login")
     @FormUrlEncoded
-    suspend fun login(@Field("username") username: String, @Field("password") password: String): Response<WanUserEntity>
+    suspend fun login(
+        @Field("username") username: String, @Field("password") password: String
+    ): Response<BaseResultData<WanUserData>>
 
     // 注册
     @POST("/user/register")
@@ -97,16 +102,16 @@ interface ApiService {
     suspend fun register(
         @Field("username") username: String, @Field("password") password: String,
         @Field("repassword") repassword: String
-    ): Response<WanUserEntity>
+    ): Response<BaseResultData<WanUserData>>
 
     // 退出
     @GET("/user/logout/json")
-    suspend fun loginOut(): BasicResultData
+    suspend fun loginOut(): BaseResultData<Any?>
 
     // ===============================>
     // 收藏文章列表
     @GET("/lg/collect/list/{page}/json")
-    suspend fun userCollectedArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): UserCollectEntity
+    suspend fun userCollectedArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): BaseResultData<UserCollectData>
 
     // 收藏文章，项目
     @POST("/lg/collect/{id}/json")

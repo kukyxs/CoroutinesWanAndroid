@@ -45,9 +45,6 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
 
         mBinding.offset = (screenWidth * 0.4f).toInt()
 
-//        mViewModel.categories.observe(this, Observer<List<ProjectCategoryData>> {
-//            mAdapter.setCategories(it as MutableList<ProjectCategoryData>?)
-//        })
         launch {
             mViewModel.getCategories().catch { dismiss() }
                 .collectLatest { mAdapter.setCategories(it) }

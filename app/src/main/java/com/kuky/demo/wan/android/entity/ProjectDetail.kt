@@ -6,7 +6,7 @@ package com.kuky.demo.wan.android.entity
  */
 data class ProjectDetailResult(
     val curPage: Int,
-    val datas: List<ProjectDetailData>,
+    val datas: MutableList<ProjectDetailData>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,
@@ -33,7 +33,7 @@ data class ProjectDetailData(
     val publishTime: Long,
     val superChapterId: Int,
     val superChapterName: String,
-    val tags: List<ProjectTag>,
+    val tags: MutableList<ProjectTag>,
     val title: String,
     val type: Int,
     val userId: Int,

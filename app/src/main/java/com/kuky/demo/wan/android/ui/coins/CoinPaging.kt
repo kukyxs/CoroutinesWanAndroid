@@ -30,11 +30,11 @@ class CoinRecordPagingSource(private val repository: CoinRepository) :
         val page = params.key ?: 1
 
         return try {
-            val records = repository.getCoinRecord(page)
+            val records = repository.getCoinRecord(page) ?: mutableListOf()
             LoadResult.Page(
-                data = records ?: mutableListOf(),
+                data = records,
                 prevKey = if (page == 1) null else page - 1,
-                nextKey = if (records.isNullOrEmpty()) null else page + 1
+                nextKey = if (records.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -66,12 +66,14 @@ class CoinRankPagingSource(private val repository: CoinRepository) :
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CoinRankDetail> {
         val page = params.key ?: 1
+
         return try {
-            val ranks = repository.getCoinRanks(page)
+            val ranks = repository.getCoinRanks(page) ?: mutableListOf()
+
             LoadResult.Page(
-                data = ranks ?: mutableListOf(),
+                data = ranks,
                 prevKey = if (page == 1) null else page - 1,
-                nextKey = if (ranks.isNullOrEmpty()) null else page + 1
+                nextKey = if (ranks.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

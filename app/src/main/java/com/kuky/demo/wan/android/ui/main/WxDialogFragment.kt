@@ -58,25 +58,25 @@ class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
             onPermissionsDenied = { toAppSettings() }
 
             onShowRationale = { request ->
-                requireContext().alert("必要权限，请务必同意o(╥﹏╥)o", "温馨提示") {
+                context?.alert("必要权限，请务必同意o(╥﹏╥)o", "温馨提示") {
                     positiveButton("行，给你~") { request.retryRequestPermissions() }
                     negativeButton("不，我不玩了！") {}
-                }.show()
+                }?.show()
             }
         }
     }
 
     private fun toAppSettings() {
-        requireContext().alert("缺少必要权限，是否手动打开^_^", "温馨提示") {
-            positiveButton("走起，小老弟~") {
-                requireContext().startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        context?.alert("缺少必要权限, 是否手动打开^_^", "温馨提示") {
+            positiveButton("走起, 小老弟~") {
+                context?.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", requireContext().packageName, null)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 })
             }
 
-            negativeButton("我不！") {}
-        }.show()
+            negativeButton("我不!") {}
+        }?.show()
     }
 
     private fun saveQrCode(file: File?) {
@@ -94,13 +94,13 @@ class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
             if (result) {
                 delayLaunch(1000) {
                     block = {
-                        context?.starApp("com.tencent.mm") { requireContext().toast("未安装微信") }
+                        context?.starApp("com.tencent.mm") { context?.toast("未安装微信") }
                         dialog?.dismiss()
                     }
                 }
-                requireContext().toast("保存图片成功，即将打开微信")
+                context?.toast("保存图片成功，即将打开微信")
             } else {
-                requireContext().toast("保存图片出错啦~")
+                context?.toast("保存图片出错啦~")
             }
         }
     }

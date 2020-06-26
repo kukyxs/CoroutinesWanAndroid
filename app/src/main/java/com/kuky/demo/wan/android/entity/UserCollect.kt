@@ -4,16 +4,9 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class UserCollectEntity(
-    val `data`: UserCollectData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class UserCollectData(
     val curPage: Int,
-    val datas: List<UserCollectDetail>,
+    val datas: MutableList<UserCollectDetail>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

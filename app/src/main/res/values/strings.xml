@@ -9,10 +9,16 @@
     <string name="edit_website">编辑网址</string>
     <string name="collected_website_name">请输入网址名称</string>
     <string name="collected_website_link">请输入网址链接</string>
-    <string name="empty_input_content">缺少输入内容, 请检查</string>
+    <string name="empty_input_content">未填写完整, 请检查后再提交</string>
     <string name="add_favourite_succeed">添加收藏成功</string>
     <string name="remove_favourite_succeed">成功移除收藏</string>
     <string name="edit_info_succeed">修改信息成功</string>
+
+    <string name="login_succeed">登录成功</string>
+    <string name="login_failed">登录失败</string>
+    <string name="register_failed">注册失败</string>
+    <string name="login_out_succeed">退出登录成功</string>
+    <string name="login_out_failed">退出登录失败</string>
 
     <string name="share">分享</string>
     <string name="user_shares">我的分享</string>

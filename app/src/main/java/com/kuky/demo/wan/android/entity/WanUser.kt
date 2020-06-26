@@ -4,13 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class WanUserEntity(
-    val `data`: WanUserData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class WanUserData(
     val admin: Boolean,
     val chapterTops: List<Any>,

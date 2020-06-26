@@ -12,7 +12,7 @@ data class CoinRank(
 
 data class CoinRankData(
     val curPage: Int,
-    val datas: List<CoinRankDetail>,
+    val datas: MutableList<CoinRankDetail>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

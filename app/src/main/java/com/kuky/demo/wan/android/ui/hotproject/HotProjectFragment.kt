@@ -11,6 +11,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
+import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
@@ -25,6 +26,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -38,6 +41,8 @@ import org.jetbrains.anko.yesButton
 class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private var mId = 0
     private var mTitle = ""
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel: HotProjectViewModel by lazy {
         ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
@@ -122,17 +127,15 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                 mAdapter.getItemData(position)?.let { article ->
                     (parentFragment as? MainFragment)?.closeMenu()
                     // 根据是否收藏显示不同信息
-                    requireContext().alert(if (article.collect) "「${article.title}」已收藏" else " 是否收藏 「${article.title}」") {
+                    context?.alert(
+                        if (article.collect) "「${article.title}」已收藏"
+                        else " 是否收藏 「${article.title}」"
+                    ) {
                         yesButton {
-                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mAdapter.getItemData(position)?.collect = true
-                                requireContext().toast("收藏成功")
-                            }, { message ->
-                                requireContext().toast(message)
-                            })
+                            if (!article.collect) launch { collectArticle(article.id, position) }
                         }
                         if (!article.collect) noButton { }
-                    }.show()
+                    }?.show()
                 }
             }
 
@@ -185,6 +188,22 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mSearchJob = launch {
             mViewModel.getDiffCategoryProjects(id).collectLatest {
                 mAdapter.submitData(it)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
             }
         }
     }

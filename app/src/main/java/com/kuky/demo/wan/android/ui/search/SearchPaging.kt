@@ -11,6 +11,7 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerSearchArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -30,7 +31,7 @@ class SearchRepository {
 
     // 搜索结果
     suspend fun loadSearchResult(page: Int, key: String): List<ArticleDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.searchArticle(page, key, PreferencesHelper.fetchCookie(WanApplication.instance)).data.datas
+        RetrofitManager.apiService.searchArticle(page, key, cookie).data.datas
     }
 }
 

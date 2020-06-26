@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.collection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kuky.demo.wan.android.base.safeLaunch
+import kotlinx.coroutines.flow.flow
 
 
 /**
@@ -11,7 +12,9 @@ import com.kuky.demo.wan.android.base.safeLaunch
  */
 class CollectionViewModel(private val repository: CollectionRepository) : ViewModel() {
 
-    fun collectArticle(id: Int) = repository.getCollectArticleResultStream(id)
+    fun collectArticle(id: Int) = flow {
+        emit(repository.collectArticle(id))
+    }
 
     fun collectArticle(id: Int, success: () -> Unit, fail: (String) -> Unit) {
         viewModelScope.safeLaunch {

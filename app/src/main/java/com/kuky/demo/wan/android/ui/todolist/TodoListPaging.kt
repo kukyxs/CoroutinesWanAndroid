@@ -7,9 +7,7 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerParentTodoChoiceBinding
 import com.kuky.demo.wan.android.databinding.RecyclerSubTodoChoiceBinding
 import com.kuky.demo.wan.android.databinding.RecyclerTodoItemBinding
@@ -18,6 +16,7 @@ import com.kuky.demo.wan.android.entity.ITodoChoice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -28,15 +27,15 @@ import kotlinx.coroutines.withContext
  * @description
  */
 class TodoRepository {
-    suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): List<TodoInfo>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService
-            .fetchTodoList(page, PreferencesHelper.fetchCookie(WanApplication.instance), param)
-            .data.datas
-    }
+    suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): List<TodoInfo>? =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.fetchTodoList(page, cookie, param).data.datas
+        }
 
-    suspend fun updateTodoState(id: Int, state: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.updateTodoState(id, state, PreferencesHelper.fetchCookie(WanApplication.instance))
-    }
+    suspend fun updateTodoState(id: Int, state: Int) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.updateTodoState(id, state, cookie)
+        }
 }
 
 class TodoDataSource(

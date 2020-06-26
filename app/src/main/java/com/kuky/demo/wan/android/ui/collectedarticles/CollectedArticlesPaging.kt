@@ -24,12 +24,12 @@ class CollectedArticlesPagingSource(private val repository: CollectedArticlesRep
         val page = params.key ?: 0
 
         return try {
-            val collectedArticles = repository.getCollectedArticleList(page)
+            val collectedArticles = repository.getCollectedArticleList(page) ?: mutableListOf()
 
             LoadResult.Page(
-                data = collectedArticles ?: mutableListOf(),
+                data = collectedArticles,
                 prevKey = if (page == 0) null else page - 1,
-                nextKey = if (collectedArticles.isNullOrEmpty()) null else page + 1
+                nextKey = if (collectedArticles.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

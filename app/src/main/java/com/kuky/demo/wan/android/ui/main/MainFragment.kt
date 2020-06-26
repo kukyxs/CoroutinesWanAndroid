@@ -1,4 +1,4 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER", "BlockingMethodInNonBlockingContext")
 
 package com.kuky.demo.wan.android.ui.main
 
@@ -16,10 +16,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
+import com.kuky.demo.wan.android.base.handleResult
 import com.kuky.demo.wan.android.base.onChange
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
+import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
@@ -30,6 +32,13 @@ import com.kuky.demo.wan.android.utils.GalleryTransformer
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import com.kuky.demo.wan.android.utils.screenWidth
 import com.youth.banner.listener.OnBannerListener
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -54,6 +63,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         )
     }
 
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     private val mViewModel: MainViewModel by lazy {
         ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
             .get(MainViewModel::class.java)
@@ -64,6 +75,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             layoutInflater, R.layout.user_profile_header, mBinding?.userProfileDrawer, false
         )
     }
+
+    private var mCoinsJob: Job? = null
 
     override fun actionsOnViewInflate() {
         mBinding?.let { binding ->
@@ -78,7 +91,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         mViewModel.getBanners()
 
-        mViewModel.getCoins()
+        getCoins()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_main
@@ -120,44 +133,39 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                     if (isNullOrBlank()) "A" else toCharArray()[0].toString().toUpperCase(Locale.getDefault())
                 }
 
-                if (it) mViewModel.getCoins()
-            })
-
-            // 设置积分
-            mViewModel.coins.observe(this, Observer {
-                it?.let {
-                    mHeaderBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
-                        setSpan(
-                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
-                            0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                        )
-
-                        setSpan(
-                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorPrimary)),
-                            run {
-                                append("\t/\t\t")
-                                length
-                            }, run {
-                                append("Lv${it.level}")
-                                length
-                            }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                        )
-
-                        setSpan(
-                            ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
-                            run {
-                                append("\t\t/\t\t")
-                                length
-                            }, run {
-                                append("R${it.rank}")
-                                length
-                            }, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                        )
-                    }
-                }
+                if (it) getCoins()
             })
 
             handleUserProfile()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun getCoins() {
+        mCoinsJob?.cancel()
+        mCoinsJob = launch {
+            mViewModel.getCoinInfo().collectLatest {
+                mHeaderBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
+                        0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorPrimary)),
+                        run { append("\t/\t\t"); length },
+                        run { append("Lv${it.level}"); length },
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
+                        run { append("\t\t/\t\t"); length },
+                        run { append("R${it.rank}"); length },
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
         }
     }
 
@@ -191,13 +199,32 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 R.id.login_out -> requireContext()
                     .alert("是否退出登录") {
-                        yesButton {
-                            mViewModel.loginOut { requireContext().toast(it) }
-                        }
+                        yesButton { loginOut() }
                         noButton { }
                     }.show()
             }
             true
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun loginOut() {
+        launch {
+            mViewModel.loginOut().catch {
+                context?.toast(R.string.no_network)
+            }.onStart {
+                mAppViewModel.showLoading()
+            }.onCompletion {
+                mAppViewModel.dismissLoading()
+            }.collectLatest {
+                it.handleResult({
+                    context?.toast(R.string.login_out_failed)
+                }, {
+                    context?.toast(R.string.login_out_succeed)
+                    mViewModel.hasLogin.postValue(false)
+                    mViewModel.clearUserInfo()
+                })
+            }
         }
     }
 

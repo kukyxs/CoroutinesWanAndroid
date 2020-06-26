@@ -6,7 +6,7 @@ package com.kuky.demo.wan.android.entity
  */
 data class CoinRecordData(
     val curPage: Int,
-    val datas: List<CoinRecordDetail>,
+    val datas: MutableList<CoinRecordDetail>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

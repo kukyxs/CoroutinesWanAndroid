@@ -14,6 +14,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
@@ -64,7 +66,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
             binding.longListener = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { data ->
-                    requireContext().selector(items = editSelector) { _, i ->
+                    context?.selector(items = editSelector) { _, i ->
                         when (i) {
                             0 -> launch { removeFavouriteWebsite(data.id) }
 
@@ -93,17 +95,17 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun removeFavouriteWebsite(id: Int) {
-        mAppViewModel.showLoading()
-        mViewModel.deleteFavouriteWebsite(id)
-            .catch {
-                mAppViewModel.dismissLoading()
-                context?.toast(R.string.no_network)
-            }.collectLatest {
-                mAppViewModel.dismissLoading()
-                it.handleResult {
-                    context?.toast(R.string.remove_favourite_succeed)
-                }
+        mViewModel.deleteFavouriteWebsite(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                context?.toast(R.string.remove_favourite_succeed)
             }
+        }
     }
 
     fun scrollToTop() = mBinding?.websiteList?.scrollToTop()

@@ -32,7 +32,7 @@ class AboutUsDialogFragment : BaseDialogFragment<DialogAboutUsBinding>() {
                 }
             }, 0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
 
-            append("：逗比码农一枚，主要做 Android，会写点 Flutter，Python，小程序和 Django 后台，传说中的样样通样样松~~")
+            append(": 逗比码农一枚, 主要做 Android, 会写点 Flutter")
         }
 
         mBinding.tSpan = SpannableStringBuilder("Taonce").apply {
@@ -43,7 +43,7 @@ class AboutUsDialogFragment : BaseDialogFragment<DialogAboutUsBinding>() {
                 }
             }, 0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
 
-            append("：Android码农一枚，喜欢Android、Kotlin，日常撸码、撸电影、撸游戏~~")
+            append(": Android码农一枚, 喜欢Android、Kotlin, 日常撸码、撸电影、撸游戏~~")
         }
     }
 
