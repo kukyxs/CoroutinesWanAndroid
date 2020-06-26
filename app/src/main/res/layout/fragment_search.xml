@@ -163,8 +163,8 @@
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         bind:adapter="@{adapter}"
                         bind:listItemClick="@{listener}"
-                        bind:pageItemClick="@{listener}"
-                        bind:pageItemLongClick="@{longListener}"
+                        bind:pagingItemClick="@{listener}"
+                        bind:pagingItemLongClick="@{longListener}"
                         tools:listitem="@layout/recycler_home_article" />
 
                     <com.kuky.demo.wan.android.ui.widget.StatusError

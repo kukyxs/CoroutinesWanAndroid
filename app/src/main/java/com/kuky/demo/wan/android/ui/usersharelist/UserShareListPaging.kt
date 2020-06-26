@@ -3,9 +3,7 @@ package com.kuky.demo.wan.android.ui.usersharelist
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
 import com.kuky.demo.wan.android.ui.app.cookie

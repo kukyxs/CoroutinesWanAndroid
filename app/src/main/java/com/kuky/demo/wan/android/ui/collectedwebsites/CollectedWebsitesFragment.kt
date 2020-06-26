@@ -114,9 +114,10 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
     private fun fetchWebSitesData() {
         mFavouriteJob?.cancel()
         mFavouriteJob = launch {
-            pageState(State.RUNNING)
             mViewModel.getWebsites().catch {
                 pageState(State.FAILED)
+            }.onStart {
+                pageState(State.RUNNING)
             }.collectLatest {
                 pageState(State.SUCCESS)
                 mBinding?.emptyStatus = it.isNullOrEmpty()

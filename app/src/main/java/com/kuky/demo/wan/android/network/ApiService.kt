@@ -16,7 +16,9 @@ interface ApiService {
     // ===============================>
     // 首页文章
     @GET("/article/list/{page}/json")
-    suspend fun homeArticles(@Path("page") page: Int): BaseResultData<ArticleData>
+    suspend fun homeArticles(
+        @Path("page") page: Int
+    ): BaseResultData<ArticleData>
 
     // 首页 Banner
     @GET("/banner/json")
@@ -25,7 +27,9 @@ interface ApiService {
     // 首页第二个 Banner.同项目分类功能重复
     @Deprecated("同项目分类功能重复，勿调用")
     @GET("/article/listproject/{page}/json")
-    suspend fun homeProject(@Path("page") page: Int): BaseResultData<ProjectDetailResult>
+    suspend fun homeProject(
+        @Path("page") page: Int
+    ): BaseResultData<ProjectDetailResult>
 
     // 常用网站
     @GET("/friend/json")
@@ -33,11 +37,13 @@ interface ApiService {
 
     // 热词搜索
     @GET("/hotkey/json")
-    suspend fun hotKeys(): HotKeyEntity
+    suspend fun hotKeys(): BaseResultData<MutableList<HotKeyData>>
 
     // 置顶文章
     @GET("/article/top/json")
-    suspend fun topArticle(@Header("Cookie") cookie: String): BaseResultData<MutableList<HomeArticleDetail>>
+    suspend fun topArticle(
+        @Header("Cookie") cookie: String
+    ): BaseResultData<MutableList<HomeArticleDetail>>
 
     // ==============================>
     // 体系
@@ -46,14 +52,18 @@ interface ApiService {
 
     // 问答
     @GET("/wenda/list/{page}/json")
-    suspend fun askAndAnswers(@Path("page") page: Int): ResponseBody
+    suspend fun askAndAnswers(
+        @Path("page") page: Int
+    ): ResponseBody
 
     /**
      * 体系下的文章，cid 查看 [SystemCategory] #id
      * 返回数据同首页文章列表
      */
     @GET("/article/list/{page}/json")
-    suspend fun articleInCategory(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): WxChapterList
+    suspend fun articleInCategory(
+        @Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String
+    ): WxChapterList
 
     // 项目分类
     @GET("/project/tree/json")
@@ -63,23 +73,33 @@ interface ApiService {
      * 返回项目分类下的所有项目列表，cid 查看 [ProjectCategoryData] #id
      */
     @GET("/project/list/{page}/json")
-    suspend fun projectList(@Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String): BaseResultData<ProjectDetailResult>
+    suspend fun projectList(
+        @Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String
+    ): BaseResultData<ProjectDetailResult>
 
     // 广场分享文章列表
     @GET("/user_article/list/{page}/json")
-    suspend fun shareArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): UserArticle
+    suspend fun shareArticles(
+        @Path("page") page: Int, @Header("Cookie") cookie: String
+    ): UserArticle
 
     // 分享用户信息
     @GET("/user/{id}/share_articles/{page}/json")
-    suspend fun sharedUserInfo(@Path("id") user: Int, @Path("page") page: Int, @Header("Cookie") cookie: String): SharedUser
+    suspend fun sharedUserInfo(
+        @Path("id") user: Int, @Path("page") page: Int, @Header("Cookie") cookie: String
+    ): SharedUser
 
     // 用户分享列表
     @GET("/user/lg/private_articles/{page}/json")
-    suspend fun userShareList(@Path("page") page: Int, @Header("Cookie") cookie: String): SharedUser
+    suspend fun userShareList(
+        @Path("page") page: Int, @Header("Cookie") cookie: String
+    ): SharedUser
 
     // 删除分享
     @POST("/lg/user_article/delete/{shared}/json")
-    suspend fun deleteAShare(@Path("shared") id: Int, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun deleteAShare(
+        @Path("shared") id: Int, @Header("Cookie") cookie: String
+    ): BasicResultData
 
     // 添加分享
     @POST("/lg/user_article/add/json")
@@ -111,15 +131,21 @@ interface ApiService {
     // ===============================>
     // 收藏文章列表
     @GET("/lg/collect/list/{page}/json")
-    suspend fun userCollectedArticles(@Path("page") page: Int, @Header("Cookie") cookie: String): BaseResultData<UserCollectData>
+    suspend fun userCollectedArticles(
+        @Path("page") page: Int, @Header("Cookie") cookie: String
+    ): BaseResultData<UserCollectData>
 
     // 收藏文章，项目
     @POST("/lg/collect/{id}/json")
-    suspend fun collectArticleOrProject(@Path("id") id: Int, @Header("Cookie") cookie: String): BaseResultData<Any?>
+    suspend fun collectArticleOrProject(
+        @Path("id") id: Int, @Header("Cookie") cookie: String
+    ): BaseResultData<Any?>
 
     // 取消收藏，文章列表
     @POST("/lg/uncollect_originId/{articleId}/json")
-    suspend fun unCollectArticle(@Path("articleId") articleId: Int, @Header("Cookie") cookie: String): ResponseBody
+    suspend fun unCollectArticle(
+        @Path("articleId") articleId: Int, @Header("Cookie") cookie: String
+    ): ResponseBody
 
     // 取消收藏，收藏列表
     @POST("/lg/uncollect/{articleId}/json")
@@ -131,14 +157,15 @@ interface ApiService {
 
     // 收藏网站列表
     @GET("/lg/collect/usertools/json")
-    suspend fun collectWebsiteList(@Header("Cookie") cookie: String): BaseResultData<MutableList<WebsiteData>>
+    suspend fun collectWebsiteList(
+        @Header("Cookie") cookie: String
+    ): BaseResultData<MutableList<WebsiteData>>
 
     // 收藏网站
     @POST("/lg/collect/addtool/json")
     @FormUrlEncoded
     suspend fun addWebsite(
-        @Field("name") name: String, @Field("link") link: String,
-        @Header("Cookie") cookie: String
+        @Field("name") name: String, @Field("link") link: String, @Header("Cookie") cookie: String
     ): BaseResultData<Any?>
 
     // 编辑收藏网址
@@ -152,13 +179,17 @@ interface ApiService {
     // 删除收藏的网址
     @POST("/lg/collect/deletetool/json")
     @FormUrlEncoded
-    suspend fun deleteWebsite(@Field("id") id: Int, @Header("Cookie") cookie: String): BaseResultData<Any?>
+    suspend fun deleteWebsite(
+        @Field("id") id: Int, @Header("Cookie") cookie: String
+    ): BaseResultData<Any?>
 
     // ===============================>
     // 搜索文章
     @POST("/article/query/{page}/json")
     @FormUrlEncoded
-    suspend fun searchArticle(@Path("page") page: Int, @Field("k") keyword: String, @Header("Cookie") cookie: String): SearchArticleEntity
+    suspend fun searchArticle(
+        @Path("page") page: Int, @Field("k") keyword: String, @Header("Cookie") cookie: String
+    ): BaseResultData<SearchArticleData>
 
     // 公众号列表
     @GET("/wxarticle/chapters/json")
@@ -168,8 +199,7 @@ interface ApiService {
     @GET("/wxarticle/list/{wxid}/{page}/json")
     suspend fun wxChapterList(
         @Path("wxid") wxid: Int, @Path("page") page: Int,
-        @Header("Cookie") cookie: String,
-        @Query("k") keyword: String
+        @Header("Cookie") cookie: String, @Query("k") keyword: String
     ): WxChapterList
 
     // 积分排行榜
@@ -178,11 +208,15 @@ interface ApiService {
 
     // 个人积分查询
     @GET("/lg/coin/userinfo/json")
-    suspend fun fetchUserCoins(@Header("Cookie") cookie: String): UserCoins
+    suspend fun fetchUserCoins(
+        @Header("Cookie") cookie: String
+    ): UserCoins
 
     // 个人积分获取记录
     @GET("/lg/coin/list/{page}/json")
-    suspend fun fetchCoinsRecord(@Path("page") page: Int, @Header("Cookie") cookie: String): BaseResultData<CoinRecordData>
+    suspend fun fetchCoinsRecord(
+        @Path("page") page: Int, @Header("Cookie") cookie: String
+    ): BaseResultData<CoinRecordData>
 
     // ===============================>
     /**
@@ -199,8 +233,7 @@ interface ApiService {
      */
     @GET("/lg/todo/v2/list/{page}/json")
     suspend fun fetchTodoList(
-        @Path("page") page: Int, @Header("Cookie") cookie: String,
-        @QueryMap param: HashMap<String, Int>
+        @Path("page") page: Int, @Header("Cookie") cookie: String, @QueryMap param: HashMap<String, Int>
     ): TodoEntity
 
     /**
@@ -216,7 +249,9 @@ interface ApiService {
      */
     @POST("/lg/todo/add/json")
     @FormUrlEncoded
-    suspend fun addTodo(@FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun addTodo(
+        @FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String
+    ): BasicResultData
 
     /**
      * 更新一条待办
@@ -233,8 +268,7 @@ interface ApiService {
     @POST("lg/todo/update/{id}/json")
     @FormUrlEncoded
     suspend fun updateTodo(
-        @Path("id") id: Int, @Header("Cookie") cookie: String,
-        @FieldMap param: HashMap<String, Any>
+        @Path("id") id: Int, @Header("Cookie") cookie: String, @FieldMap param: HashMap<String, Any>
     ): BasicResultData
 
     /**
@@ -246,11 +280,12 @@ interface ApiService {
     @POST("lg/todo/done/{id}/json")
     @FormUrlEncoded
     suspend fun updateTodoState(
-        @Path("id") id: Int, @Field("status") status: Int,
-        @Header("Cookie") cookie: String
+        @Path("id") id: Int, @Field("status") status: Int, @Header("Cookie") cookie: String
     ): BasicResultData
 
     // 删除一条待办
     @POST("/lg/todo/delete/{id}/json")
-    suspend fun deleteTodo(@Path("id") id: Int, @Header("Cookie") cookie: String): BasicResultData
+    suspend fun deleteTodo(
+        @Path("id") id: Int, @Header("Cookie") cookie: String
+    ): BasicResultData
 }

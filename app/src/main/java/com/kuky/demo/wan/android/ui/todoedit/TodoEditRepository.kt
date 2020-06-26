@@ -1,7 +1,5 @@
 package com.kuky.demo.wan.android.ui.todoedit
 
-import com.kuky.demo.wan.android.WanApplication
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.network.RetrofitManager
 import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers

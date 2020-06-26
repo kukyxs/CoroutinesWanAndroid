@@ -4,15 +4,9 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class SearchArticleEntity(
-    val `data`: SearchArticleData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class SearchArticleData(
     val curPage: Int,
-    val datas: List<ArticleDetail>,
+    val datas: MutableList<ArticleDetail>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

@@ -6,7 +6,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
 import com.kuky.demo.wan.android.R
@@ -15,12 +16,21 @@ import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.dp2px
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -34,13 +44,28 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private var errorOnLabel = false
     private var mKey = ""
 
-    private val mResultAdapter: SearchArticleAdapter by lazy { SearchArticleAdapter() }
+    @OptIn(ExperimentalPagingApi::class)
+    private val mResultAdapter: SearchArticlePagingAdapter by lazy {
+        SearchArticlePagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
 
     private val mHistoryAdapter: HistoryAdapter by lazy {
         HistoryAdapter().apply {
             onKeyRemove = { mViewModel.updateHistory() }
         }
     }
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel: SearchViewModel by lazy {
         ViewModelProvider(this, SearchModelFactory(SearchRepository()))
@@ -52,8 +77,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             .get(CollectionViewModel::class.java)
     }
 
+    private var mKeyJob: Job? = null
+    private var mSearchJob: Job? = null
+
     override fun actionsOnViewInflate() {
-        loadKeys()
+        loadHotKeys()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_search
@@ -62,8 +90,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                if (errorOnLabel) loadKeys()
-                else searchArticles(mKey)
+                if (errorOnLabel) loadHotKeys() else mResultAdapter.refresh()
             }
 
             binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
@@ -74,15 +101,14 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             }
 
             binding.errorReload = ErrorReload {
-                if (errorOnLabel) loadKeys()
-                else searchArticles(mKey)
+                if (errorOnLabel) loadHotKeys() else mResultAdapter.retry()
             }
 
             mViewModel.resultMode.observe(this, Observer {
                 if (it) {
                     binding.enable = true
                     binding.needOverScroll = true
-                    binding.adapter = mResultAdapter
+                    binding.adapter = mResultAdapter.withLoadStateFooter(PagingLoadStateAdapter { mResultAdapter.retry() })
                     binding.listener = OnItemClickListener { position, _ ->
                         mResultAdapter.getItemData(position)?.let { art ->
                             WebsiteDetailFragment.viewDetail(
@@ -92,6 +118,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                             )
                         }
                     }
+
                     binding.longListener = OnItemLongClickListener { position, _ ->
                         mResultAdapter.getItemData(position)?.let { article ->
                             showCollectionDialog(article, position)
@@ -109,101 +136,90 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                     }
                 }
             })
+
+            mViewModel.history.observe(this, Observer<MutableList<String>> {
+                mHistoryAdapter.updateHistory(it)
+            })
         }
     }
 
     private fun showCollectionDialog(article: ArticleDetail, position: Int) =
-        requireContext().alert(
+        context?.alert(
             if (article.collect) "「${article.title.renderHtml()}」已收藏"
             else " 是否收藏 「${article.title.renderHtml()}」"
         ) {
             yesButton {
-                if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                    mViewModel.result?.value?.get(position)?.collect = true
-                    requireContext().toast("收藏成功")
-                }, { message ->
-                    requireContext().toast(message)
-                })
+                if (!article.collect) launch { collectArticle(article.id, position) }
             }
+
             if (!article.collect) noButton { }
-        }.show()
+        }?.show()
 
-    private fun loadKeys() {
-        mViewModel.fetchKeys()
-
-        mViewModel.keyNetState.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = true)
-
-                State.SUCCESS -> {
-                    injectStates()
-                    mBinding?.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
-                }
-
-                State.FAILED -> {
-                    errorOnLabel = true
-                    injectStates(error = true)
-                }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mResultAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
             }
-        })
+        }
+    }
 
-        mViewModel.history.observe(this, Observer<List<String>> {
-            mBinding?.hasHistory = it.isNotEmpty()
-            mHistoryAdapter.updateHistory(it as MutableList<String>)
-        })
-
-        mViewModel.hotKeys.observe(this, Observer<List<HotKeyData>> {
-            addLabel(it)
-        })
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun loadHotKeys() {
+        mKeyJob?.cancel()
+        mKeyJob = launch {
+            mViewModel.getHotKeys().catch {
+                errorOnLabel = true
+                pageState(State.FAILED)
+            }.onStart {
+                pageState(State.RUNNING)
+            }.collectLatest {
+                addLabel(it)
+                pageState(State.SUCCESS)
+                mBinding?.emptyStatus = it.isEmpty()
+                mBinding?.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
+                mViewModel.updateHistory()
+            }
+        }
     }
 
     /**
      * 搜索
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun searchArticles(keyword: String) {
-        if (mKey != keyword) mKey = keyword
+        if (mKey == keyword) return
 
+        mKey = keyword
         mViewModel.resultMode.postValue(true)
-
         mBinding?.searchContent?.hideSoftInput()
-
         SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
-        mViewModel.fetchResult(keyword) {
-            mBinding?.emptyStatus = true
+        mSearchJob?.cancel()
+        mSearchJob = launch {
+            mViewModel.getSearchResult(keyword)
+                .catch { context?.toast(R.string.no_network) }
+                .collectLatest { mResultAdapter.submitData(it) }
         }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = true)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    errorOnLabel = false
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewModel.result?.observe(this, Observer<PagedList<ArticleDetail>> {
-            mResultAdapter.submitList(it)
-        })
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
+    private fun pageState(state: State) = mBinding?.run {
+        refreshing = state == State.RUNNING
+        loadingStatus = state == State.RUNNING
+        errorStatus = state == State.FAILED
     }
 
     /**
      * 添加热词
      */
-    private fun addLabel(hotKeys: List<HotKeyData>) {
+    private fun addLabel(hotKeys: MutableList<HotKeyData>) {
         val marginValue = 8f.dp2px().toInt()
         val paddingValue = 6f.dp2px().toInt()
         mBinding?.keysBox?.removeAllViews()

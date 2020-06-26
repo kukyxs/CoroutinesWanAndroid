@@ -4,11 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.entity.ProjectDetailData
+import com.kuky.demo.wan.android.ui.app.constPagerConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -42,9 +42,9 @@ class HotProjectViewModel(private val repository: HotProjectRepository) : ViewMo
         if (currentPid == pid && lastResult != null) return lastResult
         currentPid = pid
 
-        return Pager(
-            config = PagingConfig(pageSize = 20)
-        ) { HotProjectPagingSource(repository, pid) }.flow.apply {
+        return Pager(constPagerConfig) {
+            HotProjectPagingSource(repository, pid)
+        }.flow.apply {
             currentProResult = this
         }.cachedIn(viewModelScope)
     }

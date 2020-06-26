@@ -3,38 +3,59 @@ package com.kuky.demo.wan.android.ui.search
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.RecyclerSearchArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
-import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
  * @description
  */
+class SearchPagingSource(
+    private val repository: SearchRepository, private val key: String
+) : PagingSource<Int, ArticleDetail>() {
 
-class SearchRepository {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticleDetail> {
+        val page = params.key ?: 0
 
-    // 搜索热词
-    suspend fun hotKeys() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.hotKeys().data
-    }
-
-    // 搜索结果
-    suspend fun loadSearchResult(page: Int, key: String): List<ArticleDetail>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.searchArticle(page, key, cookie).data.datas
+        return try {
+            val articles = repository.loadSearchResult(page, key) ?: mutableListOf()
+            LoadResult.Page(
+                data = articles,
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (articles.isEmpty()) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 }
 
+class SearchArticlePagingAdapter() : BasePagingDataAdapter<ArticleDetail, RecyclerSearchArticleBinding>(DIFF_CALLBACK) {
+    override fun getLayoutId(): Int = R.layout.recycler_search_article
+
+    override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerSearchArticleBinding>) {
+        holder.binding.detail = data
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ArticleDetail>() {
+            override fun areItemsTheSame(oldItem: ArticleDetail, newItem: ArticleDetail): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: ArticleDetail, newItem: ArticleDetail): Boolean =
+                oldItem == newItem
+        }
+    }
+}
+
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class SearchDataSource(
     private val repository: SearchRepository, private val key: String
 ) : PageKeyedDataSource<Int, ArticleDetail>(), CoroutineScope by IOScope() {
@@ -77,6 +98,7 @@ class SearchDataSource(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class SearchDataSourceFactory(
     private val repository: SearchRepository, private val key: String
 ) : DataSource.Factory<Int, ArticleDetail>() {
@@ -87,6 +109,7 @@ class SearchDataSourceFactory(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class SearchArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerSearchArticleBinding>(DIFF_CALLBACK) {
 
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_search_article
@@ -105,3 +128,4 @@ class SearchArticleAdapter : BasePagedListAdapter<ArticleDetail, RecyclerSearchA
         }
     }
 }
+//endregion

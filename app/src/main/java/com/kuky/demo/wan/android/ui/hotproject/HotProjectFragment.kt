@@ -168,11 +168,12 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private fun fetchCategories() {
         mCategoryJob?.cancel()
         mCategoryJob = launch {
-            pageState(State.RUNNING)
             mViewModel.getCategories().catch {
                 errorOnCategories = true
                 mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
                 pageState(State.FAILED)
+            }.onStart {
+                pageState(State.RUNNING)
             }.collectLatest { cat ->
                 cat[0].let { mId = it.id; mTitle = it.name; fetchProjects(mId, mTitle) }
             }
