@@ -48,7 +48,7 @@ interface ApiService {
     // ==============================>
     // 体系
     @GET("/tree/json")
-    suspend fun knowledgeSystem(): AndroidSystemEntity
+    suspend fun knowledgeSystem(): BaseResultData<MutableList<SystemData>>
 
     // 问答
     @GET("/wenda/list/{page}/json")
@@ -63,7 +63,7 @@ interface ApiService {
     @GET("/article/list/{page}/json")
     suspend fun articleInCategory(
         @Path("page") page: Int, @Query("cid") cid: Int, @Header("Cookie") cookie: String
-    ): WxChapterList
+    ): BaseResultData<WxChapterListData>
 
     // 项目分类
     @GET("/project/tree/json")
@@ -81,19 +81,19 @@ interface ApiService {
     @GET("/user_article/list/{page}/json")
     suspend fun shareArticles(
         @Path("page") page: Int, @Header("Cookie") cookie: String
-    ): UserArticle
+    ): BaseResultData<UserArticleData>
 
     // 分享用户信息
     @GET("/user/{id}/share_articles/{page}/json")
     suspend fun sharedUserInfo(
         @Path("id") user: Int, @Path("page") page: Int, @Header("Cookie") cookie: String
-    ): SharedUser
+    ): BaseResultData<SharedData>
 
     // 用户分享列表
     @GET("/user/lg/private_articles/{page}/json")
     suspend fun userShareList(
         @Path("page") page: Int, @Header("Cookie") cookie: String
-    ): SharedUser
+    ): BaseResultData<SharedData>
 
     // 删除分享
     @POST("/lg/user_article/delete/{shared}/json")
@@ -200,7 +200,7 @@ interface ApiService {
     suspend fun wxChapterList(
         @Path("wxid") wxid: Int, @Path("page") page: Int,
         @Header("Cookie") cookie: String, @Query("k") keyword: String
-    ): WxChapterList
+    ): BaseResultData<WxChapterListData>
 
     // 积分排行榜
     @GET("/coin/rank/{page}/json")

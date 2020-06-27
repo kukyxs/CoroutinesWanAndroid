@@ -18,7 +18,7 @@
 
         <variable
             name="adapter"
-            type="com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter" />
+            type="androidx.recyclerview.widget.ConcatAdapter" />
 
         <variable
             name="refreshColor"
@@ -141,8 +141,8 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     bind:adapter="@{adapter}"
                     bind:hasFixedSize="@{true}"
-                    bind:pageItemClick="@{listener}"
-                    bind:pageItemLongClick="@{longClickListener}"
+                    bind:pagingItemClick="@{listener}"
+                    bind:pagingItemLongClick="@{longClickListener}"
                     tools:itemCount="20"
                     tools:listitem="@layout/recycler_wx_chapter_list" />
 

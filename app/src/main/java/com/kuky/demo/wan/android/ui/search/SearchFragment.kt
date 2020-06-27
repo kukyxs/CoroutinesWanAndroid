@@ -205,7 +205,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mSearchJob?.cancel()
         mSearchJob = launch {
             mViewModel.getSearchResult(keyword)
-                .catch { context?.toast(R.string.no_network) }
+                .catch { mBinding?.errorStatus = true }
                 .collectLatest { mResultAdapter.submitData(it) }
         }
     }

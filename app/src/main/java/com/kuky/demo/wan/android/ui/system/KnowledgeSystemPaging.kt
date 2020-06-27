@@ -4,6 +4,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
@@ -11,25 +12,29 @@ import com.kuky.demo.wan.android.databinding.RecyclerKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
-import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 /**
  * @author Taonce.
  * @description
  */
 
-class KnowledgeSystemRepository {
-    suspend fun loadSystemType() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.knowledgeSystem().data
-    }
-
-    suspend fun loadArticle4System(page: Int, cid: Int): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.articleInCategory(page, cid, cookie).data.datas
+class KnowledgeSystemPagingSource(
+    private val repository: KnowledgeSystemRepository, private val cid: Int
+) : PagingSource<Int, WxChapterListDatas>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, WxChapterListDatas> {
+        val page = params.key ?: 0
+        return try {
+            val chapters = repository.loadArticle4System(page, cid) ?: mutableListOf()
+            LoadResult.Page(
+                data = chapters,
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (chapters.isEmpty()) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 }
 

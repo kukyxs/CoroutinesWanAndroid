@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
@@ -185,6 +186,6 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
     companion object {
         fun addOrEditTodo(controller: NavController, @IdRes id: Int, todo: TodoInfo?) =
-            controller.navigate(id, Bundle().apply { putSerializable("todo", todo) })
+            controller.navigate(id, bundleOf("todo" to todo))
     }
 }

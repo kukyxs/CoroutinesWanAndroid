@@ -4,13 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class AndroidSystemEntity(
-    val `data`: List<SystemData>,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class SystemData(
     val children: List<SystemCategory>,
     val courseId: Int,

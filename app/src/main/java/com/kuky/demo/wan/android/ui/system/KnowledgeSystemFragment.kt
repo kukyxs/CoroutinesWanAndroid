@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -18,7 +22,14 @@ import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListAdapter
+import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterPagingAdapter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -30,7 +41,22 @@ import org.jetbrains.anko.yesButton
  */
 class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
-    private val mAdapter by lazy { WxChapterListAdapter() }
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter by lazy {
+        WxChapterPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel by lazy {
         ViewModelProvider(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
@@ -52,6 +78,9 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     private var errorOnTypes = false
     private var isFirstObserver = true
 
+    private var mTypeJob: Job? = null
+    private var mArticleJob: Job? = null
+
     override fun actionsOnViewInflate() {
         fetchSystemTypes()
 
@@ -63,11 +92,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
             }
 
             if (!it) {
-                mViewModel.mArticles?.value?.forEach { arc ->
-                    arc.collect = false
+                for (index in 0 until mAdapter.itemCount) {
+                    mAdapter.getItemData(index)?.collect = false
                 }
             } else {
-                fetchArticles(mCid)
+                mAdapter.refresh()
             }
         })
     }
@@ -79,12 +108,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                if (errorOnTypes) fetchSystemTypes()
-                else fetchArticles(mCid)
+                mAdapter.refresh()
             }
 
             binding.holder = this
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
             binding.itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
                     (parentFragment as? MainFragment)?.closeMenu()
@@ -95,6 +123,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     )
                 }
             }
+
             binding.itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
                     (parentFragment as? MainFragment)?.closeMenu()
@@ -103,12 +132,7 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                         else " 是否收藏 「${article.title}」"
                     ) {
                         yesButton {
-                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mViewModel.mArticles?.value?.get(position)?.collect = true
-                                requireContext().toast("收藏成功")
-                            }, { message ->
-                                requireContext().toast(message)
-                            })
+                            if (!article.collect) launch { collectArticle(article.id, position) }
                         }
                         if (!article.collect) noButton { }
                     }.show()
@@ -130,84 +154,76 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                         }
                     }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
                 }
+
                 doubleTap = {
                     binding.projectList.scrollToTop()
                 }
             }
 
             binding.errorReload = ErrorReload {
-                if (errorOnTypes) fetchSystemTypes()
-                else fetchArticles(mCid)
+                if (errorOnTypes) fetchSystemTypes() else mAdapter.retry()
             }
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchSystemTypes() {
-        mViewModel.fetchType()
-        mViewModel.typeNetState.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING, State.SUCCESS -> injectStates(refreshing = true, loading = true)
-
-                State.FAILED -> {
-                    errorOnTypes = true
-                    mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
-                    mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
-                    injectStates(error = true)
-                }
+        mTypeJob?.cancel()
+        mTypeJob = launch {
+            mViewModel.getTypeList().catch {
+                errorOnTypes = true
+                pageState(State.FAILED)
+                mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
+                mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
+            }.collectLatest {
+                pageState(State.SUCCESS)
+                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
             }
-        })
-
-        mViewModel.mType.observe(this, Observer { data ->
-            data?.let {
-                updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id, false)
-            }
-        })
+        }
     }
 
     /**
      * 选择体系后更新文章列表
      */
-    private fun updateSystemArticles(first: String?, sec: String?, cid: Int, isRefresh: Boolean = true) {
+    private fun updateSystemArticles(first: String?, sec: String?, cid: Int) {
         this.mCid = cid
         mBinding?.systemFirst?.text = first
         mBinding?.systemSec?.text = sec
-        fetchArticles(mCid, isRefresh)
+        fetchArticles(mCid)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
+            }
+        }
     }
 
     /**
      * 刷新文章列表
      */
-    private fun fetchArticles(cid: Int, isRefresh: Boolean = true) {
-        mViewModel.fetchArticles(cid) {
-            mBinding?.emptyStatus = true
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchArticles(cid: Int) {
+        mArticleJob?.cancel()
+        mArticleJob = launch {
+            mViewModel.getArticles(cid)
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
         }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    errorOnTypes = false
-                    mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
-                    mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewModel.mArticles?.observe(this, Observer {
-            mAdapter.submitList(it)
-        })
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
+    private fun pageState(state: State) = mBinding?.run {
+        refreshing = state == State.RUNNING
+        loadingStatus = state == State.RUNNING
+        errorStatus = state == State.FAILED
     }
 }

@@ -18,7 +18,7 @@ import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
-import com.kuky.demo.wan.android.ui.shareduser.SharedUserFragment
+import com.kuky.demo.wan.android.ui.shareduser.UserSharedFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import org.jetbrains.anko.alert
@@ -50,7 +50,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
     private val mAdapter: UserArticleAdapter by lazy {
         UserArticleAdapter().apply {
             userListener = { id, nick ->
-                SharedUserFragment.navToUser(
+                UserSharedFragment.navToUser(
                     mNavController,
                     R.id.action_mainFragment_to_sharedUserFragment,
                     id, nick

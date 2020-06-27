@@ -12,6 +12,7 @@ import android.util.Property
 import android.view.View
 import android.webkit.*
 import androidx.annotation.IdRes
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
@@ -148,7 +149,7 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
     companion object {
         fun viewDetail(controller: NavController, @IdRes id: Int, url: String) {
             if (url.isBlank()) return
-            controller.navigate(id, Bundle().apply { putString("url", url) })
+            controller.navigate(id, bundleOf("url" to url))
         }
     }
 }

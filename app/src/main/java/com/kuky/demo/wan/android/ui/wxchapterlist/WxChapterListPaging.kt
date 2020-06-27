@@ -3,28 +3,65 @@ package com.kuky.demo.wan.android.ui.wxchapterlist
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.RecyclerWxChapterListBinding
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
-import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 /**
  * @author Taonce.
  * @description
  */
-class WxChapterListRepository {
-    suspend fun loadPage(wxId: Int, page: Int, key: String): List<WxChapterListDatas>? = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.wxChapterList(wxId, page, cookie, key).data.datas
+
+class WxChapterListPagingSource(
+    private val repository: WxChapterListRepository,
+    private val wxId: Int, private val keyword: String
+) : PagingSource<Int, WxChapterListDatas>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, WxChapterListDatas> {
+        val page = params.key ?: 0
+
+        return try {
+            val chapters = repository.loadPage(wxId, page, keyword) ?: mutableListOf()
+            LoadResult.Page(
+                data = chapters,
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (chapters.isEmpty()) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 }
 
+class WxChapterPagingAdapter : BasePagingDataAdapter<WxChapterListDatas, RecyclerWxChapterListBinding>(DIFF_CALLBACK) {
+
+    override fun getLayoutId(): Int = R.layout.recycler_wx_chapter_list
+
+    override fun setVariable(
+        data: WxChapterListDatas,
+        position: Int,
+        holder: BaseViewHolder<RecyclerWxChapterListBinding>
+    ) {
+        holder.binding.data = data
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<WxChapterListDatas>() {
+            override fun areItemsTheSame(oldItem: WxChapterListDatas, newItem: WxChapterListDatas): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: WxChapterListDatas, newItem: WxChapterListDatas): Boolean =
+                oldItem == newItem
+        }
+    }
+}
+
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class WxChapterListDataSource(
     private val repository: WxChapterListRepository,
     private val wxId: Int, private val keyword: String
@@ -67,6 +104,7 @@ class WxChapterListDataSource(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class WxChapterListDataSourceFactory(
     private val repository: WxChapterListRepository,
     private val wxId: Int, private val keyword: String
@@ -78,6 +116,7 @@ class WxChapterListDataSourceFactory(
     }
 }
 
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
 class WxChapterListAdapter : BasePagedListAdapter<WxChapterListDatas, RecyclerWxChapterListBinding>(DIFF_CALLBACK) {
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_wx_chapter_list
 
@@ -99,3 +138,4 @@ class WxChapterListAdapter : BasePagedListAdapter<WxChapterListDatas, RecyclerWx
         }
     }
 }
+//endregion

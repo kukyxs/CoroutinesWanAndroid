@@ -1,13 +1,17 @@
 package com.kuky.demo.wan.android.ui.system
 
-import androidx.lifecycle.*
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.NetworkState
-import com.kuky.demo.wan.android.base.safeLaunch
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
+import com.kuky.demo.wan.android.ui.app.constPagerConfig
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 
 /**
@@ -15,13 +19,6 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
  * @description
  */
 class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository) : ViewModel() {
-
-    val typeNetState = MutableLiveData<NetworkState>()
-    var netState: LiveData<NetworkState>? = null
-
-    val mType: MutableLiveData<List<SystemData>?> = MutableLiveData()
-    var mArticles: LiveData<PagedList<WxChapterListDatas>>? = null
-
     // 一级体系下标
     val firstSelectedPosition = MutableLiveData<Int>()
 
@@ -29,37 +26,35 @@ class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository
     val secSelectedPosition = MutableLiveData<Int>()
     val children = MutableLiveData<MutableList<SystemCategory>>()
 
+    private var mCurrentCid: Int? = null
+    private var mCurrentChaptersResult: Flow<PagingData<WxChapterListDatas>>? = null
+    private var mCurrentTypeResult: Flow<MutableList<SystemData>>? = null
+
     init {
         firstSelectedPosition.value = 0
         secSelectedPosition.value = 0
         children.value = arrayListOf()
     }
 
-    fun fetchType() {
-        viewModelScope.safeLaunch {
-            block = {
-                typeNetState.postValue(NetworkState.LOADING)
-                mType.value = repository.loadSystemType()
-                typeNetState.postValue(NetworkState.LOADED)
-            }
-            onError = {
-                typeNetState.postValue(NetworkState.error(it.message))
-            }
-        }
+    fun getArticles(cid: Int): Flow<PagingData<WxChapterListDatas>> {
+        val lastResult = mCurrentChaptersResult
+        if (cid == mCurrentCid && lastResult != null) return lastResult
+
+        mCurrentCid = cid
+        return Pager(constPagerConfig) {
+            KnowledgeSystemPagingSource(repository, cid)
+        }.flow.apply {
+            mCurrentChaptersResult = this
+        }.cachedIn(viewModelScope)
     }
 
-    fun fetchArticles(cid: Int, empty: () -> Unit) {
-        mArticles = LivePagedListBuilder(
-            KnowledgeSystemDataSourceFactory(repository, cid).apply {
-                netState = Transformations.switchMap(sourceLiveData) { it.initState }
-            }, PagedList.Config.Builder()
-                .setPageSize(20)
-                .setEnablePlaceholders(true)
-                .setInitialLoadSizeHint(20)
-                .build()
-        ).setBoundaryCallback(object : PagedList.BoundaryCallback<WxChapterListDatas>() {
-            override fun onZeroItemsLoaded() = empty()
-        }).build()
+    fun getTypeList(): Flow<MutableList<SystemData>> {
+        val lastResult = mCurrentTypeResult
+        if (lastResult != null) return lastResult
+
+        return flow {
+            emit(repository.loadSystemType())
+        }.apply { mCurrentTypeResult = this }
     }
 }
 

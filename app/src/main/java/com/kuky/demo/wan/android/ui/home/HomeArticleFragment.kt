@@ -77,9 +77,9 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.getHomeArticles().collectLatest {
-                mAdapter.submitData(it)
-            }
+            mViewModel.getHomeArticles()
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
         }
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
@@ -145,7 +145,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
             binding.indicator = resources.getString(R.string.blog_articles)
 
-            binding.errorReload = ErrorReload { mAdapter.refresh() }
+            binding.errorReload = ErrorReload { mAdapter.retry() }
         }
     }
 

@@ -14,7 +14,7 @@
 
         <variable
             name="adapter"
-            type="androidx.recyclerview.widget.MergeAdapter" />
+            type="androidx.recyclerview.widget.ConcatAdapter" />
 
         <variable
             name="itemClick"

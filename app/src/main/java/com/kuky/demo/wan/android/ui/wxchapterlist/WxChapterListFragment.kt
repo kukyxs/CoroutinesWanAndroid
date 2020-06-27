@@ -8,18 +8,29 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.IdRes
-import androidx.lifecycle.Observer
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterListBinding
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -31,24 +42,31 @@ import org.jetbrains.anko.yesButton
  */
 class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     companion object {
-        /**
-         * 公众号跳转到列表
-         * [articleId] 文章id
-         * [name] 作者名称
-         */
-        fun navigate(
-            controller: NavController, @IdRes id: Int,
-            articleId: Int, name: String
-        ) = controller.navigate(id,
-            Bundle().apply {
-                putInt("articleId", articleId)
-                putString("name", name)
-            })
+        fun navigate(controller: NavController, @IdRes id: Int, articleId: Int, name: String) =
+            controller.navigate(id, bundleOf("articleId" to articleId, "name" to name))
     }
 
-    private var mSearchKeyword = ""
+    private var mSearchKeyword: String? = null
     private val name by lazy { arguments?.getString("name") ?: "" }
-    private val mAdapter by lazy { WxChapterListAdapter() }
+    private val mArticleId by lazy { arguments?.getInt("articleId") ?: -1 }
+
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter by lazy {
+        WxChapterPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
+    }
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     private val mViewMode by lazy {
         ViewModelProvider(requireActivity(), WxChapterListModelFactory(WxChapterListRepository()))
             .get(WxChapterListViewModel::class.java)
@@ -87,24 +105,24 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
+    private var mArticleJob: Job? = null
+
     override fun actionsOnViewInflate() {
-        fetchWxChapterList(arguments?.getInt("articleId"), isRefresh = false)
+        fetchWxChapterList()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        val id = arguments?.getInt("articleId")
-
         mBinding?.let { binding ->
             binding.wxChapter = name
 
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                fetchWxChapterList(id, mSearchKeyword)
+                fetchWxChapterList(mSearchKeyword ?: "")
             }
 
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
             binding.listener = OnItemClickListener { position, _ ->
                 if (binding.searchMode == true) {
                     binding.wxSearch.startAnimation(searchOut)
@@ -129,21 +147,14 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                         else " 是否收藏 「${article.title}」"
                     ) {
                         yesButton {
-                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mViewMode.chapters?.value?.get(position)?.collect = true
-                                requireContext().toast("收藏成功")
-                            }, { message ->
-                                requireContext().toast(message)
-                            })
+                            if (!article.collect) launch { collectArticle(article.id, position) }
                         }
                         if (!article.collect) noButton { }
                     }.show()
                 }
             }
 
-            binding.errorReload = ErrorReload {
-                fetchWxChapterList(id, mSearchKeyword)
-            }
+            binding.errorReload = ErrorReload { mAdapter.retry() }
 
             binding.gesture = DoubleClickListener {
                 doubleTap = {
@@ -153,7 +164,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
             binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    fetchWxChapterList(id, v.text.toString(), isRefresh = false)
+                    fetchWxChapterList(v.text.toString())
                     binding.wxChapter = if (v.text.isEmpty()) name else v.text.toString()
                     binding.wxSearch.hideSoftInput()
                     binding.wxSearch.startAnimation(searchOut)
@@ -172,36 +183,32 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
-    private fun fetchWxChapterList(id: Int?, keyword: String = "", isRefresh: Boolean = true) {
-        if (mSearchKeyword != keyword) mSearchKeyword = keyword
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchWxChapterList(keyword: String = "") {
+        if (mSearchKeyword == keyword) return
 
-        mViewMode.fetchWxArticles(id ?: 0, keyword) {
-            mBinding?.emptyStatus = true
+        mSearchKeyword = keyword
+        mArticleJob?.cancel()
+        mArticleJob = launch {
+            mViewMode.getWxChapters(mArticleId, keyword)
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
         }
-
-        mViewMode.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewMode.chapters?.observe(this, Observer {
-            mAdapter.submitList(it)
-        })
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
+            }
         }
     }
 

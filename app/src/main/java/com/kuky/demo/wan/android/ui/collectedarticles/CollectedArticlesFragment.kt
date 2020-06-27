@@ -54,9 +54,9 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.getCollectedArticles().collectLatest {
-                mAdapter.submitData(it)
-            }
+            mViewModel.getCollectedArticles()
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
         }
     }
 

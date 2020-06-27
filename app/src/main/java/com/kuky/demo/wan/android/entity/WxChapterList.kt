@@ -5,16 +5,9 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description 公众号作者对应的文章数据类
  */
-
-data class WxChapterList(
-    val data: WxChapterListData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class WxChapterListData(
     val curPage: Int,
-    val datas: List<WxChapterListDatas>,
+    val datas: MutableList<WxChapterListDatas>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

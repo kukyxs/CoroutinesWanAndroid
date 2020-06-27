@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModelProvider
  * @author kuky.
  * @description
  */
-class SharedUserModelFactory(private val repository: UserSharedRepository) :
+class UserSharedModelFactory(private val repository: UserSharedRepository) :
     ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return SharedUserViewModel(repository) as T
+        return UserSharedViewModel(repository) as T
     }
 }

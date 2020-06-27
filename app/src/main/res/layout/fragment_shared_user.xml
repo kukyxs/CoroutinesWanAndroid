@@ -26,7 +26,7 @@
 
         <variable
             name="adapter"
-            type="androidx.paging.PagedListAdapter" />
+            type="androidx.recyclerview.widget.ConcatAdapter" />
 
         <variable
             name="itemClick"
@@ -172,8 +172,8 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
-                bind:pageItemClick="@{itemClick}"
-                bind:pageItemLongClick="@{itemLongClick}"
+                bind:pagingItemClick="@{itemClick}"
+                bind:pagingItemLongClick="@{itemLongClick}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_user_article" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -187,9 +187,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
         mSearchJob?.cancel()
         mSearchJob = launch {
-            mViewModel.getDiffCategoryProjects(id).collectLatest {
-                mAdapter.submitData(it)
-            }
+            mViewModel.getDiffCategoryProjects(id)
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
         }
     }
 

@@ -4,15 +4,9 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class UserArticle(
-    val `data`: UserArticleData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class UserArticleData(
     val curPage: Int,
-    val datas: List<UserArticleDetail>,
+    val datas: MutableList<UserArticleDetail>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

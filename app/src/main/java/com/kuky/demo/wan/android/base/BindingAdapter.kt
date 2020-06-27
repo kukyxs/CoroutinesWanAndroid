@@ -109,7 +109,7 @@ fun bindPagingItemClickV2(recyclerView: RecyclerView, listener: OnItemClickListe
 
     val tarAdapter = when (adapter) {
         is BasePagingDataAdapter<*, *> -> adapter
-        is MergeAdapter -> findBasePagingAdapterInMergeAdapter(adapter)
+        is ConcatAdapter -> findBasePagingAdapterInConcatAdapter(adapter)
         else -> null
     }
 
@@ -119,7 +119,7 @@ fun bindPagingItemClickV2(recyclerView: RecyclerView, listener: OnItemClickListe
     } ?: return
 }
 
-private fun findBasePagingAdapterInMergeAdapter(mergeAdapter: MergeAdapter): BasePagingDataAdapter<*, *>? {
+private fun findBasePagingAdapterInConcatAdapter(mergeAdapter: ConcatAdapter): BasePagingDataAdapter<*, *>? {
     val adapterList = mergeAdapter.adapters
 
     for (i in adapterList.indices) {

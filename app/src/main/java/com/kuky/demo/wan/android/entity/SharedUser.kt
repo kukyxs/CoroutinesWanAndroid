@@ -4,12 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class SharedUser(
-    val `data`: SharedData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class SharedData(
     val coinInfo: CoinInfo,
     val shareArticles: UserArticleData

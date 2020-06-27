@@ -13,6 +13,10 @@ import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.utils.screenWidth
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * @author kuky.
@@ -31,6 +35,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
 
     override fun layoutId() = R.layout.dialog_knowledge_system
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
         mBinding.firstAdapter = mFirstAdapter
         mBinding.secAdapter = mSecAdapter
@@ -55,14 +60,16 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
                 mViewModel.secSelectedPosition.value = position
             }
         }
-        mViewModel.mType.observe(this, Observer { data ->
-            data?.let {
-                mFirstAdapter.setNewData(it as MutableList<SystemData>)
-                mFirstData = it[mViewModel.firstSelectedPosition.value ?: 0]
-                mViewModel.children.value =
-                    it[mViewModel.firstSelectedPosition.value ?: 0].children as MutableList<SystemCategory>
-            }
-        })
+
+        launch {
+            mViewModel.getTypeList().catch { dismiss() }
+                .collectLatest {
+                    mFirstAdapter.setNewData(it)
+                    mFirstData = it[mViewModel.firstSelectedPosition.value ?: 0]
+                    mViewModel.children.value =
+                        it[mViewModel.firstSelectedPosition.value ?: 0].children as MutableList<SystemCategory>
+                }
+        }
 
         mViewModel.firstSelectedPosition.observe(this, Observer<Int> {
             mFirstAdapter.updateSelectedPosition(it)

@@ -144,7 +144,7 @@
 
     <fragment
         android:id="@+id/sharedUserFragment"
-        android:name="com.kuky.demo.wan.android.ui.shareduser.SharedUserFragment"
+        android:name="com.kuky.demo.wan.android.ui.shareduser.UserSharedFragment"
         android:label="SharedUserFragment"
         tools:layout="@layout/fragment_shared_user">
         <action

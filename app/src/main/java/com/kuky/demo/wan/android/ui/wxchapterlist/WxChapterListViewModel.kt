@@ -1,12 +1,13 @@
 package com.kuky.demo.wan.android.ui.wxchapterlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.NetworkState
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
+import com.kuky.demo.wan.android.ui.app.constPagerConfig
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -15,20 +16,22 @@ import com.kuky.demo.wan.android.entity.WxChapterListDatas
  */
 class WxChapterListViewModel(private val repository: WxChapterListRepository) : ViewModel() {
 
-    var netState: LiveData<NetworkState>? = null
-    var chapters: LiveData<PagedList<WxChapterListDatas>>? = null
+    private var mCurrentWxId: Int? = null
+    private var mCurrentKeyword: String? = null
+    private var mCurrentChapterResult: Flow<PagingData<WxChapterListDatas>>? = null
 
-    fun fetchWxArticles(wxId: Int, keyword: String, empty: () -> Unit) {
-        chapters = LivePagedListBuilder(
-            WxChapterListDataSourceFactory(repository, wxId, keyword).apply {
-                netState = Transformations.switchMap(sourceLiveData) { it.initState }
-            }, PagedList.Config.Builder().setPageSize(20)
-                .setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(20)
-                .build()
-        ).setBoundaryCallback(object : PagedList.BoundaryCallback<WxChapterListDatas>() {
-            override fun onZeroItemsLoaded() = empty()
-        }).build()
+    fun getWxChapters(wxId: Int, keyword: String): Flow<PagingData<WxChapterListDatas>> {
+        val lastResult = mCurrentChapterResult
+        if (mCurrentWxId == wxId && mCurrentKeyword == keyword && lastResult != null) return lastResult
+
+        mCurrentWxId = wxId
+        mCurrentKeyword = keyword
+
+        return Pager(constPagerConfig) {
+            WxChapterListPagingSource(repository, wxId, keyword)
+        }.flow.apply {
+            mCurrentChapterResult = this
+        }.cachedIn(viewModelScope)
     }
 }
 
