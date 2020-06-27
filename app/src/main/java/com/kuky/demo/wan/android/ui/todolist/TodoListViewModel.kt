@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.app.constPagerConfig
 import kotlinx.coroutines.flow.Flow
@@ -34,16 +33,5 @@ class TodoListViewModel(private val repository: TodoRepository) : ViewModel() {
 
     fun updateTodoState(id: Int, state: Int) = flow {
         emit(repository.updateTodoState(id, state))
-    }
-
-    fun updateTodoState(id: Int, state: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.updateTodoState(id, state).let {
-                    if (it.errorCode == 0) success()
-                    else fail(it.errorMsg)
-                }
-            }
-        }
     }
 }
