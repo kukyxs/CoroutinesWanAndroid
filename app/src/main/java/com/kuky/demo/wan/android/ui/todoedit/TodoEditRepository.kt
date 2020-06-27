@@ -11,15 +11,18 @@ import kotlinx.coroutines.withContext
  */
 class TodoEditRepository {
 
-    suspend fun addTodo(param: HashMap<String, Any>) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.addTodo(param, cookie)
-    }
+    suspend fun addTodo(param: HashMap<String, Any>) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.addTodo(param, cookie)
+        }
 
-    suspend fun updateTodo(id: Int, param: HashMap<String, Any>) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.updateTodo(id, cookie, param)
-    }
+    suspend fun updateTodo(id: Int, param: HashMap<String, Any>) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.updateTodo(id, cookie, param)
+        }
 
-    suspend fun deleteTodo(id: Int) = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.deleteTodo(id, cookie)
-    }
+    suspend fun deleteTodo(id: Int) =
+        withContext(Dispatchers.IO) {
+            RetrofitManager.apiService.deleteTodo(id, cookie)
+        }
 }

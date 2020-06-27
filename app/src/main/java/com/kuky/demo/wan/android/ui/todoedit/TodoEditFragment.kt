@@ -15,8 +15,15 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.hideSoftInput
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
+import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
 import com.kuky.demo.wan.android.utils.TimeUtils
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 import java.util.*
@@ -26,6 +33,8 @@ import java.util.*
  * @description
  */
 class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
+
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel: TodoEditViewModel by lazy {
         ViewModelProvider(requireActivity(), TodoEditViewModelFactory(TodoEditRepository()))
@@ -134,6 +143,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun updateOrAddTodo(view: View) {
         val title = mBinding?.todoTitle?.text.toString()
         val content = mBinding?.todoDescription?.text.toString()
@@ -157,31 +167,52 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         param["priority"] = mViewModel.todoPriority.value ?: 1
         param["status"] = mViewModel.todoState.value ?: 0
 
-        if (mTodo == null) {
-            mViewModel.addTodo(param, {
-                mUpdateListFlag.needUpdate.value = true
-                requireContext().toast("添加待办成功")
-                mNavController.navigateUp()
-            }, { message -> requireContext().toast(message) })
-        } else {
-            mViewModel.updateTodo(mTodo?.id ?: 0, param, {
-                mUpdateListFlag.needUpdate.value = true
-                requireContext().toast("更新待办成功")
-                mNavController.navigateUp()
-            }, { message -> requireContext().toast(message) })
+        launch {
+            if (mTodo == null) {
+                mViewModel.addTodo(param).catch {
+                    context?.toast(R.string.no_network)
+                }.onStart {
+                    mAppViewModel.showLoading()
+                }.onCompletion {
+                    mAppViewModel.dismissLoading()
+                }.collectLatest {
+                    mUpdateListFlag.needUpdate.value = true
+                    context?.toast(R.string.add_todo_succeed)
+                    mNavController.navigateUp()
+                }
+            } else {
+                mViewModel.updateTodo(mTodo?.id ?: 0, param).catch {
+                    context?.toast(R.string.no_network)
+                }.onStart {
+                    mAppViewModel.showLoading()
+                }.onCompletion {
+                    mAppViewModel.dismissLoading()
+                }.collectLatest {
+                    mUpdateListFlag.needUpdate.value = true
+                    context?.toast(R.string.update_todo_succeed)
+                    mNavController.navigateUp()
+                }
+            }
         }
 
         mBinding?.todoTitle?.hideSoftInput()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun deleteTodo(view: View) {
-        mViewModel.deleteTodo(mTodo?.id ?: 0, {
-            mUpdateListFlag.needUpdate.value = true
-            requireContext().toast("删除成功")
-            mNavController.navigateUp()
-        }, { message ->
-            requireContext().toast(message)
-        })
+        launch {
+            mViewModel.deleteTodo(mTodo?.id ?: 0).catch {
+                context?.toast(R.string.no_network)
+            }.onStart {
+                mAppViewModel.showLoading()
+            }.onCompletion {
+                mAppViewModel.dismissLoading()
+            }.collectLatest {
+                mUpdateListFlag.needUpdate.value = true
+                context?.toast(R.string.delete_todo_succeed)
+                mNavController.navigateUp()
+            }
+        }
     }
 
     companion object {

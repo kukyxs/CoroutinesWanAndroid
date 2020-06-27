@@ -28,6 +28,14 @@
     <string name="articles">文章</string>
     <string name="websites">网址</string>
 
+    <string name="add_todo_succeed">添加待办成功</string>
+    <string name="add_todo_failed">添加待办失败</string>
+    <string name="update_todo_succeed">更新待办成功</string>
+    <string name="update_todo_failed">更新待办失败</string>
+    <string name="delete_todo_succeed">删除待办成功</string>
+    <string name="delete_todo_failed">删除待办失败</string>
+    <string name="change_todo_state">修改状态成功</string>
+
     <string name="coins">积分</string>
     <string name="coin_record">积分记录</string>
     <string name="coin_rank">积分排行</string>

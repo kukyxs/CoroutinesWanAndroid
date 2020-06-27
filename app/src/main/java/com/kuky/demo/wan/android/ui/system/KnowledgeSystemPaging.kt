@@ -38,60 +38,6 @@ class KnowledgeSystemPagingSource(
     }
 }
 
-class KnowledgeSystemDataSource(
-    private val repository: KnowledgeSystemRepository,
-    private val cid: Int
-) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by IOScope() {
-
-    val initState = MutableLiveData<NetworkState>()
-
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
-        safeLaunch {
-            block = {
-                initState.postValue(NetworkState.LOADING)
-                repository.loadArticle4System(0, cid)?.let {
-                    callback.onResult(it, null, 1)
-                    initState.postValue(NetworkState.LOADED)
-                }
-            }
-            onError = {
-                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
-            }
-        }
-    }
-
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
-        safeLaunch {
-            block = {
-                repository.loadArticle4System(params.key, cid)?.let {
-                    callback.onResult(it, params.key + 1)
-                }
-            }
-            onError = {
-                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
-            }
-        }
-    }
-
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {}
-
-    override fun invalidate() {
-        super.invalidate()
-        cancel()
-    }
-}
-
-class KnowledgeSystemDataSourceFactory(
-    private val repository: KnowledgeSystemRepository,
-    private val pid: Int
-) : DataSource.Factory<Int, WxChapterListDatas>() {
-    val sourceLiveData = MutableLiveData<KnowledgeSystemDataSource>()
-
-    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid).apply {
-        sourceLiveData.postValue(this)
-    }
-}
-
 class KnowledgeSystemTypeAdapter(
     mData: MutableList<SystemData>? = null
 ) : BaseRecyclerAdapter<SystemData>(mData) {
@@ -180,3 +126,60 @@ class SecTypeDiffUtil(
         else oldData[oldItemPosition].name == newData[newItemPosition].name
 }
 
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
+class KnowledgeSystemDataSource(
+    private val repository: KnowledgeSystemRepository,
+    private val cid: Int
+) : PageKeyedDataSource<Int, WxChapterListDatas>(), CoroutineScope by IOScope() {
+
+    val initState = MutableLiveData<NetworkState>()
+
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, WxChapterListDatas>) {
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
+                repository.loadArticle4System(0, cid)?.let {
+                    callback.onResult(it, null, 1)
+                    initState.postValue(NetworkState.LOADED)
+                }
+            }
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
+    }
+
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {
+        safeLaunch {
+            block = {
+                repository.loadArticle4System(params.key, cid)?.let {
+                    callback.onResult(it, params.key + 1)
+                }
+            }
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
+    }
+
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, WxChapterListDatas>) {}
+
+    override fun invalidate() {
+        super.invalidate()
+        cancel()
+    }
+}
+
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
+class KnowledgeSystemDataSourceFactory(
+    private val repository: KnowledgeSystemRepository,
+    private val pid: Int
+) : DataSource.Factory<Int, WxChapterListDatas>() {
+    val sourceLiveData = MutableLiveData<KnowledgeSystemDataSource>()
+
+    override fun create(): DataSource<Int, WxChapterListDatas> = KnowledgeSystemDataSource(repository, pid).apply {
+        sourceLiveData.postValue(this)
+    }
+}
+//endregion

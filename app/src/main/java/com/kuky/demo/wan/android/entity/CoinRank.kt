@@ -4,12 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-data class CoinRank(
-    val `data`: CoinRankData,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class CoinRankData(
     val curPage: Int,
     val datas: MutableList<CoinRankDetail>,

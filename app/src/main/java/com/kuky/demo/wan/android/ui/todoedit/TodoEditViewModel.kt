@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.utils.TimeUtils
+import kotlinx.coroutines.flow.flow
 import java.util.*
 
 /**
@@ -34,28 +35,16 @@ class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel(
         todoState.value = 0
     }
 
-    fun addTodo(param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.addTodo(param).let {
-                    if (it.errorCode == 0) success() else fail(it.errorMsg)
-                }
-            }
-            onError = {
-                fail("网络出错啦~请检查网络")
-            }
-        }
+    fun addTodo(param: HashMap<String, Any>) = flow {
+        emit(repository.addTodo(param))
     }
 
-    fun updateTodo(id: Int, param: HashMap<String, Any>, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.updateTodo(id, param).let {
-                    if (it.errorCode == 0) success() else fail(it.errorMsg)
-                }
-            }
-            onError = { fail("网络出错啦~请检查网络") }
-        }
+    fun updateTodo(id: Int, param: HashMap<String, Any>) = flow {
+        emit(repository.updateTodo(id, param))
+    }
+
+    fun deleteTodo(id: Int) = flow {
+        emit(repository.deleteTodo(id))
     }
 
     fun deleteTodo(id: Int, success: () -> Unit, fail: (String) -> Unit) {

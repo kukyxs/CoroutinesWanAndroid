@@ -30,7 +30,7 @@
 
         <variable
             name="todoAdapter"
-            type="com.kuky.demo.wan.android.base.BasePagedListAdapter" />
+            type="androidx.recyclerview.widget.ConcatAdapter" />
 
         <variable
             name="todoLayoutManager"
@@ -150,8 +150,8 @@
                         android:scrollbars="vertical"
                         app:layoutManager="@{todoLayoutManager}"
                         bind:adapter="@{todoAdapter}"
-                        bind:pageItemClick="@{todoItemClick}"
-                        bind:pageItemLongClick="@{todoItemLongClick}"
+                        bind:pagingItemClick="@{todoItemClick}"
+                        bind:pagingItemLongClick="@{todoItemLongClick}"
                         bind:scrollListener="@{scrollListener}"
                         tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         tools:listitem="@layout/recycler_todo_item"

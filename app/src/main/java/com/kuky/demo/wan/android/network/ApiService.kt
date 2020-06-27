@@ -22,7 +22,7 @@ interface ApiService {
 
     // 首页 Banner
     @GET("/banner/json")
-    suspend fun homeBanner(): HomeBannerEntity
+    suspend fun homeBanner(): BaseResultData<MutableList<BannerData>>
 
     // 首页第二个 Banner.同项目分类功能重复
     @Deprecated("同项目分类功能重复，勿调用")
@@ -99,14 +99,14 @@ interface ApiService {
     @POST("/lg/user_article/delete/{shared}/json")
     suspend fun deleteAShare(
         @Path("shared") id: Int, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // 添加分享
     @POST("/lg/user_article/add/json")
     @FormUrlEncoded
     suspend fun putAShare(
         @Field("title") title: String, @Field("link") link: String, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // ================================>
     // 登录
@@ -204,13 +204,13 @@ interface ApiService {
 
     // 积分排行榜
     @GET("/coin/rank/{page}/json")
-    suspend fun fetchCoinRanks(@Path("page") page: Int): CoinRank
+    suspend fun fetchCoinRanks(@Path("page") page: Int): BaseResultData<CoinRankData>
 
     // 个人积分查询
     @GET("/lg/coin/userinfo/json")
     suspend fun fetchUserCoins(
         @Header("Cookie") cookie: String
-    ): UserCoins
+    ): BaseResultData<CoinsData>
 
     // 个人积分获取记录
     @GET("/lg/coin/list/{page}/json")
@@ -251,7 +251,7 @@ interface ApiService {
     @FormUrlEncoded
     suspend fun addTodo(
         @FieldMap param: HashMap<String, Any>, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     /**
      * 更新一条待办
@@ -269,7 +269,7 @@ interface ApiService {
     @FormUrlEncoded
     suspend fun updateTodo(
         @Path("id") id: Int, @Header("Cookie") cookie: String, @FieldMap param: HashMap<String, Any>
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     /**
      * 仅更新待办状态
@@ -281,11 +281,11 @@ interface ApiService {
     @FormUrlEncoded
     suspend fun updateTodoState(
         @Path("id") id: Int, @Field("status") status: Int, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 
     // 删除一条待办
     @POST("/lg/todo/delete/{id}/json")
     suspend fun deleteTodo(
         @Path("id") id: Int, @Header("Cookie") cookie: String
-    ): BasicResultData
+    ): BaseResultData<Any?>
 }

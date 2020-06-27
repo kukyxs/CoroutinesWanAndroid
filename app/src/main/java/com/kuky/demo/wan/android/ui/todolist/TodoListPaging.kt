@@ -5,6 +5,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
@@ -15,85 +16,37 @@ import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.ITodoChoice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
-import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 
 /**
  * @author kuky.
  * @description
  */
-class TodoRepository {
-    suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): List<TodoInfo>? =
-        withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.fetchTodoList(page, cookie, param).data.datas
+class TodoPagingSource(
+    private val repository: TodoRepository, private val param: HashMap<String, Int>
+) : PagingSource<Int, TodoInfo>() {
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TodoInfo> {
+        val page = params.key ?: 1
+
+        return try {
+            val todoList = repository.fetchTodoList(page, param) ?: mutableListOf()
+
+            LoadResult.Page(
+                data = todoList,
+                prevKey = if (page == 1) null else page - 1,
+                nextKey = if (todoList.isEmpty()) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
         }
-
-    suspend fun updateTodoState(id: Int, state: Int) =
-        withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.updateTodoState(id, state, cookie)
-        }
-}
-
-class TodoDataSource(
-    private val repository: TodoRepository,
-    private val param: HashMap<String, Int>
-) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by IOScope() {
-    val initState = MutableLiveData<NetworkState>()
-
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {
-        safeLaunch {
-            block = {
-                initState.postValue(NetworkState.LOADING)
-                repository.fetchTodoList(1, param)?.let {
-                    callback.onResult(it, null, 2)
-                    initState.postValue(NetworkState.LOADED)
-                }
-            }
-            onError = {
-                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
-            }
-        }
-    }
-
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
-        safeLaunch {
-            block = {
-                repository.fetchTodoList(params.key, param)?.let {
-                    callback.onResult(it, params.key + 1)
-                }
-            }
-            onError = {
-                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
-            }
-        }
-    }
-
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {}
-
-    override fun invalidate() {
-        super.invalidate()
-        cancel()
     }
 }
 
-class TodoDataSourceFactory(
-    private val repository: TodoRepository,
-    private val param: HashMap<String, Int>
-) : DataSource.Factory<Int, TodoInfo>() {
-    val sourceLiveData = MutableLiveData<TodoDataSource>()
+class TodoListPagingAdapter : BasePagingDataAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {
 
-    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param).apply {
-        sourceLiveData.postValue(this)
-    }
-}
-
-class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {
-
-    override fun getLayoutId(viewType: Int): Int = R.layout.recycler_todo_item
+    override fun getLayoutId(): Int = R.layout.recycler_todo_item
 
     override fun setVariable(data: TodoInfo, position: Int, holder: BaseViewHolder<RecyclerTodoItemBinding>) {
         holder.binding.todo = data
@@ -215,3 +168,99 @@ class TodoChoiceAdapter(choices: MutableList<TodoChoiceGroup>) : BaseRecyclerAda
         if (mData!![position] is TodoChoiceGroup) PARENT_ITEM else CHILD_ITEM
 
 }
+
+//region adapter by paging2, has migrate to paging3
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
+class TodoDataSource(
+    private val repository: TodoRepository,
+    private val param: HashMap<String, Int>
+) : PageKeyedDataSource<Int, TodoInfo>(), CoroutineScope by IOScope() {
+    val initState = MutableLiveData<NetworkState>()
+
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, TodoInfo>) {
+        safeLaunch {
+            block = {
+                initState.postValue(NetworkState.LOADING)
+                repository.fetchTodoList(1, param)?.let {
+                    callback.onResult(it, null, 2)
+                    initState.postValue(NetworkState.LOADED)
+                }
+            }
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_INIT))
+            }
+        }
+    }
+
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {
+        safeLaunch {
+            block = {
+                repository.fetchTodoList(params.key, param)?.let {
+                    callback.onResult(it, params.key + 1)
+                }
+            }
+            onError = {
+                initState.postValue(NetworkState.error(it.message, ERROR_CODE_MORE))
+            }
+        }
+    }
+
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, TodoInfo>) {}
+
+    override fun invalidate() {
+        super.invalidate()
+        cancel()
+    }
+}
+
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
+class TodoDataSourceFactory(
+    private val repository: TodoRepository,
+    private val param: HashMap<String, Int>
+) : DataSource.Factory<Int, TodoInfo>() {
+    val sourceLiveData = MutableLiveData<TodoDataSource>()
+
+    override fun create(): DataSource<Int, TodoInfo> = TodoDataSource(repository, param).apply {
+        sourceLiveData.postValue(this)
+    }
+}
+
+@Deprecated("migrate to paging3", level = DeprecationLevel.WARNING)
+class TodoPagingAdapter : BasePagedListAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {
+
+    override fun getLayoutId(viewType: Int): Int = R.layout.recycler_todo_item
+
+    override fun setVariable(data: TodoInfo, position: Int, holder: BaseViewHolder<RecyclerTodoItemBinding>) {
+        holder.binding.todo = data
+
+        holder.binding.todoTypeStr = when (data.type) {
+            0 -> "只用这一个"
+            1 -> "工作"
+            2 -> "学习"
+            3 -> "生活"
+            else -> ""
+        }
+
+        holder.binding.priorityBg = ContextCompat.getDrawable(
+            holder.binding.root.context, when (data.priority) {
+                1 -> R.drawable.type_important
+                2 -> R.drawable.type_general
+                3 -> R.drawable.type_normal
+                else -> R.drawable.search_bg
+            }
+        )
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<TodoInfo>() {
+            override fun areItemsTheSame(oldItem: TodoInfo, newItem: TodoInfo): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: TodoInfo, newItem: TodoInfo): Boolean =
+                oldItem.title == newItem.title && oldItem.content == oldItem.content &&
+                        oldItem.completeDateStr == newItem.completeDateStr &&
+                        oldItem.priority == newItem.priority && oldItem.type == newItem.type
+        }
+    }
+}
+//endregion

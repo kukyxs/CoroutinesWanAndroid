@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -19,9 +20,18 @@ import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
 import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.utils.loadTextFromAssets
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -41,6 +51,8 @@ import org.jetbrains.anko.yesButton
  * 查询参数通过 [TodoChoiceAdapter] #getApiParam 获取即可
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
+    private val mAppViewMode by lazy { getSharedViewModel(AppViewModel::class.java) }
+
     private val mViewModel: TodoListViewModel by lazy {
         ViewModelProvider(requireActivity(), TodoListViewModelFactory(TodoRepository()))
             .get(TodoListViewModel::class.java)
@@ -59,8 +71,19 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         )
     }
 
-    private val mTodoAdapter: TodoPagingAdapter by lazy {
-        TodoPagingAdapter()
+    @OptIn(ExperimentalPagingApi::class)
+    private val mTodoAdapter: TodoListPagingAdapter by lazy {
+        TodoListPagingAdapter().apply {
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
+        }
     }
 
     private val mChoiceLayoutManager: FlexboxLayoutManager by lazy {
@@ -72,6 +95,8 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     }
 
     private var mParams: HashMap<String, Int>? = null
+
+    private var mTodoJob: Job? = null
 
     override fun actionsOnViewInflate() {
         fetchTodoList()
@@ -86,10 +111,10 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                fetchTodoList(true)
+                mTodoAdapter.refresh()
             }
 
-            binding.todoAdapter = mTodoAdapter
+            binding.todoAdapter = mTodoAdapter.withLoadStateFooter(PagingLoadStateAdapter { mTodoAdapter.retry() })
             binding.todoLayoutManager = mTodoLayoutManager
             binding.todoItemClick = OnItemClickListener { position, _ ->
                 mTodoAdapter.getItemData(position)?.let {
@@ -105,12 +130,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
             binding.todoItemLongClick = OnItemLongClickListener { position, _ ->
                 mTodoAdapter.getItemData(position)?.let { todo ->
                     requireContext().alert("是否设置当前待办完成状态为${if (todo.status == 0) "完成" else "未完成"}") {
-                        yesButton {
-                            mViewModel.updateTodoState(todo.id, if (todo.status == 0) 1 else 0, {
-                                requireContext().toast("修改成功")
-                                mUpdateFlag.needUpdate.value = true
-                            }, { message -> requireContext().toast(message) })
-                        }
+                        yesButton { changeTodoState(todo) }
                         noButton { }
                     }.show()
                 }
@@ -150,6 +170,23 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun changeTodoState(todo: TodoInfo) {
+        launch {
+            mViewModel.updateTodoState(todo.id, if (todo.status == 0) 1 else 0).catch {
+                context?.toast(R.string.no_network)
+            }.onStart {
+                mAppViewMode.showLoading()
+            }.onCompletion {
+                mAppViewMode.dismissLoading()
+            }.collectLatest {
+                context?.toast(R.string.change_todo_state)
+                mUpdateFlag.needUpdate.value = true
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchTodoList(isRefresh: Boolean = false) {
         val param = mChoiceAdapter.getApiParams()
 
@@ -157,33 +194,11 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
         mParams = param
 
-        mViewModel.fetchTodoList(param) {
-            mBinding?.emptyStatus = true
-        }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
-                }
-            }
-        })
-
-        mViewModel.todoList?.observe(this, Observer<PagedList<TodoInfo>> {
-            mTodoAdapter.submitList(it)
-        })
-    }
-
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
+        mTodoJob?.cancel()
+        mTodoJob = launch {
+            mViewModel.getTodoList(param)
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mTodoAdapter.submitData(it) }
         }
     }
 

@@ -14,7 +14,7 @@ data class TodoEntity(
 
 data class TodoData(
     val curPage: Int,
-    val datas: List<TodoInfo>,
+    val datas: MutableList<TodoInfo>,
     val offset: Int,
     val over: Boolean,
     val pageCount: Int,

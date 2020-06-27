@@ -4,13 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class HomeBannerEntity(
-    val `data`: List<BannerData>,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class BannerData(
     val desc: String,
     val id: Int,
