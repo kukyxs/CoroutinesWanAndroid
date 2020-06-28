@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.flow
  * @author kuky.
  * @description
  */
-class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
+class SearchViewModel(
+    private val repository: SearchRepository
+) : ViewModel() {
 
     val resultMode = MutableLiveData<Boolean>()
     val history = MutableLiveData<MutableList<String>>()

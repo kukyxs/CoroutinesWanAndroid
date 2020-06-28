@@ -193,7 +193,7 @@ interface ApiService {
 
     // 公众号列表
     @GET("/wxarticle/chapters/json")
-    suspend fun wxCahpters(): WxChapterEntity
+    suspend fun wxCahpters(): BaseResultData<MutableList<WxChapterData>>
 
     // 公众号历史数据，k 传空字符则全部记录
     @GET("/wxarticle/list/{wxid}/{page}/json")

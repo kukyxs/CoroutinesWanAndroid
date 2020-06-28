@@ -20,8 +20,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.entity.BannerData
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
-import com.kuky.demo.wan.android.ui.widget.StatusError
+import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.StatusError
 import com.youth.banner.Banner
 import com.youth.banner.BannerConfig
 import com.youth.banner.listener.OnBannerListener
@@ -128,36 +128,6 @@ private fun findBasePagingAdapterInConcatAdapter(mergeAdapter: ConcatAdapter): B
     }
     return null
 }
-
-//region deprecated paging2 adapter binding
-/**
- * 绑定 paging adapter 点击事件
- * @param listener 点击事件，[OnItemClickListener]
- */
-@Deprecated(message = "migrate to paging3", level = DeprecationLevel.WARNING)
-@BindingAdapter("bind:pageItemClick")
-fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemClickListener?) {
-    val adapter = recyclerView.adapter
-
-    if (adapter == null || adapter !is BasePagedListAdapter<*, *>) return
-
-    adapter.setOnItemListener(listener)
-}
-
-/**
- * 绑定 paging adapter 长按事件
- * @param listener 点击事件，[OnItemLongClickListener]
- */
-@Deprecated(message = "migrate to paging3", level = DeprecationLevel.WARNING)
-@BindingAdapter("bind:pageItemLongClick")
-fun bindPagingItemClick(recyclerView: RecyclerView, listener: OnItemLongClickListener?) {
-    val adapter = recyclerView.adapter
-
-    if (adapter == null || adapter !is BasePagedListAdapter<*, *>) return
-
-    adapter.setOnItemLongListener(listener)
-}
-//endregion
 
 /**
  * 绑定 RecyclerView 的点击事件

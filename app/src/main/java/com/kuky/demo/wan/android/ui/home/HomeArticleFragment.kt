@@ -14,15 +14,12 @@ import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.ui.main.MainModelFactory
-import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -41,7 +38,7 @@ import org.jetbrains.anko.yesButton
 class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter: HomeArticlePagingAdapter by lazy {
+    private val mAdapter by lazy {
         HomeArticlePagingAdapter().apply {
             addLoadStateListener { loadState ->
                 mBinding?.refreshing = loadState.refresh is LoadState.Loading
@@ -55,20 +52,22 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
-    private val mViewModel: HomeArticleViewModel by lazy {
-        ViewModelProvider(requireActivity(), HomeArticleModelFactory(HomeArticleRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideHomeArticleViewModelFactory())
             .get(HomeArticleViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 
     private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 

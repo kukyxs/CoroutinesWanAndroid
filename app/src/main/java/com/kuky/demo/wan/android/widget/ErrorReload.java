@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui.widget;
+package com.kuky.demo.wan.android.widget;
 
 /**
  * @author kuky.

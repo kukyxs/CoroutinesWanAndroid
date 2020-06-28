@@ -2,13 +2,14 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.handleResult
 import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
-import com.kuky.demo.wan.android.entity.WebsiteData
 import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -23,15 +24,27 @@ import org.jetbrains.anko.toast
  * @description
  */
 class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsiteBinding>() {
-    var editMode = false
-    private var mEditId = 0
-    private var mEditName = ""
-    private var mEditLink = ""
+    companion object {
+        fun createCollectedDialog(editMode: Boolean, editId: Int = -1, editName: String = "", editLink: String = "") =
+            CollectedWebsiteDialogFragment().apply {
+                arguments = bundleOf(
+                    "edit_mode" to editMode, "edit_id" to editId,
+                    "edit_name" to editName, "edit_link" to editLink
+                )
+            }
+    }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mEditId by lazy { arguments?.getInt("edit_id") ?: -1 }
+    private val mEditMode by lazy { arguments?.getBoolean("edit_mode") ?: false }
+    private val mEditName by lazy { arguments?.getString("edit_name") ?: "" }
+    private val mEditLink by lazy { arguments?.getString("edit_link") ?: "" }
+
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectedWebsitesModelFactory(CollectedWebsitesRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectedWebsitesViewModelFactory())
             .get(CollectedWebsitesViewModel::class.java)
     }
 
@@ -43,19 +56,13 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         mBinding.collectedLink.setText(mEditLink)
     }
 
-    fun injectWebsiteData(websiteData: WebsiteData? = null) {
-        mEditName = websiteData?.name ?: ""
-        mEditLink = websiteData?.link ?: ""
-        mEditId = websiteData?.id ?: -1
-    }
-
     fun cancel(view: View) {
         dismiss()
     }
 
     fun ensure(view: View) {
         launch {
-            if (!editMode) {
+            if (!mEditMode) {
                 addFavouriteWebsite(
                     mBinding.collectedName.text.toString(),
                     mBinding.collectedLink.text.toString()

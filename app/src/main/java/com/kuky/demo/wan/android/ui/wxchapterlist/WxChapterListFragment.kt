@@ -19,11 +19,10 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterListBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -68,16 +67,16 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
     private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewMode by lazy {
-        ViewModelProvider(requireActivity(), WxChapterListModelFactory(WxChapterListRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideWxChapterListViewModelFactory())
             .get(WxChapterListViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 
-    private val searchIn: Animation by lazy {
+    private val searchIn by lazy {
         AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_in).apply {
             setAnimationListener(object : CustomAnimationAdapter() {
                 override fun onAnimationStart(animation: Animation?) {
@@ -94,7 +93,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
-    private val searchOut: Animation by lazy {
+    private val searchOut by lazy {
         AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_out).apply {
             setAnimationListener(object : CustomAnimationAdapter() {
                 override fun onAnimationEnd(animation: Animation?) {
@@ -107,9 +106,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     private var mArticleJob: Job? = null
 
-    override fun actionsOnViewInflate() {
-        fetchWxChapterList()
-    }
+    override fun actionsOnViewInflate() = fetchWxChapterList()
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 

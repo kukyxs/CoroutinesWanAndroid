@@ -12,7 +12,9 @@ import java.util.*
  * @author kuky.
  * @description
  */
-class TodoEditViewModel(private val repository: TodoEditRepository) : ViewModel() {
+class TodoEditViewModel(
+    private val repository: TodoEditRepository
+) : ViewModel() {
 
     val todoType = MutableLiveData<Int>()
 

@@ -1,6 +1,6 @@
 @file:Suppress("BlockingMethodInNonBlockingContext")
 
-package com.kuky.demo.wan.android.ui.shareduser
+package com.kuky.demo.wan.android.ui.usershared
 
 import android.graphics.Color
 import android.os.Bundle
@@ -21,12 +21,11 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentSharedUserBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.LogUtils
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -46,15 +45,17 @@ import java.util.*
  */
 class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
-    private val mViewModel: UserSharedViewModel by lazy {
-        ViewModelProvider(requireActivity(), UserSharedModelFactory(UserSharedRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideUserSharedViewModelFactory())
             .get(UserSharedViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 

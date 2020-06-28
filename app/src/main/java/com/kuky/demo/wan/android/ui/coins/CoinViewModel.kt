@@ -10,7 +10,9 @@ import com.kuky.demo.wan.android.ui.app.constPagerConfig
  * @author kuky.
  * @description
  */
-class CoinViewModel(private val repository: CoinRepository) : ViewModel() {
+class CoinViewModel(
+    private val repository: CoinRepository
+) : ViewModel() {
 
     fun getCoinRankList() = Pager(constPagerConfig) {
         CoinRankPagingSource(repository)

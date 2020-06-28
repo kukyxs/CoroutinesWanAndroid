@@ -13,6 +13,7 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
+import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
     private val mViewModel: CoinViewModel by lazy {
-        ViewModelProvider(requireActivity(), CoinModelFactory(CoinRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCoinViewModelFactory())
             .get(CoinViewModel::class.java)
     }
 
@@ -59,7 +60,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
         }
     }
 
-    private val type by lazy(mode = LazyThreadSafetyMode.NONE) {
+    private val type by lazy {
         arguments?.getInt("type", 0) ?: 0
     }
 
@@ -83,6 +84,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
+
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 if (type == 0) mRecordAdapter.refresh() else mRankAdapter.refresh()
             }

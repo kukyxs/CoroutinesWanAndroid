@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui.widget
+package com.kuky.demo.wan.android.widget
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -53,22 +53,42 @@ object CenterDrawableHelper {
             when {
                 drawables[DRAWABLE_START] != null -> {
                     view.gravity = Gravity.CENTER_VERTICAL or Gravity.START
-                    onCenterDraw(view, it, drawables[DRAWABLE_START], Gravity.START)
+                    onCenterDraw(
+                        view,
+                        it,
+                        drawables[DRAWABLE_START],
+                        Gravity.START
+                    )
                 }
 
                 drawables[DRAWABLE_TOP] != null -> {
                     view.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
-                    onCenterDraw(view, it, drawables[DRAWABLE_TOP], Gravity.TOP)
+                    onCenterDraw(
+                        view,
+                        it,
+                        drawables[DRAWABLE_TOP],
+                        Gravity.TOP
+                    )
                 }
 
                 drawables[DRAWABLE_END] != null -> {
                     view.gravity = Gravity.CENTER_VERTICAL or Gravity.END
-                    onCenterDraw(view, it, drawables[DRAWABLE_END], Gravity.END)
+                    onCenterDraw(
+                        view,
+                        it,
+                        drawables[DRAWABLE_END],
+                        Gravity.END
+                    )
                 }
 
                 drawables[DRAWABLE_BOTTOM] != null -> {
                     view.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                    onCenterDraw(view, it, drawables[DRAWABLE_BOTTOM], Gravity.BOTTOM)
+                    onCenterDraw(
+                        view,
+                        it,
+                        drawables[DRAWABLE_BOTTOM],
+                        Gravity.BOTTOM
+                    )
                 }
             }
         }

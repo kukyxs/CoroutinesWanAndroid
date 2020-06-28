@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui.shareduser
+package com.kuky.demo.wan.android.ui.usershared
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.flow
  * @author kuky.
  * @description
  */
-class UserSharedViewModel(private val repository: UserSharedRepository) : ViewModel() {
+class UserSharedViewModel(
+    private val repository: UserSharedRepository
+) : ViewModel() {
 
     private var mCurrentUserId: Int? = null
     private var mCurrentArticleResult: Flow<PagingData<UserArticleDetail>>? = null

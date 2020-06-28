@@ -17,6 +17,7 @@ import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.TimeUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -34,14 +35,16 @@ import java.util.*
  */
 class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
-    private val mViewModel: TodoEditViewModel by lazy {
-        ViewModelProvider(requireActivity(), TodoEditViewModelFactory(TodoEditRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideTodoEditViewModelFactory())
             .get(TodoEditViewModel::class.java)
     }
 
-    private val mUpdateListFlag: UpdateListViewModel by lazy {
+    private val mUpdateListFlag by lazy {
         getSharedViewModel(UpdateListViewModel::class.java)
     }
 

@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.flow
  * @author kuky.
  * @description
  */
-class CollectedArticlesViewModel(private val repository: CollectedArticlesRepository) : ViewModel() {
+class CollectedArticlesViewModel(
+    private val repository: CollectedArticlesRepository
+) : ViewModel() {
 
     fun getCollectedArticles() = Pager(constPagerConfig) {
         CollectedArticlesPagingSource(repository)

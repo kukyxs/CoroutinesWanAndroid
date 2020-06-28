@@ -7,6 +7,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.databinding.DialogRegisterBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +25,7 @@ class RegisterDialogFragment : BaseDialogFragment<DialogRegisterBinding>() {
     private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
     private val mViewModel: MainViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 

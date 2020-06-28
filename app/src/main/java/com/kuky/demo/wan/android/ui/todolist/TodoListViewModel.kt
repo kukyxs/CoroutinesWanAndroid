@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.flow
  * @author kuky.
  * @description
  */
-class TodoListViewModel(private val repository: TodoRepository) : ViewModel() {
+class TodoListViewModel(
+    private val repository: TodoListRepository
+) : ViewModel() {
 
     private var mCurrentParam: HashMap<String, Int>? = null
     private var mCurrentTodoResult: Flow<PagingData<TodoInfo>>? = null

@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.flow
  * @author kuky.
  * @description
  */
-class HotProjectViewModel(private val repository: HotProjectRepository) : ViewModel() {
+class HotProjectViewModel(
+    private val repository: HotProjectRepository
+) : ViewModel() {
 
     val selectedCategoryPosition = MutableLiveData<Int>()
 

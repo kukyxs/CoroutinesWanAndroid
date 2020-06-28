@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.flow
  * @author Taonce.
  * @description
  */
-class KnowledgeSystemViewModel(private val repository: KnowledgeSystemRepository) : ViewModel() {
+class KnowledgeSystemViewModel(
+    private val repository: KnowledgeSystemRepository
+) : ViewModel() {
     // 一级体系下标
     val firstSelectedPosition = MutableLiveData<Int>()
 

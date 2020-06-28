@@ -29,6 +29,7 @@ import com.kuky.demo.wan.android.ui.userarticles.UserArticleFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.GalleryTransformer
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import com.kuky.demo.wan.android.utils.screenWidth
 import com.youth.banner.listener.OnBannerListener
@@ -51,7 +52,7 @@ import java.util.*
  */
 class MainFragment : BaseFragment<FragmentMainBinding>() {
 
-    private val mAdapter: BaseFragmentPagerAdapter by lazy {
+    private val mAdapter by lazy {
         BaseFragmentPagerAdapter(
             childFragmentManager, arrayListOf(
                 HomeArticleFragment(),
@@ -65,8 +66,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
-    private val mViewModel: MainViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 

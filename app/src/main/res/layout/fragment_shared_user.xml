@@ -58,7 +58,7 @@
 
         <variable
             name="errorReload"
-            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+            type="com.kuky.demo.wan.android.widget.ErrorReload" />
 
         <variable
             name="gesture"
@@ -178,7 +178,7 @@
                 tools:listitem="@layout/recycler_user_article" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <com.kuky.demo.wan.android.ui.widget.StatusError
+        <com.kuky.demo.wan.android.widget.StatusError
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
@@ -187,7 +187,7 @@
             app:layout_constraintTop_toBottomOf="@id/user_avatar"
             bind:reload="@{errorReload}" />
 
-        <com.kuky.demo.wan.android.ui.widget.StatusLoading
+        <com.kuky.demo.wan.android.widget.StatusLoading
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
@@ -195,7 +195,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_avatar" />
 
-        <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+        <com.kuky.demo.wan.android.widget.StatusEmpty
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"

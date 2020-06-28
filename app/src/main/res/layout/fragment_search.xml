@@ -62,7 +62,7 @@
 
         <variable
             name="errorReload"
-            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+            type="com.kuky.demo.wan.android.widget.ErrorReload" />
 
     </data>
 
@@ -167,18 +167,18 @@
                         bind:pagingItemLongClick="@{longListener}"
                         tools:listitem="@layout/recycler_home_article" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusError
+                    <com.kuky.demo.wan.android.widget.StatusError
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
                         bind:reload="@{errorReload}" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusLoading
+                    <com.kuky.demo.wan.android.widget.StatusLoading
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+                    <com.kuky.demo.wan.android.widget.StatusEmpty
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}" />

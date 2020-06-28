@@ -3,15 +3,21 @@ package com.kuky.demo.wan.android.ui.wxchapter
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 
 /**
  * @author kuky.
@@ -20,14 +26,15 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), WxChapterModelFactory(WxChapterRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideWxChapterViewModelFactory())
             .get(WxChapterViewModel::class.java)
     }
-    private val mAdapter by lazy { WxChapterAdapter(null) }
 
-    override fun actionsOnViewInflate() {
-        fetchWxChapter(false)
-    }
+    private val mAdapter by lazy { WxChapterAdapter() }
+
+    private var mChapterJob: Job? = null
+
+    override fun actionsOnViewInflate() = fetchWxChapter()
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter
 
@@ -51,9 +58,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                 false
             }
 
-            binding.errorReload = ErrorReload {
-                fetchWxChapter()
-            }
+            binding.errorReload = ErrorReload { fetchWxChapter() }
 
             binding.gesture = DoubleClickListener {
                 doubleTap = {
@@ -63,33 +68,27 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
         }
     }
 
-    private fun fetchWxChapter(isRefresh: Boolean = true) {
-        mViewModel.getWxChapter()
-        mViewModel.netState.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
-                    mBinding?.wxChapterType?.text = resources.getText(R.string.text_place_holder)
-                    injectStates(error = true)
-                }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchWxChapter() {
+        mChapterJob?.cancel()
+        mChapterJob = launch {
+            mViewModel.getWxChapterList().catch {
+                pageState(State.FAILED)
+                mBinding?.wxChapterType?.text = resources.getText(R.string.text_place_holder)
+            }.onStart {
+                pageState(State.RUNNING)
+            }.collectLatest {
+                mAdapter.update(it)
+                pageState(State.SUCCESS)
+                mBinding?.wxChapterType?.text = resources.getText(R.string.wx_chapter)
+                if (it.isEmpty()) mBinding?.emptyStatus = true
             }
-        })
-
-        mViewModel.mData.observe(this, Observer {
-            mBinding?.emptyStatus = it.isNullOrEmpty()
-            mAdapter.update(it)
-            mBinding?.wxChapterType?.text = resources.getText(R.string.wx_chapter)
-        })
+        }
     }
 
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
-        }
+    private fun pageState(state: State) = mBinding?.run {
+        refreshing = state == State.RUNNING
+        loadingStatus = state == State.RUNNING
+        errorStatus = state == State.FAILED
     }
 }

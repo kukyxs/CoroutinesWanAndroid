@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
  * @author kuky.
  * @description
  */
-class TodoRepository {
+class TodoListRepository {
     suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): MutableList<TodoInfo>? =
         withContext(Dispatchers.IO) {
             RetrofitManager.apiService.fetchTodoList(page, cookie, param).data.datas

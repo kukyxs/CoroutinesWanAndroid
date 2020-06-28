@@ -7,23 +7,14 @@ import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
 import com.kuky.demo.wan.android.databinding.RecyclerWxChapterBinding
 import com.kuky.demo.wan.android.entity.WxChapterData
-import com.kuky.demo.wan.android.network.RetrofitManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
 
 /**
- * Author: Taonce
- * Date: 2019/7/24
- * Desc:
+ * @author kuky.
+ * @description
  */
-class WxChapterRepository {
-    suspend fun getWxChapter() = withContext(Dispatchers.IO) {
-        RetrofitManager.apiService.wxCahpters().data
-    }
-}
+class WxChapterAdapter(chapterList: MutableList<WxChapterData>? = mutableListOf()) :
+    BaseRecyclerAdapter<WxChapterData>(chapterList) {
 
-class WxChapterAdapter(chapterList: MutableList<WxChapterData>?) : BaseRecyclerAdapter<WxChapterData>(chapterList) {
     override fun getLayoutId(viewType: Int): Int = R.layout.recycler_wx_chapter
 
     override fun setVariable(data: WxChapterData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {

@@ -18,12 +18,11 @@ import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.dp2px
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -45,7 +44,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private var mKey = ""
 
     @OptIn(ExperimentalPagingApi::class)
-    private val mResultAdapter: SearchArticlePagingAdapter by lazy {
+    private val mResultAdapter by lazy {
         SearchArticlePagingAdapter().apply {
             addLoadStateListener { loadState ->
                 mBinding?.refreshing = loadState.refresh is LoadState.Loading
@@ -59,21 +58,23 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
     }
 
-    private val mHistoryAdapter: HistoryAdapter by lazy {
+    private val mHistoryAdapter by lazy {
         HistoryAdapter().apply {
             onKeyRemove = { mViewModel.updateHistory() }
         }
     }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
-    private val mViewModel: SearchViewModel by lazy {
-        ViewModelProvider(this, SearchModelFactory(SearchRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(this, Injection.provideSearchViewModelFactory())
             .get(SearchViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 

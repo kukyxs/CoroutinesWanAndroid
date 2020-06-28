@@ -12,6 +12,7 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.screenWidth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -26,11 +27,14 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
     var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
 
     private val mFirstAdapter by lazy { KnowledgeSystemTypeAdapter() }
+
     private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
+
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideKnowledgeSystemViewModelFactory())
             .get(KnowledgeSystemViewModel::class.java)
     }
+
     private var mFirstData: SystemData? = null
 
     override fun layoutId() = R.layout.dialog_knowledge_system

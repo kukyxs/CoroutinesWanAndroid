@@ -14,7 +14,7 @@
 
         <variable
             name="adapter"
-            type="androidx.paging.PagedListAdapter" />
+            type="androidx.recyclerview.widget.ConcatAdapter" />
 
         <variable
             name="itemClick"
@@ -46,7 +46,7 @@
 
         <variable
             name="errorReload"
-            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+            type="com.kuky.demo.wan.android.widget.ErrorReload" />
 
         <variable
             name="gesture"
@@ -99,12 +99,12 @@
                 app:layout_constraintTop_toBottomOf="@id/article_title"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
-                bind:pageItemClick="@{itemClick}"
-                bind:pageItemLongClick="@{itemLongClick}"
+                bind:pagingItemClick="@{itemClick}"
+                bind:pagingItemLongClick="@{itemLongClick}"
                 tools:itemCount="20"
                 tools:listitem="@layout/recycler_user_article" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusError
+            <com.kuky.demo.wan.android.widget.StatusError
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
@@ -112,14 +112,14 @@
                 app:layout_constraintTop_toBottomOf="@id/article_title"
                 bind:reload="@{errorReload}" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusLoading
+            <com.kuky.demo.wan.android.widget.StatusLoading
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/article_title" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+            <com.kuky.demo.wan.android.widget.StatusEmpty
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"

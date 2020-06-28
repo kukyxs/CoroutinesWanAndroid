@@ -12,6 +12,7 @@ import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.screenWidth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -23,12 +24,13 @@ import kotlinx.coroutines.launch
  * @description
  */
 class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>() {
+
     var onSelectedListener: ((Dialog?, ProjectCategoryData) -> Unit)? = null
 
-    private val mAdapter: ProjectCategoryAdapter by lazy { ProjectCategoryAdapter() }
+    private val mAdapter by lazy { ProjectCategoryAdapter() }
 
-    private val mViewModel: HotProjectViewModel by lazy {
-        ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideHotProjectViewModelFactory())
             .get(HotProjectViewModel::class.java)
     }
 

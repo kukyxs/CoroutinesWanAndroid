@@ -13,16 +13,13 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.ui.main.MainModelFactory
-import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterPagingAdapter
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -56,20 +53,22 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), KnowledgeSystemModelFactory(KnowledgeSystemRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideKnowledgeSystemViewModelFactory())
             .get(KnowledgeSystemViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 
     private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 

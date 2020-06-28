@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.flow
  * @author Taonce.
  * @description
  */
-class CollectedWebsitesViewModel(private val repository: CollectedWebsitesRepository) : ViewModel() {
+class CollectedWebsitesViewModel(
+    private val repository: CollectedWebsitesRepository
+) : ViewModel() {
+
     fun getWebsites() = flow {
         emit(repository.getCollectedWebsites())
     }

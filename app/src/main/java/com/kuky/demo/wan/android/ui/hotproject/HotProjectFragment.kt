@@ -13,15 +13,12 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.ui.main.MainModelFactory
-import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -42,25 +39,28 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private var mId = 0
     private var mTitle = ""
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
-    private val mViewModel: HotProjectViewModel by lazy {
-        ViewModelProvider(requireActivity(), HotProjectModelFactory(HotProjectRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideHotProjectViewModelFactory())
             .get(HotProjectViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 
     private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 
     private var mCategoryJob: Job? = null
     private var mSearchJob: Job? = null
+
     private var errorOnCategories = false
     private var isFirstObserver = true
 

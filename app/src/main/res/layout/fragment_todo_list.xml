@@ -74,14 +74,14 @@
 
         <variable
             name="errorReload"
-            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+            type="com.kuky.demo.wan.android.widget.ErrorReload" />
 
         <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
     </data>
 
-    <com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout
+    <com.kuky.demo.wan.android.widget.BottomDrawerLayout
         android:id="@+id/setting_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -157,18 +157,18 @@
                         tools:listitem="@layout/recycler_todo_item"
                         tools:spanCount="2" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusError
+                    <com.kuky.demo.wan.android.widget.StatusError
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
                         bind:reload="@{errorReload}" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusLoading
+                    <com.kuky.demo.wan.android.widget.StatusLoading
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}" />
 
-                    <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+                    <com.kuky.demo.wan.android.widget.StatusEmpty
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}" />
@@ -201,5 +201,5 @@
                 bind:adapter="@{choiceAdapter}"
                 bind:listItemClick="@{choiceItemClick}" />
         </FrameLayout>
-    </com.kuky.demo.wan.android.ui.widget.BottomDrawerLayout>
+    </com.kuky.demo.wan.android.widget.BottomDrawerLayout>
 </layout>

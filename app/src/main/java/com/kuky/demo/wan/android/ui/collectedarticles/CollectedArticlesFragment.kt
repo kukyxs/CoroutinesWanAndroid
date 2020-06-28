@@ -12,7 +12,9 @@ import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
+import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
@@ -29,10 +31,12 @@ import org.jetbrains.anko.toast
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectedArticlesModelFactory(CollectedArticlesRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectedArticlesViewModelFactory())
             .get(CollectedArticlesViewModel::class.java)
     }
 
@@ -51,14 +55,9 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun actionsOnViewInflate() {
-        launch {
-            mViewModel.getCollectedArticles()
-                .catch { mBinding?.errorStatus = true }
-                .collectLatest { mAdapter.submitData(it) }
-        }
-    }
+    private var mArticleJob: Job? = null
+
+    override fun actionsOnViewInflate() = getCollectedArticles()
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
 
@@ -91,6 +90,16 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    private fun getCollectedArticles() {
+        mArticleJob?.cancel()
+        mArticleJob = launch {
+            mViewModel.getCollectedArticles()
+                .catch { mBinding?.errorStatus = true }
+                .collectLatest { mAdapter.submitData(it) }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun removeFavourite(position: Int) {
         mAdapter.getItemData(position)?.let { data ->
             launch {
@@ -103,10 +112,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                 }.collectLatest {
                     it.handleResult {
                         requireContext().toast(R.string.remove_favourite_succeed)
-                        // TODO("删除 item 存在异常, 暂时使用 refresh 代替")
-//                        mAdapter.notifyItemRemoved(position)
-//                        mAdapter.notifyItemRangeChanged(position, mAdapter.itemCount - position)
-                        mAdapter.refresh()
+                        getCollectedArticles()
                     }
                 }
             }

@@ -18,7 +18,10 @@ import retrofit2.Response
  * @author kuky.
  * @description
  */
-class MainViewModel(private val repository: MainRepository) : ViewModel() {
+class MainViewModel(
+    private val repository: MainRepository
+) : ViewModel() {
+
     val hasLogin = MutableLiveData<Boolean>()
     val banners = MutableLiveData<List<BannerData>>()
 

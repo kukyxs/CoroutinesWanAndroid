@@ -3,22 +3,10 @@ package com.kuky.demo.wan.android.base
 import android.content.Context
 import android.os.Build
 import android.text.Html
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.kuky.demo.wan.android.WanApplication
-import kotlinx.coroutines.*
 import org.jetbrains.anko.toast
-import kotlin.math.min
 
 /**
  * @author kuky.

@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.ui.widget
+package com.kuky.demo.wan.android.widget
 
 import android.content.Context
 import android.graphics.Color
@@ -10,16 +10,16 @@ import com.kuky.demo.wan.android.R
  * @author kuky.
  * @description
  */
-class StatusEmpty @JvmOverloads constructor(
+class StatusLoading @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : CenterDrawableTextView(context, attrs, defStyleAttr) {
 
     init {
-        val errDrawable = ContextCompat.getDrawable(context, R.drawable.tag_empty)
+        val errDrawable = ContextCompat.getDrawable(context, R.drawable.tag_loading)
         errDrawable?.setBounds(0, 0, errDrawable.minimumWidth / 2, errDrawable.minimumHeight / 2)
         compoundDrawablePadding = 12
         setCompoundDrawables(null, errDrawable, null, null)
-        text = resources.getString(R.string.empty_data)
+        text = resources.getString(R.string.loading_data)
         setTextColor(Color.parseColor("#FFCCCCCC"))
     }
 }

@@ -40,7 +40,7 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
     /** 透明状态栏 */
     open fun transparentStatusBar() {
         window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.TRANSPARENT
         supportActionBar?.hide()

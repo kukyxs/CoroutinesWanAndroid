@@ -23,8 +23,9 @@ import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.loadTextFromAssets
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -51,18 +52,21 @@ import org.jetbrains.anko.yesButton
  * 查询参数通过 [TodoChoiceAdapter] #getApiParam 获取即可
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
-    private val mAppViewMode by lazy { getSharedViewModel(AppViewModel::class.java) }
 
-    private val mViewModel: TodoListViewModel by lazy {
-        ViewModelProvider(requireActivity(), TodoListViewModelFactory(TodoRepository()))
+    private val mAppViewMode by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
+
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideTodoListViewModelFactory())
             .get(TodoListViewModel::class.java)
     }
 
-    private val mUpdateFlag: UpdateListViewModel by lazy {
+    private val mUpdateFlag by lazy {
         getSharedViewModel(UpdateListViewModel::class.java)
     }
 
-    private val mChoiceAdapter: TodoChoiceAdapter by lazy {
+    private val mChoiceAdapter by lazy {
         TodoChoiceAdapter(
             Gson().fromJson(
                 context?.loadTextFromAssets("todo_choices.json"),
@@ -72,7 +76,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    private val mTodoAdapter: TodoListPagingAdapter by lazy {
+    private val mTodoAdapter by lazy {
         TodoListPagingAdapter().apply {
             addLoadStateListener { loadState ->
                 mBinding?.refreshing = loadState.refresh is LoadState.Loading
@@ -86,11 +90,11 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         }
     }
 
-    private val mChoiceLayoutManager: FlexboxLayoutManager by lazy {
+    private val mChoiceLayoutManager by lazy {
         FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
     }
 
-    private val mTodoLayoutManager: StaggeredGridLayoutManager by lazy {
+    private val mTodoLayoutManager by lazy {
         StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
     }
 

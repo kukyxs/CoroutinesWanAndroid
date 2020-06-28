@@ -10,7 +10,9 @@ import com.kuky.demo.wan.android.ui.app.constPagerConfig
  * @author kuky.
  * @description
  */
-class HomeArticleViewModel(private val repository: HomeArticleRepository) : ViewModel() {
+class HomeArticleViewModel(
+    private val repository: HomeArticleRepository
+) : ViewModel() {
 
     fun getHomeArticles() = Pager(constPagerConfig) {
         HomeArticlePagingSource(repository)

@@ -5,22 +5,27 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentUserArticlesBinding
-import com.kuky.demo.wan.android.entity.UserArticleDetail
-import com.kuky.demo.wan.android.ui.collection.CollectionModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
+import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
-import com.kuky.demo.wan.android.ui.main.MainModelFactory
-import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModel
-import com.kuky.demo.wan.android.ui.shareduser.UserSharedFragment
+import com.kuky.demo.wan.android.ui.usershared.UserSharedFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
@@ -32,23 +37,26 @@ import org.jetbrains.anko.yesButton
  */
 class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
-    private val mViewModel: UserArticleViewModel by lazy {
-        ViewModelProvider(requireActivity(), UserArticleModelFactory(UserArticleRepository()))
+    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideUserArticleViewModelFactory())
             .get(UserArticleViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectionModelFactory(CollectionRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
             .get(CollectionViewModel::class.java)
     }
 
     private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 
-    private val mAdapter: UserArticleAdapter by lazy {
-        UserArticleAdapter().apply {
+    @OptIn(ExperimentalPagingApi::class)
+    private val mAdapter by lazy {
+        UserArticlePagingAdapter().apply {
             userListener = { id, nick ->
                 UserSharedFragment.navToUser(
                     mNavController,
@@ -56,13 +64,23 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                     id, nick
                 )
             }
+
+            addLoadStateListener { loadState ->
+                mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
+                mBinding?.errorStatus = loadState.refresh is LoadState.Error
+            }
+
+            addDataRefreshListener {
+                mBinding?.emptyStatus = itemCount == 0
+            }
         }
     }
 
     private var isFirstObserver = true
 
     override fun actionsOnViewInflate() {
-        fetchSharedArticles(false)
+        fetchSharedArticles()
 
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
@@ -72,11 +90,11 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
             }
 
             if (!it) {
-                mViewModel.userArticles?.value?.forEach { arc ->
-                    arc.collect = false
+                for (index in 0 until mAdapter.itemCount) {
+                    mAdapter.getItemData(index)?.collect = false
                 }
             } else {
-                fetchSharedArticles()
+                mAdapter.refresh()
             }
         })
     }
@@ -88,10 +106,10 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
         mBinding?.let { binding ->
             binding.refreshColor = R.color.colorAccent
             binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
-                fetchSharedArticles()
+                mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter
+            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
             binding.itemClick = OnItemClickListener { position, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let {
@@ -110,12 +128,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                         else " 是否收藏 「${article.title}」"
                     ) {
                         yesButton {
-                            if (!article.collect) mCollectionViewModel.collectArticle(article.id, {
-                                mViewModel.userArticles?.value?.get(position)?.collect = true
-                                requireContext().toast("收藏成功")
-                            }, { message ->
-                                requireContext().toast(message)
-                            })
+                            if (!article.collect) launch { collectArticle(article.id, position) }
                         }
                         if (!article.collect) noButton { }
                     }.show()
@@ -133,42 +146,37 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                 }
             }
 
-            binding.errorReload = ErrorReload {
-                fetchSharedArticles()
+            binding.errorReload = ErrorReload { mAdapter.retry() }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun collectArticle(id: Int, position: Int) {
+        mCollectionViewModel.collectArticle(id).catch {
+            context?.toast(R.string.no_network)
+        }.onStart {
+            mAppViewModel.showLoading()
+        }.onCompletion {
+            mAppViewModel.dismissLoading()
+        }.collectLatest {
+            it.handleResult {
+                mAdapter.getItemData(position)?.collect = true
+                context?.toast(R.string.add_favourite_succeed)
             }
         }
     }
 
-    private fun fetchSharedArticles(isRefresh: Boolean = true) {
-        mViewModel.fetchSharedArticles {
-            mBinding?.emptyStatus = true
-        }
-
-        mViewModel.netState?.observe(this, Observer {
-            when (it.state) {
-                State.RUNNING -> injectStates(refreshing = true, loading = !isRefresh)
-
-                State.SUCCESS -> injectStates()
-
-                State.FAILED -> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun fetchSharedArticles() {
+        launch {
+            mViewModel.getSharedArticles()
+                .catch {
+                    mBinding?.errorStatus = true
                     mBinding?.indicator = resources.getString(R.string.text_place_holder)
-                    if (it.code == ERROR_CODE_INIT) injectStates(error = true)
-                    else requireContext().toast(R.string.no_net_on_loading)
+                }.collectLatest {
+                    mBinding?.indicator = resources.getString(R.string.share_articles)
+                    mAdapter.submitData(it)
                 }
-            }
-        })
-
-        mViewModel.userArticles?.observe(this, Observer<PagedList<UserArticleDetail>> {
-            mAdapter.submitList(it)
-            mBinding?.indicator = resources.getString(R.string.share_articles)
-        })
-    }
-
-    private fun injectStates(refreshing: Boolean = false, loading: Boolean = false, error: Boolean = false) {
-        mBinding?.let { binding ->
-            binding.refreshing = refreshing
-            binding.loadingStatus = loading
-            binding.errorStatus = error
         }
     }
 }

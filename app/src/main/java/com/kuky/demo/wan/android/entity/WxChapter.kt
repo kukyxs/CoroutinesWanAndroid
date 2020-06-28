@@ -4,13 +4,6 @@ package com.kuky.demo.wan.android.entity
  * @author kuky.
  * @description
  */
-
-data class WxChapterEntity(
-    val `data`: MutableList<WxChapterData>,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
 data class WxChapterData(
     val children: List<Any>,
     val courseId: Int,

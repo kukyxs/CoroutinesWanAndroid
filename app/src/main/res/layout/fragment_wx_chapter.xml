@@ -42,7 +42,7 @@
 
         <variable
             name="errorReload"
-            type="com.kuky.demo.wan.android.ui.widget.ErrorReload" />
+            type="com.kuky.demo.wan.android.widget.ErrorReload" />
 
         <variable
             name="gesture"
@@ -92,7 +92,7 @@
                 bind:listItemClick="@{listener}"
                 tools:listitem="@layout/recycler_wx_chapter" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusError
+            <com.kuky.demo.wan.android.widget.StatusError
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
@@ -100,14 +100,14 @@
                 app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
                 bind:reload="@{errorReload}" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusEmpty
+            <com.kuky.demo.wan.android.widget.StatusEmpty
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/wx_chapter_type" />
 
-            <com.kuky.demo.wan.android.ui.widget.StatusLoading
+            <com.kuky.demo.wan.android.widget.StatusLoading
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"

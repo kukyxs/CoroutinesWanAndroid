@@ -1,69 +1,29 @@
 package com.kuky.demo.wan.android.ui.usersharelist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
-import com.kuky.demo.wan.android.base.NetworkState
-import com.kuky.demo.wan.android.base.safeLaunch
-import com.kuky.demo.wan.android.entity.UserArticleDetail
+import androidx.paging.Pager
+import androidx.paging.cachedIn
+import com.kuky.demo.wan.android.ui.app.constPagerConfig
+import kotlinx.coroutines.flow.flow
 
 /**
  * @author kuky.
  * @description
  */
-class UserShareListViewModel(private val repository: UserShareListRepository) : ViewModel() {
+class UserShareListViewModel(
+    private val repository: UserShareListRepository
+) : ViewModel() {
 
-    var netState: LiveData<NetworkState>? = null
-    var articles: LiveData<PagedList<UserArticleDetail>>? = null
+    fun getSharedArticles() = Pager(constPagerConfig) {
+        UserSharePagingSource(repository)
+    }.flow.cachedIn(viewModelScope)
 
-    fun fetchSharedArticles(empty: () -> Unit) {
-        articles = LivePagedListBuilder(
-            UserShareDataSourceFactory(repository).apply {
-                netState = Transformations.switchMap(sourceLiveData) { it.initState }
-            }, PagedList.Config.Builder()
-                .setPageSize(20)
-                .setEnablePlaceholders(true)
-                .setInitialLoadSizeHint(20)
-                .build()
-        ).setBoundaryCallback(object : PagedList.BoundaryCallback<UserArticleDetail>() {
-            override fun onZeroItemsLoaded() = empty()
-        }).build()
+    fun deleteAShare(id: Int) = flow {
+        emit(repository.deleteShare(id))
     }
 
-    fun deleteAShare(id: Int, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                repository.deleteShare(id).let {
-                    if (it.errorCode == 0) {
-                        articles?.value?.dataSource?.invalidate()
-                        success()
-                    } else fail(it.errorMsg)
-                }
-            }
-            onError = {
-                fail("删除出错啦~请检查网络")
-            }
-        }
-    }
-
-    fun putAShare(title: String, link: String, success: () -> Unit, fail: (String) -> Unit) {
-        viewModelScope.safeLaunch {
-            block = {
-                if (title.isBlank() || link.isBlank())
-                    fail("请填写必要信息")
-                else repository.shareArticle(title, link).let {
-                    if (it.errorCode == 0) {
-                        articles?.value?.dataSource?.invalidate()
-                        success()
-                    } else fail(it.errorMsg)
-                }
-            }
-            onError = {
-                fail("分享出错啦~请检查网络")
-            }
-        }
+    fun putAShare(title: String, link: String) = flow {
+        emit(repository.shareArticle(title, link))
     }
 }

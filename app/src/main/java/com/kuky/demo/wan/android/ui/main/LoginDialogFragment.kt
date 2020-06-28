@@ -7,6 +7,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.databinding.DialogLoginBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -23,8 +24,8 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
 
     private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
 
-    private val mViewModel: MainViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainModelFactory(MainRepository()))
+    private val mViewModel by lazy {
+        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
             .get(MainViewModel::class.java)
     }
 

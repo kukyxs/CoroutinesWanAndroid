@@ -9,7 +9,8 @@ import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.ui.widget.ErrorReload
+import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -26,10 +27,12 @@ import org.jetbrains.anko.toast
  */
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by lazy {
+        getSharedViewModel(AppViewModel::class.java)
+    }
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), CollectedWebsitesModelFactory(CollectedWebsitesRepository()))
+        ViewModelProvider(requireActivity(), Injection.provideCollectedWebsitesViewModelFactory())
             .get(CollectedWebsitesViewModel::class.java)
     }
 
@@ -39,9 +42,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
     private val editSelector by lazy { arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website)) }
 
-    override fun actionsOnViewInflate() {
-        fetchWebSitesData()
-    }
+    override fun actionsOnViewInflate() = fetchWebSitesData()
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_websites
 
@@ -70,10 +71,9 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                         when (i) {
                             0 -> launch { removeFavouriteWebsite(data.id) }
 
-                            1 -> CollectedWebsiteDialogFragment().apply {
-                                editMode = true
-                                injectWebsiteData(data)
-                            }.show(childFragmentManager, "edit_website")
+                            1 -> CollectedWebsiteDialogFragment
+                                .createCollectedDialog(true, data.id, data.name, data.link)
+                                .showAllowStateLoss(childFragmentManager, "edit_website")
                         }
                     }
                 }
@@ -83,15 +83,15 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
             binding.gesture = DoubleClickListener {
                 singleTap = {
-                    CollectedWebsiteDialogFragment().apply {
-                        editMode = false
-                        injectWebsiteData()
-                        onDialogFragmentDismissListener = { fetchWebSitesData() }
-                    }.showAllowStateLoss(childFragmentManager, "new_website")
+                    CollectedWebsiteDialogFragment
+                        .createCollectedDialog(false)
+                        .showAllowStateLoss(childFragmentManager, "new_website")
                 }
             }
         }
     }
+
+    fun scrollToTop() = mBinding?.websiteList?.scrollToTop()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun removeFavouriteWebsite(id: Int) {
@@ -107,8 +107,6 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
             }
         }
     }
-
-    fun scrollToTop() = mBinding?.websiteList?.scrollToTop()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchWebSitesData() {
