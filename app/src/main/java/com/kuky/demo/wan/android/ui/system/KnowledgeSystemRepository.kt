@@ -1,8 +1,9 @@
 package com.kuky.demo.wan.android.ui.system
 
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -18,6 +19,8 @@ class KnowledgeSystemRepository {
 
     suspend fun loadArticle4System(page: Int, cid: Int): MutableList<WxChapterListDatas>? =
         withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.articleInCategory(page, cid, cookie).data.datas
+            RetrofitManager.apiService.articleInCategory(
+                page, cid, PreferencesHelper.fetchCookie(WanApplication.instance)
+            ).data.datas
         }
 }

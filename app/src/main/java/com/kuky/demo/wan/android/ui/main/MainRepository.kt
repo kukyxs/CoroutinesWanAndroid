@@ -6,7 +6,6 @@ import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,7 +22,9 @@ class MainRepository {
 
     suspend fun getCoins() =
         withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.fetchUserCoins(cookie).data
+            RetrofitManager.apiService.fetchUserCoins(
+                PreferencesHelper.fetchCookie(WanApplication.instance)
+            ).data
         }
 
     suspend fun getHomeBanners() =

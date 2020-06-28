@@ -171,9 +171,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             mViewModel.getCategories().catch {
                 errorOnCategories = true
                 mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
-                pageState(State.FAILED)
+                pageState(NetworkState.FAILED)
             }.onStart {
-                pageState(State.RUNNING)
+                pageState(NetworkState.RUNNING)
             }.collectLatest { cat ->
                 cat[0].let { mId = it.id; mTitle = it.name; fetchProjects(mId, mTitle) }
             }
@@ -209,9 +209,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         }
     }
 
-    private fun pageState(state: State) = mBinding?.run {
-        refreshing = state == State.RUNNING
-        loadingStatus = state == State.RUNNING
-        errorStatus = state == State.FAILED
+    private fun pageState(state: NetworkState) = mBinding?.run {
+        refreshing = state == NetworkState.RUNNING
+        loadingStatus = state == NetworkState.RUNNING
+        errorStatus = state == NetworkState.FAILED
     }
 }

@@ -73,22 +73,22 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
         mChapterJob?.cancel()
         mChapterJob = launch {
             mViewModel.getWxChapterList().catch {
-                pageState(State.FAILED)
+                pageState(NetworkState.FAILED)
                 mBinding?.wxChapterType?.text = resources.getText(R.string.text_place_holder)
             }.onStart {
-                pageState(State.RUNNING)
+                pageState(NetworkState.RUNNING)
             }.collectLatest {
                 mAdapter.update(it)
-                pageState(State.SUCCESS)
+                pageState(NetworkState.SUCCESS)
                 mBinding?.wxChapterType?.text = resources.getText(R.string.wx_chapter)
                 if (it.isEmpty()) mBinding?.emptyStatus = true
             }
         }
     }
 
-    private fun pageState(state: State) = mBinding?.run {
-        refreshing = state == State.RUNNING
-        loadingStatus = state == State.RUNNING
-        errorStatus = state == State.FAILED
+    private fun pageState(state: NetworkState) = mBinding?.run {
+        refreshing = state == NetworkState.RUNNING
+        loadingStatus = state == NetworkState.RUNNING
+        errorStatus = state == NetworkState.FAILED
     }
 }

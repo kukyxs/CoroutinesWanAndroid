@@ -5,18 +5,18 @@ package com.kuky.demo.wan.android.base
  * @description
  */
 
-enum class State {
+enum class NetworkState {
     RUNNING, SUCCESS, FAILED
 }
 
-data class NetworkState(
-    val state: State,
+data class RequestState(
+    val state: NetworkState,
     val msg: String? = null,
     val code: Int? = null
 ) {
     companion object {
-        val LOADED = NetworkState(State.SUCCESS)
-        val LOADING = NetworkState(State.RUNNING)
-        fun error(msg: String? = "", code: Int = ERROR_CODE_NORM) = NetworkState(State.FAILED, msg ?: "unknown error", code)
+        val LOADED = RequestState(NetworkState.SUCCESS)
+        val LOADING = RequestState(NetworkState.RUNNING)
+        fun error(msg: String? = "", code: Int = 400) = RequestState(NetworkState.FAILED, msg ?: "unknown error", code)
     }
 }

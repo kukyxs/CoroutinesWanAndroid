@@ -113,20 +113,20 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mFavouriteJob?.cancel()
         mFavouriteJob = launch {
             mViewModel.getWebsites().catch {
-                pageState(State.FAILED)
+                pageState(NetworkState.FAILED)
             }.onStart {
-                pageState(State.RUNNING)
+                pageState(NetworkState.RUNNING)
             }.collectLatest {
-                pageState(State.SUCCESS)
+                pageState(NetworkState.SUCCESS)
                 mBinding?.emptyStatus = it.isNullOrEmpty()
                 mAdapter.update(it)
             }
         }
     }
 
-    private fun pageState(state: State) = mBinding?.run {
-        refreshing = state == State.RUNNING
-        loadingStatus = state == State.RUNNING
-        errorStatus = state == State.FAILED
+    private fun pageState(state: NetworkState) = mBinding?.run {
+        refreshing = state == NetworkState.RUNNING
+        loadingStatus = state == NetworkState.RUNNING
+        errorStatus = state == NetworkState.FAILED
     }
 }

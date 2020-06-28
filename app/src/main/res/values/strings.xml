@@ -3,7 +3,6 @@
 
     <string name="collection">收藏</string>
     <string name="collections">我的收藏</string>
-    <string name="collected_articles">文章收藏</string>
     <string name="collected_websites">网址收藏</string>
     <string name="del_website">删除网址</string>
     <string name="edit_website">编辑网址</string>
@@ -32,11 +31,8 @@
     <string name="add_succeed">添加成功</string>
 
     <string name="add_todo_succeed">添加待办成功</string>
-    <string name="add_todo_failed">添加待办失败</string>
     <string name="update_todo_succeed">更新待办成功</string>
-    <string name="update_todo_failed">更新待办失败</string>
     <string name="delete_todo_succeed">删除待办成功</string>
-    <string name="delete_todo_failed">删除待办失败</string>
     <string name="change_todo_state">修改状态成功</string>
 
     <string name="coins">积分</string>
@@ -99,5 +95,4 @@
     <string name="empty_data">未查找到任何数据~</string>
     <string name="loading_data">正在努力加载数据中..</string>
     <string name="reload_data">加载出错啦~点击重新加载</string>
-    <string name="no_net_on_loading">无法加载更多~请检查您的网络~</string>
 </resources>

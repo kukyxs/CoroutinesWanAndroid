@@ -171,11 +171,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mTypeJob = launch {
             mViewModel.getTypeList().catch {
                 errorOnTypes = true
-                pageState(State.FAILED)
+                pageState(NetworkState.FAILED)
                 mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
                 mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
             }.collectLatest {
-                pageState(State.SUCCESS)
+                pageState(NetworkState.SUCCESS)
                 updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
             }
         }
@@ -220,9 +220,9 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
     }
 
-    private fun pageState(state: State) = mBinding?.run {
-        refreshing = state == State.RUNNING
-        loadingStatus = state == State.RUNNING
-        errorStatus = state == State.FAILED
+    private fun pageState(state: NetworkState) = mBinding?.run {
+        refreshing = state == NetworkState.RUNNING
+        loadingStatus = state == NetworkState.RUNNING
+        errorStatus = state == NetworkState.FAILED
     }
 }

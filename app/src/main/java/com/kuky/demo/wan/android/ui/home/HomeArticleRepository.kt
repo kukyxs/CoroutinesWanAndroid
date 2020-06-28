@@ -1,8 +1,9 @@
 package com.kuky.demo.wan.android.ui.home
 
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -19,6 +20,8 @@ class HomeArticleRepository {
     // 加载首页置顶文章
     suspend fun loadTops(): MutableList<HomeArticleDetail>? =
         withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.topArticle(cookie).data
+            RetrofitManager.apiService.topArticle(
+                PreferencesHelper.fetchCookie(WanApplication.instance)
+            ).data
         }
 }

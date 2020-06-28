@@ -1,9 +1,10 @@
 package com.kuky.demo.wan.android.ui.coins
 
+import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.CoinRankDetail
 import com.kuky.demo.wan.android.entity.CoinRecordDetail
 import com.kuky.demo.wan.android.network.RetrofitManager
-import com.kuky.demo.wan.android.ui.app.cookie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,7 +15,9 @@ import kotlinx.coroutines.withContext
 class CoinRepository {
     suspend fun getCoinRecord(page: Int): MutableList<CoinRecordDetail>? =
         withContext(Dispatchers.IO) {
-            RetrofitManager.apiService.fetchCoinsRecord(page, cookie).data.datas
+            RetrofitManager.apiService.fetchCoinsRecord(
+                page, PreferencesHelper.fetchCookie(WanApplication.instance)
+            ).data.datas
         }
 
     suspend fun getCoinRanks(page: Int): MutableList<CoinRankDetail>? =
