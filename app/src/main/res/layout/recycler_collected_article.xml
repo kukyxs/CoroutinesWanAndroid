@@ -11,6 +11,10 @@
         <variable
             name="data"
             type="com.kuky.demo.wan.android.entity.UserCollectDetail" />
+
+        <variable
+            name="description"
+            type="String" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -66,8 +70,8 @@
                 android:maxLines="3"
                 android:minLines="@{data.desc == null ? 1 : 2}"
                 android:textSize="13sp"
+                android:text="@{description}"
                 android:visibility="@{data.desc == null ? View.GONE : View.VISIBLE}"
-                bind:renderHtml="@{data.desc}"
                 tools:text="使用Kotlin语言开发的WanAndroid客户端，使用了AndroidX和RxJava、Retrofit、OkHttp等开元技术。" />
 
             <TextView

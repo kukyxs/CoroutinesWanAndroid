@@ -9,6 +9,14 @@
         <variable
             name="project"
             type="com.kuky.demo.wan.android.entity.ProjectDetailData" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="desc"
+            type="String" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -46,7 +54,7 @@
                 android:layout_toStartOf="@id/env_image"
                 android:ellipsize="end"
                 android:maxLines="2"
-                bind:renderHtml="@{project.title}"
+                android:text="@{title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -64,8 +72,8 @@
                 android:lineSpacingExtra="4dp"
                 android:maxLines="3"
                 android:minLines="2"
+                android:text="@{desc}"
                 android:textSize="13sp"
-                bind:renderHtml="@{project.desc}"
                 tools:text="应用推出新功能需要给给用户提示指引一下.传入需要指引的View即可" />
 
             <TextView

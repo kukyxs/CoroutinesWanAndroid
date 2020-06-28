@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerSearchArticleBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 
@@ -38,6 +39,7 @@ class SearchArticlePagingAdapter :
 
     override fun setVariable(data: ArticleDetail, position: Int, holder: BaseViewHolder<RecyclerSearchArticleBinding>) {
         holder.binding.detail = data
+        holder.binding.title = data.title.renderHtml()
     }
 
     companion object {

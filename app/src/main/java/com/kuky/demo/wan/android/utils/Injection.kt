@@ -1,5 +1,7 @@
 package com.kuky.demo.wan.android.utils
 
+import android.content.Context
+import com.kuky.demo.wan.android.data.WanDatabase
 import com.kuky.demo.wan.android.ui.coins.CoinRepository
 import com.kuky.demo.wan.android.ui.coins.CoinViewModelFactory
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesRepository
@@ -49,7 +51,9 @@ object Injection {
 
     fun provideCollectedWebsitesViewModelFactory() = CollectedWebsitesViewModelFactory(CollectedWebsitesRepository())
 
-    fun provideHomeArticleViewModelFactory() = HomeArticleViewModelFactory(HomeArticleRepository())
+    fun provideHomeArticleViewModelFactory(context: Context) = HomeArticleViewModelFactory(
+        HomeArticleRepository(WanDatabase.getInstance(context))
+    )
 
     fun provideHotProjectViewModelFactory() = HotProjectViewModelFactory(HotProjectRepository())
 

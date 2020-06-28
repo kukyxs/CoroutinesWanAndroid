@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="category"
-            type="com.kuky.demo.wan.android.entity.ProjectCategoryData" />
+            name="categoryName"
+            type="String" />
 
         <variable
             name="selected"
@@ -20,7 +19,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:singleLine="true"
-        bind:renderHtml="@{category.name}"
+        android:text="@{categoryName}"
         android:textColor="@{selected ? @color/colorAccent : @android:color/black }"
         android:textSize="14sp"
         tools:text="完整项目" />

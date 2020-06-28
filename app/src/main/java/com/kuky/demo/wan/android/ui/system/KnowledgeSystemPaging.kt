@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
@@ -44,7 +45,7 @@ class KnowledgeSystemTypeAdapter(
         data: SystemData, position: Int, holder: BaseViewHolder<ViewDataBinding>
     ) {
         (holder.binding as RecyclerKnowledgeSystemBinding).let {
-            it.name = mData?.get(position)?.name
+            it.name = mData?.get(position)?.name?.renderHtml()
             it.selected = mSelectionPosition == position
         }
     }

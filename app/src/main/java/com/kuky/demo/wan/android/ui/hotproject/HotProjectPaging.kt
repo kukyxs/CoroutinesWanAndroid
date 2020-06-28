@@ -7,6 +7,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerHomeProjectBinding
 import com.kuky.demo.wan.android.databinding.RecyclerProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
@@ -47,6 +48,8 @@ class HomeProjectPagingAdapter :
         holder: BaseViewHolder<RecyclerHomeProjectBinding>
     ) {
         holder.binding.project = data
+        holder.binding.title = data.title.renderHtml()
+        holder.binding.desc = data.desc.renderHtml()
     }
 
     companion object {
@@ -77,7 +80,7 @@ class ProjectCategoryAdapter(categories: MutableList<ProjectCategoryData>? = nul
 
     override fun setVariable(data: ProjectCategoryData, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
         (holder.binding as RecyclerProjectCategoryBinding).let {
-            it.category = data
+            it.categoryName = data.name.renderHtml()
             it.selected = mSelectionPosition == position
         }
     }

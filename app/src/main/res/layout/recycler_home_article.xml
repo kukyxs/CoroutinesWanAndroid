@@ -10,6 +10,10 @@
             name="detail"
             type="com.kuky.demo.wan.android.data.db.HomeArticleDetail" />
 
+        <variable
+            name="title"
+            type="String" />
+
         <import type="android.view.View" />
     </data>
 
@@ -37,7 +41,7 @@
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                bind:renderHtml="@{detail.title}"
+                android:text="@{title}"
                 tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
 
             <ImageView

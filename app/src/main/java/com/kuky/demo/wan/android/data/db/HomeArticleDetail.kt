@@ -27,3 +27,10 @@ data class HomeArticleDetail(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "type") val type: Int
 )
+
+@Entity(tableName = "home_article_remote_key")
+data class HomeArticleRemoteKey(
+    @PrimaryKey @ColumnInfo(name = "article_id") val articleId: Int,
+    @ColumnInfo(name = "prev_key") val prevKey: Int?,
+    @ColumnInfo(name = "next_key") val nextKey: Int?
+)

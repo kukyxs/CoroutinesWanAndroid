@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.RecyclerHomeArticleBinding
 
@@ -42,6 +43,7 @@ class HomeArticlePagingAdapter :
 
     override fun setVariable(data: HomeArticleDetail, position: Int, holder: BaseViewHolder<RecyclerHomeArticleBinding>) {
         holder.binding.detail = data
+        holder.binding.title = data.title.renderHtml()
     }
 
     companion object {

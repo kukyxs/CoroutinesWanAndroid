@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -9,6 +8,10 @@
         <variable
             name="detail"
             type="com.kuky.demo.wan.android.entity.ArticleDetail" />
+
+        <variable
+            name="title"
+            type="String" />
 
         <import type="android.view.View" />
     </data>
@@ -34,10 +37,10 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:minLines="2"
+                android:text="@{title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                bind:renderHtml="@{detail.title}"
                 tools:text="Android多线程技术选型最全指南(part 1 - 误区)" />
 
             <ImageView

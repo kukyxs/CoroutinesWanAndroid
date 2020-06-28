@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerUserArticleBinding
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 
@@ -43,6 +44,7 @@ class UserArticlePagingAdapter : BasePagingDataAdapter<UserArticleDetail, Recycl
 
     override fun setVariable(data: UserArticleDetail, position: Int, holder: BaseViewHolder<RecyclerUserArticleBinding>) {
         holder.binding.article = data
+        holder.binding.title = data.title.renderHtml()
         holder.binding.shareUser.let {
             it.paint.flags = it.paint.flags or Paint.UNDERLINE_TEXT_FLAG
             it.setOnClickListener {

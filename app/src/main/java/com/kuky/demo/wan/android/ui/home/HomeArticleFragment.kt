@@ -57,8 +57,10 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     }
 
     private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideHomeArticleViewModelFactory())
-            .get(HomeArticleViewModel::class.java)
+        ViewModelProvider(
+            requireActivity(),
+            Injection.provideHomeArticleViewModelFactory(requireActivity())
+        ).get(HomeArticleViewModel::class.java)
     }
 
     private val mCollectionViewModel by lazy {
@@ -76,7 +78,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
-            mViewModel.getHomeArticles()
+            mViewModel.getHomeArticlesByRoomCache()
                 .catch { mBinding?.errorStatus = true }
                 .collectLatest { mAdapter.submitData(it) }
         }

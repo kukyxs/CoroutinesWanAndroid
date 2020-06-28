@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerCollectedArticleBinding
 import com.kuky.demo.wan.android.entity.UserCollectDetail
 
@@ -43,6 +44,7 @@ class CollectedArticlesPagingAdapter :
         data: UserCollectDetail, position: Int, holder: BaseViewHolder<RecyclerCollectedArticleBinding>
     ) {
         holder.binding.data = data
+        holder.binding.description = data.desc.renderHtml()
     }
 
     companion object {

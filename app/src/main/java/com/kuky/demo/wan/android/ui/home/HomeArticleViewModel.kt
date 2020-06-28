@@ -17,4 +17,10 @@ class HomeArticleViewModel(
     fun getHomeArticles() = Pager(constPagerConfig) {
         HomeArticlePagingSource(repository)
     }.flow.cachedIn(viewModelScope)
+
+    fun getHomeArticlesByRoomCache() = Pager(
+        constPagerConfig,
+        remoteMediator = HomeArtRemoteMediator(repository, repository.db),
+        pagingSourceFactory = repository.pagingSourceFactory
+    ).flow.cachedIn(viewModelScope)
 }

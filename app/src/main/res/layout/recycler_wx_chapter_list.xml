@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -11,6 +10,10 @@
         <variable
             name="data"
             type="com.kuky.demo.wan.android.entity.WxChapterListDatas" />
+
+        <variable
+            name="title"
+            type="String" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -31,10 +34,10 @@
                 android:id="@+id/chapter_article_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{title}"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                bind:renderHtml="@{data.title}"
                 tools:text="是什么让我们阅读RxJava源码如此艰难？" />
 
             <TextView
