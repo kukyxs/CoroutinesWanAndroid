@@ -2,15 +2,12 @@ package com.kuky.demo.wan.android.base
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build
-import android.text.Html
 import android.text.method.MovementMethod
 import android.view.View
 import android.webkit.WebView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -241,14 +238,6 @@ fun bindWebUrl(webView: WebView, url: String?) {
 @BindingAdapter("bind:movementMethod")
 fun bindMovementMethod(textView: TextView, method: MovementMethod) {
     textView.movementMethod = method
-}
-
-@Suppress("DEPRECATION")
-@BindingAdapter("bind:renderHtml")
-fun bindRenderHtml(textView: TextView, description: String) {
-    textView.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
-        Html.fromHtml(description, HtmlCompat.FROM_HTML_MODE_COMPACT)
-    else Html.fromHtml(description)
 }
 
 /**
