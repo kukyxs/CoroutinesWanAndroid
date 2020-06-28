@@ -210,7 +210,7 @@ interface ApiService {
     @GET("/lg/coin/userinfo/json")
     suspend fun fetchUserCoins(
         @Header("Cookie") cookie: String
-    ): BaseResultData<CoinsData>
+    ): BaseResultData<CoinsData?>
 
     // 个人积分获取记录
     @GET("/lg/coin/list/{page}/json")

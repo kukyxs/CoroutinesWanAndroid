@@ -92,7 +92,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         mViewModel.getBanners()
 
-        getCoins()
+        if (mViewModel.hasLogin.value == true) getCoins()
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_main
@@ -146,6 +146,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         mCoinsJob?.cancel()
         mCoinsJob = launch {
             mViewModel.getCoinInfo().collectLatest {
+                if (it == null) return@collectLatest
+
                 mHeaderBinding.coinSpan = SpannableStringBuilder("${it.coinCount}").apply {
                     setSpan(
                         ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.coin_color)),
