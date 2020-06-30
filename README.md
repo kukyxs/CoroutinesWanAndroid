@@ -2,6 +2,10 @@
 该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口, 整体采用 MVVM, Android Jetpack, Retrofit, Kotlin 协程进行编写。
 该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成, 目前已完成所有的开发功能。
 
+### update 
+#### 2020-06-30 更新日志: `paging2` 升级到 `paging3`; `livedata` 大部分替换成 `fow`; 开启暗黑模式; 优化代码结构
+
+
 ### 目前已完成功能
 - 首页最新博文
 - 首页项目分类

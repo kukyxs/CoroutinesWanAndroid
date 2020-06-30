@@ -19,13 +19,13 @@ class WxChapterListPagingSource(
     private val wxId: Int, private val keyword: String
 ) : PagingSource<Int, WxChapterListDatas>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, WxChapterListDatas> {
-        val page = params.key ?: 0
+        val page = params.key ?: 1
 
         return try {
             val chapters = repository.loadPage(wxId, page, keyword) ?: mutableListOf()
             LoadResult.Page(
                 data = chapters,
-                prevKey = if (page == 0) null else page - 1,
+                prevKey = if (page == 1) null else page - 1,
                 nextKey = if (chapters.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {

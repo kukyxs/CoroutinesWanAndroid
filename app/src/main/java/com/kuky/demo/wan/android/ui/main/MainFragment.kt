@@ -118,7 +118,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 }
             }
 
-            mViewModel.hasLogin.observe(this, Observer<Boolean> {
+            mViewModel.hasLogin.observe(this, Observer {
                 binding.userProfileDrawer.menu.let { menus ->
                     menus.findItem(R.id.user_collections).isVisible = it
                     menus.findItem(R.id.login_out).isVisible = it

@@ -1,9 +1,11 @@
 package com.kuky.demo.wan.android.base
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
@@ -30,6 +32,15 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
         initActivity(savedInstanceState)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (needFitDarkMode())
+            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                Configuration.UI_MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         ActivityStackManager.removeActivity(this)
@@ -51,6 +62,8 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
     abstract fun initActivity(savedInstanceState: Bundle?)
 
     protected open fun needTransparentStatus(): Boolean = true
+
+    protected open fun needFitDarkMode(): Boolean = true
 
     /** 获取 ViewModel */
     fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProvider(this).get(clazz)

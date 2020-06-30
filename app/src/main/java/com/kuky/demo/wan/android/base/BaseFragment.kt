@@ -1,9 +1,11 @@
 package com.kuky.demo.wan.android.base
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -45,6 +47,15 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
         initFragment(view, savedInstanceState)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (needFitDarkMode())
+            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                Configuration.UI_MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         cancel()
@@ -59,6 +70,8 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
     abstract fun getLayoutId(): Int
 
     abstract fun initFragment(view: View, savedInstanceState: Bundle?)
+
+    protected open fun needFitDarkMode(): Boolean = true
 
     fun <T : ViewModel> getViewModel(clazz: Class<T>): T =
         ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(clazz)

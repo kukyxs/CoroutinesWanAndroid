@@ -53,6 +53,7 @@ class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
                     WxChapterListFragment.navigate(mNavController, R.id.action_mainFragment_to_wxChapterListFragment, it.id, it.name)
                 }
             }
+
             binding.rcvChapter.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 false

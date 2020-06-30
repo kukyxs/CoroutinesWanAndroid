@@ -21,7 +21,7 @@
 
         <activity
             android:name=".ui.SplashActivity"
-            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:configChanges="screenSize|orientation|keyboardHidden|uiMode"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme"
             tools:ignore="LockedOrientationActivity">
@@ -34,7 +34,7 @@
 
         <activity
             android:name=".ui.app.MainActivity"
-            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:configChanges="screenSize|orientation|keyboardHidden|uiMode"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
     </application>
