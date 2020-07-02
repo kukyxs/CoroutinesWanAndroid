@@ -72,13 +72,37 @@ class WebsiteDetailFragment : BaseFragment<FragmentWesiteDetailBinding>() {
 
             it.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    if (url.isNullOrBlank()) return false
+
+                    if (!url.matches(Regex("(http|https)?://(\\S)+"))) {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        } catch (e: Exception) {
+
+                        }
+                        return true
+                    }
+
                     view?.loadUrl(url)
-                    return false
+                    return true
                 }
 
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                    view?.loadUrl(request?.url.toString())
-                    return false
+                    val url = request?.url.toString()
+
+                    if (url.isBlank()) return false
+
+                    if (!url.matches(Regex("(http|https)?://(\\S)+"))) {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        } catch (e: Exception) {
+
+                        }
+                        return true
+                    }
+
+                    view?.loadUrl(url)
+                    return true
                 }
             }
 
