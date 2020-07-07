@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.todolist
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -36,6 +35,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -53,7 +53,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
-    private val mAppViewMode by activityViewModels<AppViewModel>()
+    private val mAppViewMode by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<TodoListViewModel>()
 

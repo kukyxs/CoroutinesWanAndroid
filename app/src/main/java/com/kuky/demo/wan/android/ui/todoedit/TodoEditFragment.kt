@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -34,7 +34,7 @@ import java.util.*
  */
 class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<TodoEditViewModel>()
 

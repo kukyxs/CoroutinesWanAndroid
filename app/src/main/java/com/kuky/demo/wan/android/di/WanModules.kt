@@ -3,8 +3,7 @@ package com.kuky.demo.wan.android.di
 import com.kuky.demo.wan.android.data.WanDatabase
 import com.kuky.demo.wan.android.network.RetrofitManager
 import com.kuky.demo.wan.android.ui.app.LoadingDialog
-import com.kuky.demo.wan.android.ui.coins.CoinRepository
-import com.kuky.demo.wan.android.ui.coins.CoinViewModel
+import com.kuky.demo.wan.android.ui.coins.*
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesRepository
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesViewModel
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesRepository
@@ -15,6 +14,8 @@ import com.kuky.demo.wan.android.ui.home.HomeArticleRepository
 import com.kuky.demo.wan.android.ui.home.HomeArticleViewModel
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectRepository
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectViewModel
+import com.kuky.demo.wan.android.ui.main.MainRepository
+import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.search.SearchRepository
 import com.kuky.demo.wan.android.ui.search.SearchViewModel
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemRepository
@@ -42,7 +43,7 @@ import org.koin.dsl.module
 val dataSourceModule = module {
     single { RetrofitManager.apiService }
 
-    single { WanDatabase.getInstance(androidContext()) }
+    single { WanDatabase.buildDatabase(androidContext()) }
 }
 
 val viewModelModule = module {
@@ -57,6 +58,8 @@ val viewModelModule = module {
     viewModel { HomeArticleViewModel(get()) }
 
     viewModel { HotProjectViewModel(get()) }
+
+    viewModel { MainViewModel(get()) }
 
     viewModel { SearchViewModel(get()) }
 
@@ -88,6 +91,8 @@ val repositoryModule = module {
 
     single { HotProjectRepository(get()) }
 
+    single { MainRepository(get()) }
+
     single { SearchRepository(get()) }
 
     single { KnowledgeSystemRepository(get()) }
@@ -103,6 +108,16 @@ val repositoryModule = module {
     single { WxChapterRepository(get()) }
 
     single { WxChapterListRepository(get()) }
+}
+
+val fragmentModule = module {
+    factory { (type: Int) -> CoinCommonSubFragment.instance(type) }
+}
+
+val adapterModule = module {
+    factory { CoinRecordPagingAdapter() }
+
+    factory { CoinRankPagingAdapter() }
 }
 
 val dialogModule = module {

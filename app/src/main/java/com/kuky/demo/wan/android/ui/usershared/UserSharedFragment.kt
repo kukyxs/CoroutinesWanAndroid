@@ -11,7 +11,6 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -36,6 +35,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -45,7 +45,7 @@ import java.util.*
  */
 class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<UserSharedViewModel>()
 

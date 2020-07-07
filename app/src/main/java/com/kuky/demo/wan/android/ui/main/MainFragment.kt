@@ -12,7 +12,6 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
@@ -29,7 +28,6 @@ import com.kuky.demo.wan.android.ui.userarticles.UserArticleFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapter.WxChapterFragment
 import com.kuky.demo.wan.android.utils.GalleryTransformer
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import com.kuky.demo.wan.android.utils.screenWidth
 import com.youth.banner.listener.OnBannerListener
@@ -44,6 +42,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 /**
@@ -64,12 +63,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         )
     }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
-            .get(MainViewModel::class.java)
-    }
+    private val mViewModel by sharedViewModel<MainViewModel>()
 
     private val mHeaderBinding by lazy {
         DataBindingUtil.inflate<UserProfileHeaderBinding>(

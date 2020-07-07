@@ -19,6 +19,7 @@ import org.jetbrains.anko.yesButton
 import org.koin.android.ext.android.inject
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
+
     private val mAppViewModel by viewModels<AppViewModel>()
 
     private val mLoadingDialog by inject<LoadingDialog>()
@@ -27,11 +28,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
-    private val request: NetworkRequest by lazy {
+    private val request by lazy {
         NetworkRequest.Builder().build()
     }
 
-    private val netStateCallback: ConnectivityManager.NetworkCallback by lazy {
+    private val netStateCallback by lazy {
         object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)

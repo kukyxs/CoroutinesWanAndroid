@@ -2,8 +2,6 @@ package com.kuky.demo.wan.android.ui.usersharelist
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -14,7 +12,6 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.usershared.UserSharedPagingAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -27,6 +24,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -50,7 +48,7 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
         }
     }
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<UserShareListViewModel>()
 

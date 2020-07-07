@@ -15,13 +15,12 @@ import java.util.concurrent.TimeUnit
 object RetrofitManager {
     private var BASE_URL = "https://www.wanandroid.com"
 
-    val apiService: ApiService by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(genericOkClient())
-            .build().create(ApiService::class.java)
-    }
+    val apiService: ApiService = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(genericOkClient())
+        .build().create(ApiService::class.java)
+
 
     private fun genericOkClient(): OkHttpClient {
         val httpLoggingInterceptor = HttpLoggingInterceptor(

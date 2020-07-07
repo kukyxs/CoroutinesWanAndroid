@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -64,7 +62,4 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
     protected open fun needTransparentStatus(): Boolean = true
 
     protected open fun needFitDarkMode(): Boolean = true
-
-    /** 获取 ViewModel */
-    fun <T : ViewModel> getViewModel(clazz: Class<T>): T = ViewModelProvider(this).get(clazz)
 }

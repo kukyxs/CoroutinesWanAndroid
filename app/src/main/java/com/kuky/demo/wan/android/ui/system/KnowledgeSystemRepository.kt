@@ -4,7 +4,6 @@ import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 import com.kuky.demo.wan.android.network.ApiService
-import com.kuky.demo.wan.android.network.RetrofitManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

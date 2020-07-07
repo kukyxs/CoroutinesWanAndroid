@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
  * @description
  */
 class CoinRepository(private val api: ApiService) {
+
     suspend fun getCoinRecord(page: Int): MutableList<CoinRecordDetail>? =
         withContext(Dispatchers.IO) {
             api.fetchCoinsRecord(

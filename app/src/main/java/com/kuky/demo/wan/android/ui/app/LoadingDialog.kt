@@ -19,6 +19,7 @@ class LoadingDialog : BaseDialogFragment<DialogLoadingBinding>() {
 
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
         isCancelable = false
+
         (mBinding.loading.drawable as? AnimationDrawable)?.start()
     }
 

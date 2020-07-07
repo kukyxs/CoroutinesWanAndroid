@@ -3,10 +3,14 @@
 该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成, 目前已完成所有的开发功能。
 
 ### 内容更新记录
+
+#### 2020-07-07 更新日志
+
+使用 `Koin` 替换部分注入, 待应用到全局
+
 #### 2020-06-30 更新日志: 
 
 `paging2` 升级到 `paging3`; `livedata` 大部分替换成 `fow`; 开启暗黑模式; 优化代码结构
-
 
 ### 目前已完成功能
 - 首页最新博文
@@ -24,7 +28,6 @@
 
 ### 目前存在问题
 - `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理, 只能通过普通方式处理, 如果有解决方案请提 issue
-- `Paging3` 踩坑阶段, 后期会有问题添加..
 
 ### 特此感谢（排名不分先后）
 - [玩 Android 洋神](https://www.wanandroid.com/)
@@ -37,6 +40,7 @@
 - [FlexboxLayout](https://github.com/google/flexbox-layout)
 - [FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 - [anko](https://github.com/Kotlin/anko)
+- [Koin](https://github.com/InsertKoinIO/koin)
 
 ### 支持一下
 如果该项目对你有帮助, 请在右上角帮我们 **star** 一下。如果有什么问题, 可以直接提 **issue**

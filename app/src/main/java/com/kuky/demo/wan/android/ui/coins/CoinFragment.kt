@@ -8,6 +8,8 @@ import com.kuky.demo.wan.android.base.BaseViewPager2FragmentAdapter
 import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.base.setupWithViewPager2
 import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 /**
  * @author kuky.
@@ -15,13 +17,12 @@ import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
  */
 class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
 
+    private val mRecordPage by inject<CoinCommonSubFragment> { parametersOf(0) }
+
+    private val mRankPage by inject<CoinCommonSubFragment> { parametersOf(1) }
+
     private val mPagerAdapter by lazy {
-        BaseViewPager2FragmentAdapter(
-            this, mutableListOf(
-                CoinCommonSubFragment.recordInstance(),
-                CoinCommonSubFragment.rankInstance()
-            )
-        )
+        BaseViewPager2FragmentAdapter(this, mutableListOf(mRecordPage, mRankPage))
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_coins

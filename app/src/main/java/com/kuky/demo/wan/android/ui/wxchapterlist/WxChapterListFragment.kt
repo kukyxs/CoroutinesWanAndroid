@@ -9,7 +9,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -33,6 +32,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -64,7 +64,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewMode by viewModel<WxChapterListViewModel>()
 

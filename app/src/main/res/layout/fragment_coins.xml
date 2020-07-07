@@ -4,6 +4,7 @@
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="gesture"
             type="com.kuky.demo.wan.android.base.DoubleClickListener" />
@@ -45,7 +46,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="2dp"
             android:overScrollMode="never"
-            android:scrollbars="none"/>
+            android:scrollbars="none" />
 
         <!--        <androidx.viewpager.widget.ViewPager-->
         <!--            android:id="@+id/coin_vp"-->

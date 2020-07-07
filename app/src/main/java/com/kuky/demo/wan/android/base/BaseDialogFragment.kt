@@ -13,8 +13,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -120,10 +118,4 @@ abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(),
     abstract fun layoutId(): Int
 
     abstract fun initDialog(view: View, savedInstanceState: Bundle?)
-
-    fun <T : ViewModel> getViewModel(clazz: Class<T>): T =
-        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(clazz)
-
-    fun <T : ViewModel> getSharedViewModel(clazz: Class<T>): T =
-        ViewModelProvider(requireActivity(), ViewModelProvider.NewInstanceFactory()).get(clazz)
 }

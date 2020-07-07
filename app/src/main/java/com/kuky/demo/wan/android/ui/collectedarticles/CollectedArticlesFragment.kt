@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -23,6 +22,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -31,7 +31,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<CollectedArticlesViewModel>()
 

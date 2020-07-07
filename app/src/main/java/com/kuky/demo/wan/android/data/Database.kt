@@ -17,21 +17,14 @@ import com.kuky.demo.wan.android.data.db.HomeArticleRemoteKey
     version = 1, exportSchema = false
 )
 abstract class WanDatabase : RoomDatabase() {
+
     abstract fun homeArticleCacheDao(): HomeArticleCacheDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: WanDatabase? = null
 
-        fun getInstance(context: Context): WanDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-            }
-
-        private fun buildDatabase(context: Context) =
-            Room.databaseBuilder(
-                context.applicationContext,
-                WanDatabase::class.java, "wan.db"
-            ).build()
+        fun buildDatabase(context: Context) = Room.databaseBuilder(
+            context.applicationContext,
+            WanDatabase::class.java, "wan.db"
+        ).build()
     }
 }

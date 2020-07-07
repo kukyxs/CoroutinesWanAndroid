@@ -2,7 +2,6 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -29,7 +29,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 

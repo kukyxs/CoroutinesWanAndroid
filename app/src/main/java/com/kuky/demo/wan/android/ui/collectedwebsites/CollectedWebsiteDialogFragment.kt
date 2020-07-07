@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.handleResult
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -42,7 +42,7 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
 
     private val mEditLink by lazy { arguments?.getString("edit_link") ?: "" }
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 

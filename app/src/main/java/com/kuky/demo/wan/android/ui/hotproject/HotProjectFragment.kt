@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.hotproject
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -29,6 +28,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -39,9 +39,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private var mId = 0
     private var mTitle = ""
 
-    private val mAppViewModel by activityViewModels<AppViewModel>()
+    private val mAppViewModel by sharedViewModel<AppViewModel>()
 
-    private val mLoginViewModel by activityViewModels<MainViewModel>()
+    private val mLoginViewModel by sharedViewModel<MainViewModel>()
 
     private val mViewModel by viewModel<HotProjectViewModel>()
 

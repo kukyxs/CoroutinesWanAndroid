@@ -14,7 +14,6 @@ import org.jetbrains.anko.toast
  */
 fun Context.stringValue(@StringRes stringRes: Int) = resources.getString(stringRes)
 
-
 suspend fun <T> BaseResultData<T>.handleResult(
     fail: suspend (String) -> Unit = { WanApplication.instance.toast(it) },
     ok: suspend (T) -> Unit = {}
