@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -25,10 +26,7 @@ import kotlinx.coroutines.launch
  */
 class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideWxChapterViewModelFactory())
-            .get(WxChapterViewModel::class.java)
-    }
+    private val mViewModel by viewModel<WxChapterViewModel>()
 
     private val mAdapter by lazy { WxChapterAdapter() }
 

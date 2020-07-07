@@ -76,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/share_time"
                 android:contentDescription="@null"
-                android:src="@{article.fresh ? @drawable/ic_fresh : @drawable/ic_rec}" />
+                android:src="@{article.fresh ? @drawable/ic_fresh : @drawable/ic_rec}"
+                tools:src="@drawable/ic_fresh" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </layout>

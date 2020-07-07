@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.usersharelist
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -22,14 +24,9 @@ import org.jetbrains.anko.toast
  */
 class ShareArticleDialogFragment : BaseDialogFragment<DialogShareArticleBinding>() {
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideUserShareListViewModelFactory())
-            .get(UserShareListViewModel::class.java)
-    }
+    private val mViewModel by viewModel<UserShareListViewModel>()
 
     override fun layoutId(): Int = R.layout.dialog_share_article
 

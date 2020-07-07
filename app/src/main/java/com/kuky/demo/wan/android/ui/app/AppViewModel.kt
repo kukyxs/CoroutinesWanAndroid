@@ -12,6 +12,8 @@ class AppViewModel : ViewModel() {
 
     val reloadCollectWebsite = MutableLiveData<Boolean>()
 
+    val needUpdateTodoList = MutableLiveData<Boolean>()
+
     fun showLoading() = showLoadingProgress.postValue(true)
 
     fun dismissLoading() = showLoadingProgress.postValue(false)

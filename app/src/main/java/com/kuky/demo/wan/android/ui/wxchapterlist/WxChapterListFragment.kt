@@ -9,7 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -21,7 +21,6 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -65,12 +64,9 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewMode by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideWxChapterListViewModelFactory())
-            .get(WxChapterListViewModel::class.java)
-    }
+    private val mViewMode by viewModel<WxChapterListViewModel>()
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 

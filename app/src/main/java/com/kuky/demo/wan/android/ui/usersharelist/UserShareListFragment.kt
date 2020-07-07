@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.usersharelist
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -26,6 +27,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -48,14 +50,9 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideUserShareListViewModelFactory())
-            .get(UserShareListViewModel::class.java)
-    }
+    private val mViewModel by viewModel<UserShareListViewModel>()
 
     private var mShareJob: Job? = null
 

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -19,7 +18,6 @@ import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.usershared.UserSharedFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -39,16 +37,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
-    private val mAppViewModel by lazy { getSharedViewModel(AppViewModel::class.java) }
-
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideUserArticleViewModelFactory())
-            .get(UserArticleViewModel::class.java)
-    }
-
-    private val mCollectionViewModel by viewModel<CollectionViewModel>()
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
     private val mLoginViewModel by activityViewModels<MainViewModel>()
+
+    private val mViewModel by viewModel<UserArticleViewModel>()
+
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {
@@ -79,7 +74,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
         fetchSharedArticles()
 
         // 登录状态切换
-        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+        mLoginViewModel.hasLogin.observe(this, Observer {
             if (isFirstObserver) {
                 isFirstObserver = false
                 return@Observer

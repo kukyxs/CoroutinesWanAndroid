@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,7 +20,6 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.dp2px
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,23 +64,16 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(this, Injection.provideSearchViewModelFactory())
-            .get(SearchViewModel::class.java)
-    }
+    private val mViewModel by viewModel<SearchViewModel>()
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     private var mKeyJob: Job? = null
     private var mSearchJob: Job? = null
 
-    override fun actionsOnViewInflate() {
-        loadHotKeys()
-    }
+    override fun actionsOnViewInflate() = loadHotKeys()
 
     override fun getLayoutId(): Int = R.layout.fragment_search
 

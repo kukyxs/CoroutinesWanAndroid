@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
@@ -12,12 +11,12 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.screenWidth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -30,10 +29,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
 
     private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideKnowledgeSystemViewModelFactory())
-            .get(KnowledgeSystemViewModel::class.java)
-    }
+    private val mViewModel by viewModel<KnowledgeSystemViewModel>()
 
     private var mFirstData: SystemData? = null
 

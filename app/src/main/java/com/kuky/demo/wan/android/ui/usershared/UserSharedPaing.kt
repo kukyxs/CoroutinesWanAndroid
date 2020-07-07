@@ -1,11 +1,11 @@
 package com.kuky.demo.wan.android.ui.usershared
 
-import androidx.core.view.isInvisible
 import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
+import com.kuky.demo.wan.android.base.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerUserArticleBinding
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 
@@ -39,7 +39,7 @@ class UserSharedPagingAdapter : BasePagingDataAdapter<UserArticleDetail, Recycle
 
     override fun setVariable(data: UserArticleDetail, position: Int, holder: BaseViewHolder<RecyclerUserArticleBinding>) {
         holder.binding.article = data
-        holder.binding.shareUser.isInvisible = true
+        holder.binding.title = data.title.renderHtml()
     }
 
     companion object {

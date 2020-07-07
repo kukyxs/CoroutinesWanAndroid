@@ -55,16 +55,13 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
     }
 
-    private val mAppViewModel by viewModel<AppViewModel>()
-
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideKnowledgeSystemViewModelFactory())
-            .get(KnowledgeSystemViewModel::class.java)
-    }
-
-    private val mCollectionViewModel by viewModel<CollectionViewModel>()
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
     private val mLoginViewModel by activityViewModels<MainViewModel>()
+
+    private val mViewModel by viewModel<KnowledgeSystemViewModel>()
+
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     // 体系id
     private var mCid: Int = 0

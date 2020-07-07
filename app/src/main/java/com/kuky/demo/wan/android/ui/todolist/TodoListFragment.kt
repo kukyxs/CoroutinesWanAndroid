@@ -2,8 +2,8 @@ package com.kuky.demo.wan.android.ui.todolist
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +23,6 @@ import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.loadTextFromAssets
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +36,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -53,18 +53,9 @@ import org.jetbrains.anko.yesButton
  */
 class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
-    private val mAppViewMode by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewMode by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideTodoListViewModelFactory())
-            .get(TodoListViewModel::class.java)
-    }
-
-    private val mUpdateFlag by lazy {
-        getSharedViewModel(UpdateListViewModel::class.java)
-    }
+    private val mViewModel by viewModel<TodoListViewModel>()
 
     private val mChoiceAdapter by lazy {
         TodoChoiceAdapter(
@@ -166,7 +157,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 }
             }
 
-            mUpdateFlag.needUpdate.observe(this, Observer<Boolean> {
+            mAppViewMode.needUpdateTodoList.observe(this, Observer<Boolean> {
                 if (it) fetchTodoList(true)
             })
 
@@ -185,7 +176,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                 mAppViewMode.dismissLoading()
             }.collectLatest {
                 context?.toast(R.string.change_todo_state)
-                mUpdateFlag.needUpdate.value = true
+                mAppViewMode.needUpdateTodoList.postValue(true)
             }
         }
     }

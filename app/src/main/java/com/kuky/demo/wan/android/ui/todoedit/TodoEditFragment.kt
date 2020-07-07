@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -16,8 +16,6 @@ import com.kuky.demo.wan.android.base.hideSoftInput
 import com.kuky.demo.wan.android.databinding.FragmentTodoEditBinding
 import com.kuky.demo.wan.android.entity.TodoInfo
 import com.kuky.demo.wan.android.ui.app.AppViewModel
-import com.kuky.demo.wan.android.ui.todolist.UpdateListViewModel
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.TimeUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -27,6 +25,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 /**
@@ -35,18 +34,9 @@ import java.util.*
  */
 class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideTodoEditViewModelFactory())
-            .get(TodoEditViewModel::class.java)
-    }
-
-    private val mUpdateListFlag by lazy {
-        getSharedViewModel(UpdateListViewModel::class.java)
-    }
+    private val mViewModel by viewModel<TodoEditViewModel>()
 
     private val mCalendar: Calendar by lazy {
         Calendar.getInstance()
@@ -179,7 +169,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 }.onCompletion {
                     mAppViewModel.dismissLoading()
                 }.collectLatest {
-                    mUpdateListFlag.needUpdate.value = true
+                    mAppViewModel.needUpdateTodoList.postValue(true)
                     context?.toast(R.string.add_todo_succeed)
                     mNavController.navigateUp()
                 }
@@ -191,7 +181,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 }.onCompletion {
                     mAppViewModel.dismissLoading()
                 }.collectLatest {
-                    mUpdateListFlag.needUpdate.value = true
+                    mAppViewModel.needUpdateTodoList.postValue(true)
                     context?.toast(R.string.update_todo_succeed)
                     mNavController.navigateUp()
                 }
@@ -211,7 +201,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             }.onCompletion {
                 mAppViewModel.dismissLoading()
             }.collectLatest {
-                mUpdateListFlag.needUpdate.value = true
+                mAppViewModel.needUpdateTodoList.postValue(true)
                 context?.toast(R.string.delete_todo_succeed)
                 mNavController.navigateUp()
             }

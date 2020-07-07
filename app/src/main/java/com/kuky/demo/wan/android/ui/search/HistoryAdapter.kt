@@ -24,8 +24,8 @@ class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<St
     override fun setVariable(data: String, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
         (holder.binding as RecyclerHistoryBinding).let {
             it.history = data
-            it.listener = View.OnClickListener {
-                SearchHistoryUtils.removeKeyword(holder.binding.root.context, data)
+            it.listener = View.OnClickListener { _ ->
+                SearchHistoryUtils.removeKeyword(it.root.context, data)
                 val last = mData?.size ?: 0
                 mData?.remove(data)
                 onKeyRemove?.invoke()

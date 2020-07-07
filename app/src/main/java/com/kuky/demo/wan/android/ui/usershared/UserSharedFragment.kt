@@ -11,7 +11,7 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -23,7 +23,6 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,14 +45,9 @@ import java.util.*
  */
 class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideUserSharedViewModelFactory())
-            .get(UserSharedViewModel::class.java)
-    }
+    private val mViewModel by viewModel<UserSharedViewModel>()
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
