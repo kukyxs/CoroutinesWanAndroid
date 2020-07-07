@@ -34,6 +34,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -73,10 +74,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             .get(SearchViewModel::class.java)
     }
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     private var mKeyJob: Job? = null
     private var mSearchJob: Job? = null

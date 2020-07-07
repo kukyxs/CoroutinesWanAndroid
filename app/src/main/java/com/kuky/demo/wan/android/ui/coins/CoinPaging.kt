@@ -85,30 +85,33 @@ class CoinRankPagingAdapter :
     override fun getLayoutId(): Int = R.layout.recycler_coin_rank
 
     override fun setVariable(data: CoinRankDetail, position: Int, holder: BaseViewHolder<RecyclerCoinRankBinding>) {
-        holder.binding.rank = data
+        holder.binding.run {
+            rank = data
 
-        val context = holder.binding.root.context
-        holder.binding.coinSpan = SpannableStringBuilder("${data.coinCount}").apply {
-            setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(context, R.color.coin_color)),
-                0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-            )
-            setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary)),
-                run { append("\t/\t");length },
-                run { append("Lv${data.level}");length },
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            val context = root.context
+
+            coinSpan = SpannableStringBuilder("${data.coinCount}").apply {
+                setSpan(
+                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.coin_color)),
+                    0, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+                setSpan(
+                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary)),
+                    run { append("\t/\t");length },
+                    run { append("Lv${data.level}");length },
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            imageRes = ContextCompat.getDrawable(
+                context, when (position) {
+                    0 -> R.drawable.ic_no_1
+                    1 -> R.drawable.ic_no_2
+                    2 -> R.drawable.ic_no_3
+                    else -> R.drawable.ic_no_other
+                }
             )
         }
-
-        holder.binding.imageRes = ContextCompat.getDrawable(
-            context, when (position) {
-                0 -> R.drawable.ic_no_1
-                1 -> R.drawable.ic_no_2
-                2 -> R.drawable.ic_no_3
-                else -> R.drawable.ic_no_other
-            }
-        )
     }
 
     companion object {

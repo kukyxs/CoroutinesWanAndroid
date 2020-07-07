@@ -34,9 +34,10 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description 公众号作者对应的文章列表页
  */
 class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
@@ -71,10 +72,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             .get(WxChapterListViewModel::class.java)
     }
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     private val searchIn by lazy {
         AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_in).apply {

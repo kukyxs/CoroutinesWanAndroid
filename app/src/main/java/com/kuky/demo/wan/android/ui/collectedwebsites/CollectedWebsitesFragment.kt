@@ -2,14 +2,15 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -27,14 +29,9 @@ import org.jetbrains.anko.toast
  */
 class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectedWebsitesViewModelFactory())
-            .get(CollectedWebsitesViewModel::class.java)
-    }
+    private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 
     private var mFavouriteJob: Job? = null
 
@@ -88,6 +85,12 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                         .showAllowStateLoss(childFragmentManager, "new_website")
                 }
             }
+
+            mAppViewModel.reloadCollectWebsite.observe(this, Observer {
+                if (it) fetchWebSitesData()
+            })
+
+            LogUtils.error(mAppViewModel)
         }
     }
 
@@ -104,6 +107,7 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         }.collectLatest {
             it.handleResult {
                 context?.toast(R.string.remove_favourite_succeed)
+                mAppViewModel.reloadCollectWebsite.postValue(true)
             }
         }
     }

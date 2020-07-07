@@ -5,19 +5,18 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.utils.screenWidth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -29,10 +28,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
 
     private val mAdapter by lazy { ProjectCategoryAdapter() }
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideHotProjectViewModelFactory())
-            .get(HotProjectViewModel::class.java)
-    }
+    private val mViewModel by viewModel<HotProjectViewModel>()
 
     override fun layoutId(): Int = R.layout.dialog_project_category
 

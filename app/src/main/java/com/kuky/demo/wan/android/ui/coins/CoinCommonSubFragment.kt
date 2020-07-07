@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.coins
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,11 +12,11 @@ import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
-import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -25,10 +24,7 @@ import kotlinx.coroutines.launch
  */
 class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
-    private val mViewModel: CoinViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCoinViewModelFactory())
-            .get(CoinViewModel::class.java)
-    }
+    private val mViewModel by viewModel<CoinViewModel>()
 
     @OptIn(ExperimentalPagingApi::class)
     private val mRankAdapter: CoinRankPagingAdapter by lazy {

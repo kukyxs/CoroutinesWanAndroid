@@ -3,13 +3,13 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.handleResult
 import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
-import com.kuky.demo.wan.android.utils.Injection
+import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
-
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -35,18 +35,16 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
     }
 
     private val mEditId by lazy { arguments?.getInt("edit_id") ?: -1 }
+
     private val mEditMode by lazy { arguments?.getBoolean("edit_mode") ?: false }
+
     private val mEditName by lazy { arguments?.getString("edit_name") ?: "" }
+
     private val mEditLink by lazy { arguments?.getString("edit_link") ?: "" }
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectedWebsitesViewModelFactory())
-            .get(CollectedWebsitesViewModel::class.java)
-    }
+    private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 
     override fun layoutId() = R.layout.dialog_collected_website
 
@@ -54,6 +52,8 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         mBinding.fragment = this
         mBinding.collectedName.setText(mEditName)
         mBinding.collectedLink.setText(mEditLink)
+
+        LogUtils.error(mAppViewModel)
     }
 
     fun cancel(view: View) {
@@ -93,6 +93,7 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
             mAppViewModel.dismissLoading()
         }.collectLatest {
             it.handleResult {
+                mAppViewModel.reloadCollectWebsite.postValue(true)
                 context?.toast(R.string.add_favourite_succeed)
                 dismiss()
             }

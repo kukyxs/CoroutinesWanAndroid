@@ -3,8 +3,8 @@ package com.kuky.demo.wan.android.ui.hotproject
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,7 +17,6 @@ import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -30,6 +29,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -39,24 +39,13 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private var mId = 0
     private var mTitle = ""
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideHotProjectViewModelFactory())
-            .get(HotProjectViewModel::class.java)
-    }
+    private val mLoginViewModel by activityViewModels<MainViewModel>()
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mViewModel by viewModel<HotProjectViewModel>()
 
-    private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
-            .get(MainViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     private var mCategoryJob: Job? = null
     private var mSearchJob: Job? = null
@@ -84,7 +73,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         fetchCategories()
 
         // 登录状态切换
-        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+        mLoginViewModel.hasLogin.observe(this, Observer {
             if (isFirstObserver) {
                 isFirstObserver = false
                 return@Observer

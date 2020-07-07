@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.userarticles
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
@@ -30,6 +31,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -44,15 +46,9 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
             .get(UserArticleViewModel::class.java)
     }
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
-            .get(MainViewModel::class.java)
-    }
+    private val mLoginViewModel by activityViewModels<MainViewModel>()
 
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {

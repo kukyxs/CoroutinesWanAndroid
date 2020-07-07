@@ -7,9 +7,10 @@ import androidx.lifecycle.ViewModel
  * @author kuky.
  * @description
  */
-
 class AppViewModel : ViewModel() {
     val showLoadingProgress = MutableLiveData<Boolean>()
+
+    val reloadCollectWebsite = MutableLiveData<Boolean>()
 
     fun showLoading() = showLoadingProgress.postValue(true)
 

@@ -1,19 +1,5 @@
 package com.kuky.demo.wan.android.utils
 
-import android.content.Context
-import com.kuky.demo.wan.android.data.WanDatabase
-import com.kuky.demo.wan.android.ui.coins.CoinRepository
-import com.kuky.demo.wan.android.ui.coins.CoinViewModelFactory
-import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesRepository
-import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesViewModelFactory
-import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesRepository
-import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesViewModelFactory
-import com.kuky.demo.wan.android.ui.collection.CollectionRepository
-import com.kuky.demo.wan.android.ui.collection.CollectionViewModelFactory
-import com.kuky.demo.wan.android.ui.home.HomeArticleRepository
-import com.kuky.demo.wan.android.ui.home.HomeArticleViewModelFactory
-import com.kuky.demo.wan.android.ui.hotproject.HotProjectRepository
-import com.kuky.demo.wan.android.ui.hotproject.HotProjectViewModelFactory
 import com.kuky.demo.wan.android.ui.main.MainRepository
 import com.kuky.demo.wan.android.ui.main.MainViewModelFactory
 import com.kuky.demo.wan.android.ui.search.SearchRepository
@@ -42,20 +28,6 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListViewModelFactory
 object Injection {
 
     fun provideMainViewModelFactory() = MainViewModelFactory(MainRepository())
-
-    fun provideCoinViewModelFactory() = CoinViewModelFactory(CoinRepository())
-
-    fun provideCollectionViewModelFactory() = CollectionViewModelFactory(CollectionRepository())
-
-    fun provideCollectedArticlesViewModelFactory() = CollectedArticlesViewModelFactory(CollectedArticlesRepository())
-
-    fun provideCollectedWebsitesViewModelFactory() = CollectedWebsitesViewModelFactory(CollectedWebsitesRepository())
-
-    fun provideHomeArticleViewModelFactory(context: Context) = HomeArticleViewModelFactory(
-        HomeArticleRepository(WanDatabase.getInstance(context))
-    )
-
-    fun provideHotProjectViewModelFactory() = HotProjectViewModelFactory(HotProjectRepository())
 
     fun provideSearchViewModelFactory() = SearchViewModelFactory(SearchRepository())
 

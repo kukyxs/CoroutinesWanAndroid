@@ -2,12 +2,8 @@ package com.kuky.demo.wan.android.ui.collection
 
 import android.os.Bundle
 import android.view.View
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.DoubleClickListener
-import com.kuky.demo.wan.android.base.setupWithViewPager2
-import com.kuky.demo.wan.android.base.stringValue
+import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
@@ -19,13 +15,9 @@ import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
 class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
 
     private val mPagerAdapter by lazy {
-        object : FragmentStateAdapter(this) {
-            override fun getItemCount() = 2
-
-            override fun createFragment(position: Int) =
-                if (position == 0) CollectedArticlesFragment()
-                else CollectedWebsitesFragment()
-        }
+        BaseViewPager2FragmentAdapter(
+            this, mutableListOf(CollectedArticlesFragment(), CollectedWebsitesFragment())
+        )
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_collection
@@ -37,7 +29,7 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
             // IllegalException("Expected the adapter to be 'fresh' while restoring state.")
             // but it will make fragment destroyed and recreated
             binding.collectionVp.isSaveEnabled = false
-            binding.collectionVp.offscreenPageLimit = 1
+            binding.collectionVp.offscreenPageLimit = 2
             binding.collectionVp.adapter = mPagerAdapter
             binding.collectionIndicator.setupWithViewPager2(
                 binding.collectionVp, mutableListOf(

@@ -3,8 +3,8 @@ package com.kuky.demo.wan.android.ui.home
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,7 +18,6 @@ import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import com.kuky.demo.wan.android.widget.ErrorReload
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -30,6 +29,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -52,26 +52,13 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
     }
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(
-            requireActivity(),
-            Injection.provideHomeArticleViewModelFactory(requireActivity())
-        ).get(HomeArticleViewModel::class.java)
-    }
+    private val mLoginViewModel by activityViewModels<MainViewModel>()
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mViewModel by viewModel<HomeArticleViewModel>()
 
-    private val mLoginViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideMainViewModelFactory())
-            .get(MainViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     private var isFirstObserver = true
 
@@ -84,7 +71,7 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
         }
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
-        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+        mLoginViewModel.hasLogin.observe(this, Observer {
             if (isFirstObserver) {
                 isFirstObserver = false
                 return@Observer

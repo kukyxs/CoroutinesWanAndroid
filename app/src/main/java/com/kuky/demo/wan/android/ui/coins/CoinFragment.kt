@@ -2,9 +2,9 @@ package com.kuky.demo.wan.android.ui.coins
 
 import android.os.Bundle
 import android.view.View
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.BaseViewPager2FragmentAdapter
 import com.kuky.demo.wan.android.base.DoubleClickListener
 import com.kuky.demo.wan.android.base.setupWithViewPager2
 import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
@@ -16,13 +16,12 @@ import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
 class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
 
     private val mPagerAdapter by lazy {
-        object : FragmentStateAdapter(this) {
-            override fun getItemCount() = 2
-
-            override fun createFragment(position: Int) =
-                if (position == 0) CoinCommonSubFragment.recordInstance()
-                else CoinCommonSubFragment.rankInstance()
-        }
+        BaseViewPager2FragmentAdapter(
+            this, mutableListOf(
+                CoinCommonSubFragment.recordInstance(),
+                CoinCommonSubFragment.rankInstance()
+            )
+        )
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_coins
@@ -33,12 +32,13 @@ class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
             resources.getString(R.string.coin_rank)
         )
 
-        mBinding?.let { binding ->
-            binding.coinVp.adapter = mPagerAdapter
-            binding.coinIndicator.setupWithViewPager2(binding.coinVp, titles)
-            binding.gesture = DoubleClickListener {
+        mBinding?.run {
+            coinVp.adapter = mPagerAdapter
+            coinVp.offscreenPageLimit = 2
+            coinIndicator.setupWithViewPager2(coinVp, titles)
+            gesture = DoubleClickListener {
                 doubleTap = {
-                    (childFragmentManager.fragments[binding.coinVp.currentItem] as? CoinCommonSubFragment)?.scrollToTop()
+                    (childFragmentManager.fragments[coinVp.currentItem] as? CoinCommonSubFragment)?.scrollToTop()
                 }
             }
         }

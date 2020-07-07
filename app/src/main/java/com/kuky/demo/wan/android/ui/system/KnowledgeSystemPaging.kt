@@ -13,10 +13,9 @@ import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description
  */
-
 class KnowledgeSystemPagingSource(
     private val repository: KnowledgeSystemRepository, private val cid: Int
 ) : PagingSource<Int, WxChapterListDatas>() {

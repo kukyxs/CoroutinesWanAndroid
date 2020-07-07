@@ -37,6 +37,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 /**
@@ -54,10 +55,7 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
             .get(UserSharedViewModel::class.java)
     }
 
-    private val mCollectionViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectionViewModelFactory())
-            .get(CollectionViewModel::class.java)
-    }
+    private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {

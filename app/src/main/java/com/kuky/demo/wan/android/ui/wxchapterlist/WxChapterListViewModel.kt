@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description
  */
 class WxChapterListViewModel(private val repository: WxChapterListRepository) : ViewModel() {

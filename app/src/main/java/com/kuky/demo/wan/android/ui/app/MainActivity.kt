@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
@@ -15,13 +16,12 @@ import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.utils.getAppVersionName
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
+import org.koin.android.ext.android.inject
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
-    private val mAppViewModel by lazy { getViewModel(AppViewModel::class.java) }
+    private val mAppViewModel by viewModels<AppViewModel>()
 
-    private var availableCount = 0
-
-    private val mLoadingDialog by lazy { LoadingDialog() }
+    private val mLoadingDialog by inject<LoadingDialog>()
 
     private val manager: ConnectivityManager by lazy {
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -46,6 +46,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             }
         }
     }
+
+    private var availableCount = 0
 
     override fun getLayoutId(): Int = R.layout.activity_main
 

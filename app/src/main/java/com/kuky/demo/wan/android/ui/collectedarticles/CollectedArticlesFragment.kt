@@ -2,7 +2,7 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.Injection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -24,6 +23,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.toast
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * @author kuky.
@@ -31,14 +31,9 @@ import org.jetbrains.anko.toast
  */
 class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>() {
 
-    private val mAppViewModel by lazy {
-        getSharedViewModel(AppViewModel::class.java)
-    }
+    private val mAppViewModel by activityViewModels<AppViewModel>()
 
-    private val mViewModel by lazy {
-        ViewModelProvider(requireActivity(), Injection.provideCollectedArticlesViewModelFactory())
-            .get(CollectedArticlesViewModel::class.java)
-    }
+    private val mViewModel by viewModel<CollectedArticlesViewModel>()
 
     @OptIn(ExperimentalPagingApi::class)
     private val mAdapter by lazy {

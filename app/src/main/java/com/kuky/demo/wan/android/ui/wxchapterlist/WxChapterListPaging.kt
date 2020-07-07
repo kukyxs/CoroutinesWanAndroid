@@ -10,7 +10,7 @@ import com.kuky.demo.wan.android.databinding.RecyclerWxChapterListBinding
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description
  */
 

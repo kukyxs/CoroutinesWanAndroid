@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.collection
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.flow
 
-
 /**
  * @author kuky.
  * @description

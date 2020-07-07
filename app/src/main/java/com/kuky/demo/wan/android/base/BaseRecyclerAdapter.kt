@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 /**
- * @author Taonce.
+ * @author kuky.
  * @description recycler adapter 基类
  */
 abstract class BaseRecyclerAdapter<T>(var mData: MutableList<T>?) :
