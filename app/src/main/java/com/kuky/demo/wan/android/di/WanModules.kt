@@ -1,8 +1,12 @@
 package com.kuky.demo.wan.android.di
 
+import androidx.fragment.app.Fragment
+import com.kuky.demo.wan.android.base.ViewPager2Adapter
 import com.kuky.demo.wan.android.data.WanDatabase
 import com.kuky.demo.wan.android.network.RetrofitManager
+import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.LoadingDialog
+import com.kuky.demo.wan.android.ui.app.MainActivity
 import com.kuky.demo.wan.android.ui.coins.*
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesRepository
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesViewModel
@@ -47,6 +51,8 @@ val dataSourceModule = module {
 }
 
 val viewModelModule = module {
+    viewModel { AppViewModel() }
+
     viewModel { CoinViewModel(get()) }
 
     viewModel { CollectedArticlesViewModel(get()) }
@@ -111,15 +117,24 @@ val repositoryModule = module {
 }
 
 val fragmentModule = module {
-    factory { (type: Int) -> CoinCommonSubFragment.instance(type) }
+    factory { (type: Int) ->
+        CoinCommonSubFragment.instance(type)
+    }
 }
 
 val adapterModule = module {
-    factory { CoinRecordPagingAdapter() }
+    factory { (holder: Fragment, children: MutableList<Fragment>) ->
+        ViewPager2Adapter(holder, children)
+    }
 
-    factory { CoinRankPagingAdapter() }
+    scope<CoinCommonSubFragment> {
+        scoped { CoinRecordPagingAdapter() }
+        scoped { CoinRankPagingAdapter() }
+    }
 }
 
 val dialogModule = module {
-    single { LoadingDialog() }
+    scope<MainActivity> {
+        scoped { LoadingDialog() }
+    }
 }

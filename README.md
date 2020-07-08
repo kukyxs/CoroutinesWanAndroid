@@ -1,15 +1,13 @@
 ### 大概介绍
-该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口, 整体采用 MVVM, Android Jetpack, Retrofit, Kotlin 协程进行编写。
+该项目基于「[玩 Android 接口](https://www.wanandroid.com/blog/show/2)」接口, 整体采用 `MVVM`, `Android Jetpack`, `Retrofit`, `Kotlin 协程`, `Koin` 进行编写。
 该项目是和大佬 [Taonce](https://github.com/Taonce) 一起编写完成, 目前已完成所有的开发功能。
 
 ### 内容更新记录
 
 #### 2020-07-07 更新日志
-
 使用 `Koin` 替换部分注入, 待应用到全局
 
 #### 2020-06-30 更新日志: 
-
 `paging2` 升级到 `paging3`; `livedata` 大部分替换成 `fow`; 开启暗黑模式; 优化代码结构
 
 ### 目前已完成功能
@@ -46,7 +44,7 @@
 如果该项目对你有帮助, 请在右上角帮我们 **star** 一下。如果有什么问题, 可以直接提 **issue**
 
 ### 体验下载
-[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.0/wan_2.0.apk)
+[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.1/wan.apk)
 
 ### 附上效果图：
 <div align="center">

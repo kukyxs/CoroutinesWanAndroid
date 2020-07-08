@@ -3,7 +3,9 @@ package com.kuky.demo.wan.android.base
 import android.content.Context
 import android.os.Build
 import android.text.Html
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.kuky.demo.wan.android.WanApplication
 import org.jetbrains.anko.toast
@@ -13,6 +15,8 @@ import org.jetbrains.anko.toast
  * @description
  */
 fun Context.stringValue(@StringRes stringRes: Int) = resources.getString(stringRes)
+
+fun Context.drawableValue(@DrawableRes drawableRes: Int) = ContextCompat.getDrawable(this, drawableRes)
 
 suspend fun <T> BaseResultData<T>.handleResult(
     fail: suspend (String) -> Unit = { WanApplication.instance.toast(it) },

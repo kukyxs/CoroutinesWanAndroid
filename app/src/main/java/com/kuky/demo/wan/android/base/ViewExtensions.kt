@@ -21,13 +21,17 @@ import kotlin.math.min
  * @author kuky.
  * @description
  */
-fun TabLayout.setupWithViewPager2(viewPager2: ViewPager2, titles: MutableList<String>): TabLayoutMediator =
+fun TabLayout.setupWithViewPager2(viewPager2: ViewPager2, titles: Array<String>): TabLayoutMediator =
     TabLayoutMediator(this, viewPager2) { tab, position ->
         tab.text = titles[position]
     }.apply { attach() }
 
-fun RecyclerView.scrollToTop(sizeOneLine: Int = 2, threshold: Int = 10) {
+fun TabLayout.setupWithViewPager2(viewPager2: ViewPager2, titles: IntArray): TabLayoutMediator =
+    TabLayoutMediator(this, viewPager2) { tab, position ->
+        tab.setText(titles[position])
+    }.apply { attach() }
 
+fun RecyclerView.scrollToTop(sizeOneLine: Int = 2, threshold: Int = 10) {
     when (val manager = layoutManager) {
         is LinearLayoutManager -> {
             manager.let {

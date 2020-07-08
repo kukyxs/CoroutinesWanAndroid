@@ -3,7 +3,10 @@ package com.kuky.demo.wan.android.ui.collection
 import android.os.Bundle
 import android.view.View
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.DoubleClickListener
+import com.kuky.demo.wan.android.base.ViewPager2Adapter
+import com.kuky.demo.wan.android.base.setupWithViewPager2
 import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
@@ -15,7 +18,7 @@ import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
 class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
 
     private val mPagerAdapter by lazy {
-        BaseViewPager2FragmentAdapter(
+        ViewPager2Adapter(
             this, mutableListOf(CollectedArticlesFragment(), CollectedWebsitesFragment())
         )
     }
@@ -31,13 +34,7 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
             binding.collectionVp.isSaveEnabled = false
             binding.collectionVp.offscreenPageLimit = 2
             binding.collectionVp.adapter = mPagerAdapter
-            binding.collectionIndicator.setupWithViewPager2(
-                binding.collectionVp, mutableListOf(
-                    requireContext().stringValue(R.string.articles),
-                    requireContext().stringValue(R.string.websites)
-                )
-            )
-
+            binding.collectionIndicator.setupWithViewPager2(binding.collectionVp, intArrayOf(R.string.articles, R.string.websites))
             binding.gesture = DoubleClickListener {
                 doubleTap = {
                     when (binding.collectionVp.currentItem) {

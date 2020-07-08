@@ -21,7 +21,6 @@ abstract class WanDatabase : RoomDatabase() {
     abstract fun homeArticleCacheDao(): HomeArticleCacheDao
 
     companion object {
-
         fun buildDatabase(context: Context) = Room.databaseBuilder(
             context.applicationContext,
             WanDatabase::class.java, "wan.db"
