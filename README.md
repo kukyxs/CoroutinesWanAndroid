@@ -7,9 +7,13 @@
 #### 2020-07-10 更新日志
 使用 `Koin` 进行注入
 `Koin` 对比 `Dagger2`, `Hilt` 可以参考以下文章
+
 [Koin vs Dagger, Say hello to Koin](https://blog.usejournal.com/android-koin-with-mvvm-and-retrofit-e040e4e15f9d?gi=3b086a923b76)
+
 [Let's discuss: Dagger vs Koin](https://www.reddit.com/r/androiddev/comments/ei83mh/lets_discuss_dagger_vs_koin/)
+
 [全方面分析 Hilt 和 Koin 性能](https://juejin.im/post/5f02114d5188252e8a081afb#heading-2)
+
 [Koin README](https://github.com/InsertKoinIO/koin)
 
 #### 2020-06-30 更新日志: 
