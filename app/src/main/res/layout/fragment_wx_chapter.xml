@@ -8,6 +8,8 @@
 
         <import type="android.view.View" />
 
+        <import type="com.kuky.demo.wan.android.widget.RequestStatusCode" />
+
         <variable
             name="listener"
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
@@ -29,16 +31,8 @@
             type="androidx.recyclerview.widget.RecyclerView.Adapter" />
 
         <variable
-            name="errorStatus"
-            type="Boolean" />
-
-        <variable
-            name="loadingStatus"
-            type="Boolean" />
-
-        <variable
-            name="emptyStatus"
-            type="Boolean" />
+            name="statusCode"
+            type="RequestStatusCode" />
 
         <variable
             name="errorReload"
@@ -85,7 +79,7 @@
                 android:layout_height="0dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:visibility="@{errorStatus || emptyStatus || loadingStatus ? View.GONE : View.VISIBLE}"
+                android:visibility="@{statusCode == RequestStatusCode.Succeed ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
@@ -94,27 +88,13 @@
                 bind:listItemClick="@{listener}"
                 tools:listitem="@layout/recycler_wx_chapter" />
 
-            <com.kuky.demo.wan.android.widget.StatusError
+            <com.kuky.demo.wan.android.widget.RequestStatusView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/wx_chapter_type"
-                bind:reload="@{errorReload}" />
-
-            <com.kuky.demo.wan.android.widget.StatusEmpty
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_chapter_type" />
-
-            <com.kuky.demo.wan.android.widget.StatusLoading
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_chapter_type" />
+                bind:errorReload="@{errorReload}"
+                bind:requestStatusCode="@{statusCode}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

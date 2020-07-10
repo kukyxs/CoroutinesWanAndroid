@@ -26,11 +26,11 @@ class CoinRecordPagingSource(
         val page = params.key ?: 1
 
         return try {
-            val records = repository.getCoinRecord(page)
+            val records = repository.getCoinRecord(page) ?: mutableListOf()
             LoadResult.Page(
-                data = records.datas,
+                data = records,
                 prevKey = if (page == 1) null else page - 1,
-                nextKey = if (records.pageCount == page) null else page + 1
+                nextKey = if (records.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -66,12 +66,12 @@ class CoinRankPagingSource(
         val page = params.key ?: 1
 
         return try {
-            val ranks = repository.getCoinRanks(page)
+            val ranks = repository.getCoinRanks(page) ?: mutableListOf()
 
             LoadResult.Page(
-                data = ranks.datas,
+                data = ranks,
                 prevKey = if (page == 1) null else page - 1,
-                nextKey = if (ranks.pageCount == page) null else page + 1
+                nextKey = if (ranks.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

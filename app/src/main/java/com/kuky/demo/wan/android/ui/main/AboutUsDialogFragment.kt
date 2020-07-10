@@ -21,7 +21,7 @@ class AboutUsDialogFragment : BaseDialogFragment<DialogAboutUsBinding>() {
     override fun layoutId(): Int = R.layout.dialog_about_us
 
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@AboutUsDialogFragment
+        mBinding.holder = this
         mBinding.movementMethod = LinkMovementMethod.getInstance()
 
         mBinding.kSpan = SpannableStringBuilder("Kukyxs").apply {

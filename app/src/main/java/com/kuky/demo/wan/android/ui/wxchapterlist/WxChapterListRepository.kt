@@ -15,8 +15,7 @@ class WxChapterListRepository(private val api: ApiService) {
 
     suspend fun loadPage(wxId: Int, page: Int, key: String): MutableList<WxChapterListDatas>? =
         withContext(Dispatchers.IO) {
-            api.wxChapterList(
-                wxId, page, PreferencesHelper.fetchCookie(WanApplication.instance), key
-            ).data.datas
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.wxChapterList(wxId, page, cookie, key).data.datas
         }
 }

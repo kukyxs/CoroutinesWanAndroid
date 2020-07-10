@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +19,7 @@ import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterPagingAdapter
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -29,6 +31,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,21 +41,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter by lazy {
-        WxChapterPagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
-
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mLoginViewModel by sharedViewModel<MainViewModel>()
@@ -60,6 +48,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     private val mViewModel by viewModel<KnowledgeSystemViewModel>()
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
+
+    private val mAdapter by lifecycleScope.inject<WxChapterPagingAdapter>()
+
+    private val mCategoryDialog by lifecycleScope.inject<KnowledgeSystemDialogFragment>()
 
     // 体系id
     private var mCid: Int = 0
@@ -72,8 +64,12 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
     override fun actionsOnViewInflate() {
         fetchSystemTypes()
 
+        mAppViewModel.reloadHomeData.observe(this, Observer {
+            mAdapter.refresh()
+        })
+
         // 登录状态切换
-        mLoginViewModel.hasLogin.observe(this, Observer<Boolean> {
+        mLoginViewModel.hasLogin.observe(this, Observer {
             if (isFirstObserver) {
                 isFirstObserver = false
                 return@Observer
@@ -91,30 +87,45 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
+    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 mAdapter.refresh()
             }
 
-            binding.holder = this
-            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
-            binding.itemClick = OnItemClickListener { position, _ ->
+            holder = this@KnowledgeSystemFragment
+            adapter = mAdapter.apply {
+                addLoadStateListener { loadState ->
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+
+            itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
-                    (parentFragment as? MainFragment)?.closeMenu()
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
 
-            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+            itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
-                    (parentFragment as? MainFragment)?.closeMenu()
                     requireContext().alert(
                         if (article.collect) "「${article.title}」已收藏"
                         else " 是否收藏 「${article.title}」"
@@ -127,15 +138,15 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                 }
             }
 
-            binding.projectList.setOnTouchListener { _, _ ->
+            projectList.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 false
             }
 
             // 单击弹出选择框，双击返回顶部
-            binding.gesture = DoubleClickListener {
+            gesture = DoubleClickListener {
                 singleTap = {
-                    KnowledgeSystemDialogFragment().apply {
+                    mCategoryDialog.apply {
                         mOnClick = { dialog, first, sec, cid ->
                             updateSystemArticles(first, sec, cid)
                             dialog.dismiss()
@@ -143,12 +154,10 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     }.showAllowStateLoss(childFragmentManager, "knowledgeSystem")
                 }
 
-                doubleTap = {
-                    binding.projectList.scrollToTop()
-                }
+                doubleTap = { projectList.scrollToTop() }
             }
 
-            binding.errorReload = ErrorReload {
+            errorReload = ErrorReload {
                 if (errorOnTypes) fetchSystemTypes() else mAdapter.retry()
             }
         }
@@ -160,11 +169,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mTypeJob = launch {
             mViewModel.getTypeList().catch {
                 errorOnTypes = true
-                pageState(NetworkState.FAILED)
+                mBinding?.statusCode = RequestStatusCode.Error
                 mBinding?.systemFirst?.text = resources.getString(R.string.text_place_holder)
                 mBinding?.systemSec?.text = resources.getString(R.string.text_place_holder)
             }.collectLatest {
-                pageState(NetworkState.SUCCESS)
+                mBinding?.statusCode = RequestStatusCode.Succeed
                 updateSystemArticles(it[0].name, it[0].children[0].name, it[0].children[0].id)
             }
         }
@@ -204,14 +213,8 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         mArticleJob?.cancel()
         mArticleJob = launch {
             mViewModel.getArticles(cid)
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mAdapter.submitData(it) }
         }
-    }
-
-    private fun pageState(state: NetworkState) = mBinding?.run {
-        refreshing = state == NetworkState.RUNNING
-        loadingStatus = state == NetworkState.RUNNING
-        errorStatus = state == NetworkState.FAILED
     }
 }

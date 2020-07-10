@@ -29,7 +29,7 @@ class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
     override fun layoutId(): Int = R.layout.dialog_wx
 
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@WxDialogFragment
+        mBinding.holder = this
     }
 
     fun saveImg(view: View): Boolean {

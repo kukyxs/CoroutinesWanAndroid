@@ -8,6 +8,8 @@
 
         <import type="android.view.View" />
 
+        <import type="com.kuky.demo.wan.android.widget.RequestStatusCode" />
+
         <variable
             name="refreshColor"
             type="Integer" />
@@ -61,16 +63,8 @@
             type="com.kuky.demo.wan.android.base.OnItemClickListener" />
 
         <variable
-            name="errorStatus"
-            type="Boolean" />
-
-        <variable
-            name="loadingStatus"
-            type="Boolean" />
-
-        <variable
-            name="emptyStatus"
-            type="Boolean" />
+            name="statusCode"
+            type="RequestStatusCode" />
 
         <variable
             name="errorReload"
@@ -128,7 +122,6 @@
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:visibility="@{errorStatus ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/todo_title"
                 bind:refreshColor="@{refreshColor}"
@@ -148,6 +141,7 @@
                         android:padding="4dp"
                         android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                         android:scrollbars="vertical"
+                        android:visibility="@{statusCode == RequestStatusCode.Succeed ? View.VISIBLE : View.GONE}"
                         app:layoutManager="@{todoLayoutManager}"
                         bind:adapter="@{todoAdapter}"
                         bind:pagingItemClick="@{todoItemClick}"
@@ -157,21 +151,11 @@
                         tools:listitem="@layout/recycler_todo_item"
                         tools:spanCount="2" />
 
-                    <com.kuky.demo.wan.android.widget.StatusError
+                    <com.kuky.demo.wan.android.widget.RequestStatusView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
-                        bind:reload="@{errorReload}" />
-
-                    <com.kuky.demo.wan.android.widget.StatusLoading
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}" />
-
-                    <com.kuky.demo.wan.android.widget.StatusEmpty
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}" />
+                        bind:errorReload="@{errorReload}"
+                        bind:requestStatusCode="@{statusCode}" />
                 </FrameLayout>
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

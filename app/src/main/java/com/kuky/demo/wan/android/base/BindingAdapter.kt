@@ -20,7 +20,6 @@ import com.kuky.demo.wan.android.entity.BannerData
 import com.kuky.demo.wan.android.widget.ErrorReload
 import com.kuky.demo.wan.android.widget.RequestStatusCode
 import com.kuky.demo.wan.android.widget.RequestStatusView
-import com.kuky.demo.wan.android.widget.StatusError
 import com.youth.banner.Banner
 import com.youth.banner.BannerConfig
 import com.youth.banner.listener.OnBannerListener
@@ -245,12 +244,6 @@ fun bindMovementMethod(textView: TextView, method: MovementMethod) {
 /**
  * 错误处理绑定
  */
-@Deprecated(replaceWith = ReplaceWith("bindRequestStatus", ""), message = "replace by RequestStatusView")
-@BindingAdapter("bind:reload")
-fun bindReloadHandler(statusError: StatusError, handler: ErrorReload?) {
-    statusError.errorReload = handler
-}
-
 @BindingAdapter(value = ["bind:requestStatusCode", "bind:errorReload"], requireAll = false)
 fun bindRequestStatus(statusView: RequestStatusView, requestStatusCode: RequestStatusCode?, errorReload: ErrorReload?) {
     statusView.injectRequestStatus(requestStatusCode ?: RequestStatusCode.Succeed)

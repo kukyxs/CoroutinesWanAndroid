@@ -32,7 +32,7 @@
 
         <variable
             name="statusCode"
-            type="com.kuky.demo.wan.android.widget.RequestStatusCode" />
+            type="RequestStatusCode" />
 
         <variable
             name="errorReload"

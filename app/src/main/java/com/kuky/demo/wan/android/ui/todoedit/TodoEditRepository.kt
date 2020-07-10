@@ -14,16 +14,19 @@ class TodoEditRepository(private val api: ApiService) {
 
     suspend fun addTodo(param: HashMap<String, Any>) =
         withContext(Dispatchers.IO) {
-            api.addTodo(param, PreferencesHelper.fetchCookie(WanApplication.instance))
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.addTodo(param, cookie)
         }
 
     suspend fun updateTodo(id: Int, param: HashMap<String, Any>) =
         withContext(Dispatchers.IO) {
-            api.updateTodo(id, PreferencesHelper.fetchCookie(WanApplication.instance), param)
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.updateTodo(id, cookie, param)
         }
 
     suspend fun deleteTodo(id: Int) =
         withContext(Dispatchers.IO) {
-            api.deleteTodo(id, PreferencesHelper.fetchCookie(WanApplication.instance))
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.deleteTodo(id, cookie)
         }
 }

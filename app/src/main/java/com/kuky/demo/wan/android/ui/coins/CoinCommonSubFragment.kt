@@ -58,8 +58,8 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
             val orgPagerAdapter = (if (mType == 0) mRecordAdapter else mRankAdapter).apply {
                 addLoadStateListener { loadState ->
-                    mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                    mBinding?.statusCode = when (loadState.refresh) {
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
                         else -> RequestStatusCode.Succeed
@@ -67,8 +67,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
                 }
 
                 addDataRefreshListener {
-                    if (itemCount == 0)
-                        mBinding?.statusCode = RequestStatusCode.Empty
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }
 

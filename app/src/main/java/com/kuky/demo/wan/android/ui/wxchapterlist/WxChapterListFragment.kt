@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -21,6 +22,7 @@ import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -32,6 +34,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -45,30 +48,17 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
             controller.navigate(id, bundleOf("articleId" to articleId, "name" to name))
     }
 
-    private var mSearchKeyword: String? = null
-    private val name by lazy { arguments?.getString("name") ?: "" }
-    private val mArticleId by lazy { arguments?.getInt("articleId") ?: -1 }
-
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter by lazy {
-        WxChapterPagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
-
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewMode by viewModel<WxChapterListViewModel>()
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
+
+    private val mAdapter by lifecycleScope.inject<WxChapterPagingAdapter>()
+
+    private var mSearchKeyword: String? = null
+    private val name by lazy { arguments?.getString("name") ?: "" }
+    private val mArticleId by lazy { arguments?.getInt("articleId") ?: -1 }
 
     private val searchIn by lazy {
         AnimationUtils.loadAnimation(requireContext(), R.anim.slide_right_in).apply {
@@ -104,32 +94,48 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.wxChapter = name
+        mBinding?.run {
+            wxChapter = name
 
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchWxChapterList(mSearchKeyword ?: "")
             }
 
-            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
-            binding.listener = OnItemClickListener { position, _ ->
-                if (binding.searchMode == true) {
-                    binding.wxSearch.startAnimation(searchOut)
+            adapter = mAdapter.apply {
+                addLoadStateListener { loadState ->
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+            listener = OnItemClickListener { position, _ ->
+                if (searchMode == true) {
+                    wxSearch.startAnimation(searchOut)
                 }
 
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_wxChapterListFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
-            binding.longClickListener = OnItemLongClickListener { position, _ ->
-                if (binding.searchMode == true) {
-                    binding.wxSearch.startAnimation(searchOut)
+            longClickListener = OnItemLongClickListener { position, _ ->
+                if (searchMode == true) {
+                    wxSearch.startAnimation(searchOut)
                 }
 
                 mAdapter.getItemData(position)?.let { article ->
@@ -145,29 +151,29 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                 }
             }
 
-            binding.errorReload = ErrorReload { mAdapter.retry() }
+            errorReload = ErrorReload { mAdapter.retry() }
 
-            binding.gesture = DoubleClickListener {
+            gesture = DoubleClickListener {
                 doubleTap = {
-                    binding.chapterList.scrollToTop()
+                    chapterList.scrollToTop()
                 }
             }
 
-            binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+            editAction = TextView.OnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     fetchWxChapterList(v.text.toString())
-                    binding.wxChapter = if (v.text.isEmpty()) name else v.text.toString()
-                    binding.wxSearch.hideSoftInput()
-                    binding.wxSearch.startAnimation(searchOut)
+                    wxChapter = if (v.text.isEmpty()) name else v.text.toString()
+                    wxSearch.hideSoftInput()
+                    wxSearch.startAnimation(searchOut)
                 }
                 true
             }
 
-            binding.searchGesture = DoubleClickListener {
+            searchGesture = DoubleClickListener {
                 singleTap = {
-                    if (binding.searchMode == false || binding.searchMode == null) {
-                        binding.wxSearch.clearText()
-                        binding.wxSearch.startAnimation(searchIn)
+                    if (searchMode == false || searchMode == null) {
+                        wxSearch.clearText()
+                        wxSearch.startAnimation(searchIn)
                     }
                 }
             }
@@ -182,7 +188,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         mArticleJob?.cancel()
         mArticleJob = launch {
             mViewMode.getWxChapters(mArticleId, keyword)
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mAdapter.submitData(it) }
         }
     }

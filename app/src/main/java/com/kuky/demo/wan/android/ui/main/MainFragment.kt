@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
@@ -42,6 +43,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
@@ -67,6 +69,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private val mViewModel by sharedViewModel<MainViewModel>()
 
+    private val mAboutUsDialog by lifecycleScope.inject<AboutUsDialogFragment>()
+
+    private val mWxDialog by lifecycleScope.inject<WxDialogFragment>()
+
     private val mHeaderBinding by lazy {
         DataBindingUtil.inflate<UserProfileHeaderBinding>(
             layoutInflater, R.layout.user_profile_header, mBinding?.userProfileDrawer, false
@@ -76,14 +82,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     private var mCoinsJob: Job? = null
 
     override fun actionsOnViewInflate() {
-        mBinding?.let { binding ->
-            binding.adapter = mAdapter
-            binding.limit = mAdapter.count
-            binding.transformer = GalleryTransformer()
-            binding.mainPage.onChange(scrolled = { _, _, _ -> closeMenu() })
+        mBinding?.run {
+            adapter = mAdapter
+            limit = mAdapter.count
+            transformer = GalleryTransformer()
+            mainPage.onChange(scrolled = { _, _, _ -> closeMenu() })
 
             mHeaderBinding.holder = this@MainFragment
-            binding.userProfileDrawer.addHeaderView(mHeaderBinding.root)
+            userProfileDrawer.addHeaderView(mHeaderBinding.root)
         }
 
         mViewModel.getBanners()
@@ -94,28 +100,28 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_main
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.holder = this@MainFragment
-            binding.viewModel = mViewModel
-            binding.listener = OnBannerListener { position ->
+        mBinding?.run {
+            holder = this@MainFragment
+            viewModel = mViewModel
+            listener = OnBannerListener { position ->
                 mViewModel.banners.value?.let {
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         it[position].url
                     )
                 }
             }
 
-            binding.banner.let {
+            banner.let {
                 it.layoutParams = it.layoutParams.apply {
                     width = screenWidth
                     height = (width * 0.45f).toInt()
                 }
             }
 
-            mViewModel.hasLogin.observe(this, Observer {
-                binding.userProfileDrawer.menu.let { menus ->
+            mViewModel.hasLogin.observe(this@MainFragment, Observer {
+                userProfileDrawer.menu.let { menus ->
                     menus.findItem(R.id.user_collections).isVisible = it
                     menus.findItem(R.id.login_out).isVisible = it
                     menus.findItem(R.id.todo_group).isVisible = it
@@ -124,9 +130,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
                 mHeaderBinding.userCoins.isVisible = it
                 mHeaderBinding.loginState = it
-                mHeaderBinding.name =
-                    if (it) PreferencesHelper.fetchUserName(requireContext()) else requireContext().getString(R.string.click_to_login)
-                mHeaderBinding.avatarKey = PreferencesHelper.fetchUserName(requireContext()).run {
+                val username = PreferencesHelper.fetchUserName(requireContext())
+                mHeaderBinding.name = if (it) username else requireContext().getString(R.string.click_to_login)
+                mHeaderBinding.avatarKey = username.run {
                     if (isNullOrBlank()) "A" else toCharArray()[0].toString().toUpperCase(Locale.getDefault())
                 }
 
@@ -228,25 +234,25 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     private fun toFavourite() {
-        mNavController.navigate(R.id.action_mainFragment_to_collectionFragment)
+        findNavController().navigate(R.id.action_mainFragment_to_collectionFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun toShare() {
-        mNavController.navigate(R.id.action_mainFragment_to_userShareListFragment)
+        findNavController().navigate(R.id.action_mainFragment_to_userShareListFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun launchTodoList() {
-        mNavController.navigate(R.id.action_mainFragment_to_todoListFragment)
+        findNavController().navigate(R.id.action_mainFragment_to_todoListFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
     private fun showAboutUs() {
-        AboutUsDialogFragment().apply {
+        mAboutUsDialog.apply {
             aboutUsHandler = { url ->
                 WebsiteDetailFragment.viewDetail(
-                    mNavController,
+                    findNavController(),
                     R.id.action_mainFragment_to_websiteDetailFragment,
                     url
                 )
@@ -257,7 +263,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private fun starForUs() {
         WebsiteDetailFragment.viewDetail(
-            mNavController,
+            findNavController(),
             R.id.action_mainFragment_to_websiteDetailFragment,
             "https://github.com/kukyxs/CoroutinesWanAndroid"
         )
@@ -272,7 +278,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     fun userCoins(view: View) {
         closeMenu()
-        mNavController.navigate(R.id.action_mainFragment_to_coinFragment)
+        findNavController().navigate(R.id.action_mainFragment_to_coinFragment)
         mBinding?.drawer?.closeDrawer(GravityCompat.START)
     }
 
@@ -282,12 +288,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     fun showWxDialog(view: View) {
-        WxDialogFragment().showAllowStateLoss(childFragmentManager, "wx_code")
+        mWxDialog.showAllowStateLoss(childFragmentManager, "wx_code")
     }
 
     fun searchArticles(view: View) {
         closeMenu()
-        mNavController.navigate(R.id.action_mainFragment_to_searchFragment)
+        findNavController().navigate(R.id.action_mainFragment_to_searchFragment)
     }
 
     fun closeMenu(animate: Boolean = true) {

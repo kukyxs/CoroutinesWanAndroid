@@ -8,6 +8,8 @@
 
         <import type="android.view.View" />
 
+        <import type="com.kuky.demo.wan.android.widget.RequestStatusCode" />
+
         <variable
             name="avatarKey"
             type="String" />
@@ -45,16 +47,8 @@
             type="Boolean" />
 
         <variable
-            name="errorStatus"
-            type="Boolean" />
-
-        <variable
-            name="loadingStatus"
-            type="Boolean" />
-
-        <variable
-            name="emptyStatus"
-            type="Boolean" />
+            name="statusCode"
+            type="RequestStatusCode" />
 
         <variable
             name="errorReload"
@@ -168,7 +162,7 @@
                 android:paddingBottom="8dp"
                 android:scrollbarThumbVertical="@drawable/custom_scroll_bar"
                 android:scrollbars="vertical"
-                android:visibility="@{errorStatus || loadingStatus || emptyStatus ? View.INVISIBLE : View.VISIBLE}"
+                android:visibility="@{statusCode == RequestStatusCode.Succeed ? View.VISIBLE : View.INVISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 bind:adapter="@{adapter}"
                 bind:hasFixedSize="@{true}"
@@ -178,28 +172,12 @@
                 tools:listitem="@layout/recycler_user_article" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <com.kuky.demo.wan.android.widget.StatusError
+        <com.kuky.demo.wan.android.widget.RequestStatusView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:visibility="@{errorStatus ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_avatar"
-            bind:reload="@{errorReload}" />
-
-        <com.kuky.demo.wan.android.widget.StatusLoading
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:visibility="@{loadingStatus ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_avatar" />
-
-        <com.kuky.demo.wan.android.widget.StatusEmpty
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:visibility="@{emptyStatus ? View.VISIBLE : View.GONE}"
+            bind:errorReload="@{errorReload}"
+            bind:requestStatusCode="@{statusCode}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_avatar" />
 

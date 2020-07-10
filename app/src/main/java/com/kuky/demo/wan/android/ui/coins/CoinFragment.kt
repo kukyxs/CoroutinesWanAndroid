@@ -5,7 +5,7 @@ import android.view.View
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.DoubleClickListener
-import com.kuky.demo.wan.android.base.ViewPager2Adapter
+import com.kuky.demo.wan.android.base.ViewPager2FragmentAdapter
 import com.kuky.demo.wan.android.base.setupWithViewPager2
 import com.kuky.demo.wan.android.databinding.FragmentCoinsBinding
 import org.koin.android.ext.android.inject
@@ -21,7 +21,7 @@ class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
 
     private val mRankPage by inject<CoinCommonSubFragment> { parametersOf(1) }
 
-    private val mPagerAdapter by inject<ViewPager2Adapter> {
+    private val mPagerAdapter by inject<ViewPager2FragmentAdapter> {
         parametersOf(this, mutableListOf(mRecordPage, mRankPage))
     }
 
@@ -34,7 +34,8 @@ class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
             coinIndicator.setupWithViewPager2(coinVp, intArrayOf(R.string.coin_record, R.string.coin_rank))
             gesture = DoubleClickListener {
                 doubleTap = {
-                    (childFragmentManager.fragments[coinVp.currentItem] as? CoinCommonSubFragment)?.scrollToTop()
+                    (childFragmentManager.fragments[coinVp.currentItem]
+                            as? CoinCommonSubFragment)?.scrollToTop()
                 }
             }
         }

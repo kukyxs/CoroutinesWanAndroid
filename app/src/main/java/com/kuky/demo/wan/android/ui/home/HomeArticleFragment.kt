@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +19,7 @@ import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -28,6 +30,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,21 +40,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter by lazy {
-        HomeArticlePagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
-
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mLoginViewModel by sharedViewModel<MainViewModel>()
@@ -60,15 +48,21 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
+    private val mAdapter by lifecycleScope.inject<HomeArticlePagingAdapter>()
+
     private var isFirstObserver = true
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
             mViewModel.getHomeArticlesByRoomCache()
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mAdapter.submitData(it) }
         }
+
+        mAppViewModel.reloadHomeData.observe(this, Observer {
+            if (it) mAdapter.refresh()
+        })
 
         // 根据登录状态做修改，过滤首次监听，防止多次加载造成页面状态显示错误
         mLoginViewModel.hasLogin.observe(this, Observer {
@@ -90,50 +84,58 @@ class HomeArticleFragment : BaseFragment<FragmentHomeArticleBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_home_article
 
     @SuppressLint("ClickableViewAccessibility")
+    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter.withLoadStateFooter(
+            adapter = mAdapter.apply {
+                addLoadStateListener { loadState ->
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
             )
 
-            binding.itemClick = OnItemClickListener { position, _ ->
+            itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { art ->
-                    (parentFragment as? MainFragment)?.closeMenu()
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         art.link
                     )
                 }
             }
 
-            binding.itemLongClick = OnItemLongClickListener { position, _ ->
-                (parentFragment as? MainFragment)?.closeMenu()
+            itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
                     showCollectDialog(article, position)
                 }
             }
 
-            binding.articleList.setOnTouchListener { _, _ ->
+            articleList.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu(true)
                 false
             }
 
             // 双击回顶部
-            binding.gesture = DoubleClickListener {
-                doubleTap = {
-                    binding.articleList.scrollToTop()
-                }
+            gesture = DoubleClickListener {
+                doubleTap = { articleList.scrollToTop() }
             }
 
-            binding.indicator = resources.getString(R.string.blog_articles)
-
-            binding.errorReload = ErrorReload { mAdapter.retry() }
+            errorReload = ErrorReload { mAdapter.retry() }
         }
     }
 

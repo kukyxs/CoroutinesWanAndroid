@@ -15,15 +15,13 @@ class UserSharedRepository(private val api: ApiService) {
 
     suspend fun fetchUserSharedArticles(userId: Int, page: Int): MutableList<UserArticleDetail>? =
         withContext(Dispatchers.IO) {
-            api.sharedUserInfo(
-                userId, page, PreferencesHelper.fetchCookie(WanApplication.instance)
-            ).data.shareArticles.datas
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.sharedUserInfo(userId, page, cookie).data.shareArticles.datas
         }
 
     suspend fun fetchUserCoinInfo(userId: Int) =
         withContext(Dispatchers.IO) {
-            api.sharedUserInfo(
-                userId, 1, PreferencesHelper.fetchCookie(WanApplication.instance)
-            ).data
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.sharedUserInfo(userId, 1, cookie).data
         }
 }

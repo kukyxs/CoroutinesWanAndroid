@@ -12,6 +12,7 @@ import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -24,6 +25,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -35,6 +37,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -51,20 +54,7 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter by lazy {
-        UserSharedPagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
+    private val mAdapter by lifecycleScope.inject<UserSharedPagingAdapter>()
 
     private val userId by lazy { arguments?.getInt("user") ?: 0 }
 
@@ -78,29 +68,45 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_shared_user
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
+        mBinding?.run {
             arguments?.getString("name")?.let {
-                binding.nick = it
-                binding.avatarKey = it.toCharArray()[0].toString().toUpperCase(Locale.getDefault())
+                nick = it
+                avatarKey = it.toCharArray()[0].toString().toUpperCase(Locale.getDefault())
             }
 
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchSharedArticles()
             }
 
-            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
-            binding.itemClick = OnItemClickListener { position, _ ->
+            adapter = mAdapter.apply {
+                addLoadStateListener { loadState ->
+                    mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+            itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_sharedUserFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
-            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+            itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
                     requireContext().alert(
                         if (article.collect) "「${article.title}」已收藏"
@@ -115,13 +121,11 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
             }
 
             // 双击回顶部
-            binding.gesture = DoubleClickListener {
-                doubleTap = {
-                    binding.articleList.scrollToTop()
-                }
+            gesture = DoubleClickListener {
+                doubleTap = { articleList.scrollToTop() }
             }
 
-            binding.errorReload = ErrorReload {
+            errorReload = ErrorReload {
                 fetchSharedArticles()
                 fetchUserInfo()
             }
@@ -149,7 +153,7 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
         mArticleJob?.cancel()
         mArticleJob = launch {
             mViewModel.getSharedArticles(userId)
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mAdapter.submitData(it) }
         }
     }

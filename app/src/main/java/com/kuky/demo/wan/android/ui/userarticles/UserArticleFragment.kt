@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +19,7 @@ import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.usershared.UserSharedFragment
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -28,6 +30,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -45,33 +48,16 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter by lazy {
-        UserArticlePagingAdapter().apply {
-            userListener = { id, nick ->
-                UserSharedFragment.navToUser(
-                    mNavController,
-                    R.id.action_mainFragment_to_sharedUserFragment,
-                    id, nick
-                )
-            }
-
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
+    private val mAdapter by lifecycleScope.inject<UserArticlePagingAdapter>()
 
     private var isFirstObserver = true
 
     override fun actionsOnViewInflate() {
         fetchSharedArticles()
+
+        mAppViewModel.reloadHomeData.observe(this, Observer {
+            mAdapter.refresh()
+        })
 
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer {
@@ -92,26 +78,52 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_user_articles
 
+    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
-            binding.itemClick = OnItemClickListener { position, _ ->
+            adapter = mAdapter.apply {
+                userListener = { id, nick ->
+                    UserSharedFragment.navToUser(
+                        findNavController(),
+                        R.id.action_mainFragment_to_sharedUserFragment,
+                        id, nick
+                    )
+                }
+
+                addLoadStateListener { loadState ->
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+
+            itemClick = OnItemClickListener { position, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
-            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+
+            itemLongClick = OnItemLongClickListener { position, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 mAdapter.getItemData(position)?.let { article ->
                     requireContext().alert(
@@ -125,19 +137,17 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                     }.show()
                 }
             }
-            binding.articleList.setOnTouchListener { _, _ ->
+            articleList.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 false
             }
 
             // 双击回顶部
-            binding.gesture = DoubleClickListener {
-                doubleTap = {
-                    binding.articleList.scrollToTop()
-                }
+            gesture = DoubleClickListener {
+                doubleTap = { articleList.scrollToTop() }
             }
 
-            binding.errorReload = ErrorReload { mAdapter.retry() }
+            errorReload = ErrorReload { mAdapter.retry() }
         }
     }
 
@@ -162,7 +172,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
         launch {
             mViewModel.getSharedArticles()
                 .catch {
-                    mBinding?.errorStatus = true
+                    mBinding?.statusCode = RequestStatusCode.Error
                     mBinding?.indicator = resources.getString(R.string.text_place_holder)
                 }.collectLatest {
                     mBinding?.indicator = resources.getString(R.string.share_articles)

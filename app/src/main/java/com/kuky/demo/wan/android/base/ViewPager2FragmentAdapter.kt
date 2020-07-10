@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * @author kuky.
  * @description
  */
-class ViewPager2Adapter(
+class ViewPager2FragmentAdapter(
     holder: Fragment, private val childFragments: MutableList<Fragment>
 ) : FragmentStateAdapter(holder) {
 

@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="com.kuky.demo.wan.android.widget.RequestStatusCode" />
+
         <variable
             name="url"
             type="String" />
@@ -68,12 +70,13 @@
             app:layout_constraintTop_toBottomOf="@id/detail_title"
             bind:url="@{url}" />
 
-        <com.kuky.demo.wan.android.widget.StatusLoading
+        <com.kuky.demo.wan.android.widget.RequestStatusView
             android:id="@+id/loading"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:alpha="0.5"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detail_title" />
+            app:layout_constraintTop_toBottomOf="@id/detail_title"
+            bind:requestStatusCode="@{RequestStatusCode.Loading}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

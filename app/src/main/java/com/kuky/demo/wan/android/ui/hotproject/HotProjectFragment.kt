@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,6 +18,7 @@ import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.main.MainViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -28,6 +30,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,9 +39,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * @description 首页项目模块界面
  */
 class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
-    private var mId = 0
-    private var mTitle = ""
-
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mLoginViewModel by sharedViewModel<MainViewModel>()
@@ -47,30 +47,26 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
+    private val mAdapter by lifecycleScope.inject<HomeProjectPagingAdapter>()
+
+    private val mCategoryDialog by lifecycleScope.inject<ProjectCategoryDialog>()
+
     private var mCategoryJob: Job? = null
     private var mSearchJob: Job? = null
 
     private var errorOnCategories = false
     private var isFirstObserver = true
 
-    @OptIn(ExperimentalPagingApi::class)
-    private val mAdapter: HomeProjectPagingAdapter by lazy {
-        HomeProjectPagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
+    private var mId = 0
+    private var mTitle = ""
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         fetchCategories()
+
+        mAppViewModel.reloadHomeData.observe(this, Observer {
+            if (it) mAdapter.refresh()
+        })
 
         // 登录状态切换
         mLoginViewModel.hasLogin.observe(this, Observer {
@@ -91,30 +87,45 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_hot_project
 
+    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 mAdapter.refresh()
             }
 
-            binding.adapter = mAdapter.withLoadStateFooter(PagingLoadStateAdapter { mAdapter.retry() })
-            binding.holder = this@HotProjectFragment
-            binding.itemClick = OnItemClickListener { position, _ ->
+            adapter = mAdapter.apply {
+                addLoadStateListener { loadState ->
+                    refreshing = loadState.refresh is LoadState.Loading
+                    statusCode = when (loadState.refresh) {
+                        is LoadState.Loading -> RequestStatusCode.Loading
+                        is LoadState.Error -> RequestStatusCode.Error
+                        else -> RequestStatusCode.Succeed
+                    }
+                }
+
+                addDataRefreshListener {
+                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                }
+            }.withLoadStateFooter(
+                PagingLoadStateAdapter { mAdapter.retry() }
+            )
+
+            holder = this@HotProjectFragment
+            itemClick = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
-                    (parentFragment as? MainFragment)?.closeMenu()
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_mainFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
 
-            binding.itemLongClick = OnItemLongClickListener { position, _ ->
+            itemLongClick = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { article ->
-                    (parentFragment as? MainFragment)?.closeMenu()
                     // 根据是否收藏显示不同信息
                     context?.alert(
                         if (article.collect) "「${article.title}」已收藏"
@@ -128,14 +139,14 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                 }
             }
 
-            binding.projectList.setOnTouchListener { _, _ ->
+            projectList.setOnTouchListener { _, _ ->
                 (parentFragment as? MainFragment)?.closeMenu()
                 false
             }
 
-            binding.gesture = DoubleClickListener {
+            gesture = DoubleClickListener {
                 singleTap = {
-                    ProjectCategoryDialog().apply {
+                    mCategoryDialog.apply {
                         onSelectedListener = { dialog, category ->
                             mId = category.id; mTitle = category.name
                             fetchProjects(mId, mTitle); dialog?.dismiss()
@@ -143,10 +154,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     }.showAllowStateLoss(childFragmentManager, "category")
                 }
 
-                doubleTap = { binding.projectList.scrollToTop() }
+                doubleTap = { projectList.scrollToTop() }
             }
 
-            binding.errorReload = ErrorReload {
+            errorReload = ErrorReload {
                 if (errorOnCategories) fetchCategories() else mAdapter.retry()
             }
         }
@@ -160,9 +171,10 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
             mViewModel.getCategories().catch {
                 errorOnCategories = true
                 mBinding?.projectType?.text = resources.getString(R.string.text_place_holder)
-                pageState(NetworkState.FAILED)
+                mBinding?.statusCode = RequestStatusCode.Error
             }.onStart {
-                pageState(NetworkState.RUNNING)
+                mBinding?.refreshing = true
+                mBinding?.statusCode = RequestStatusCode.Loading
             }.collectLatest { cat ->
                 cat[0].let { mId = it.id; mTitle = it.name; fetchProjects(mId, mTitle) }
             }
@@ -177,7 +189,7 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
         mSearchJob?.cancel()
         mSearchJob = launch {
             mViewModel.getDiffCategoryProjects(id)
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mAdapter.submitData(it) }
         }
     }
@@ -196,11 +208,5 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                 context?.toast(R.string.add_favourite_succeed)
             }
         }
-    }
-
-    private fun pageState(state: NetworkState) = mBinding?.run {
-        refreshing = state == NetworkState.RUNNING
-        loadingStatus = state == NetworkState.RUNNING
-        errorStatus = state == NetworkState.FAILED
     }
 }

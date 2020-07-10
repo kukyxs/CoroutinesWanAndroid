@@ -16,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -23,13 +24,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * @description
  */
 class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBinding>() {
+
     var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
 
-    private val mFirstAdapter by lazy { KnowledgeSystemTypeAdapter() }
-
-    private val mSecAdapter by lazy { KnowledgeSystemSecTypeAdapter() }
-
     private val mViewModel by viewModel<KnowledgeSystemViewModel>()
+
+    private val mFirstAdapter by lifecycleScope.inject<KnowledgeSystemTypeAdapter>()
+
+    private val mSecAdapter by lifecycleScope.inject<KnowledgeSystemSecTypeAdapter>()
 
     private var mFirstData: SystemData? = null
 
@@ -50,7 +52,7 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
         }
         mBinding.offset = (screenWidth * 0.4f).toInt()
 
-        mViewModel.children.observe(this, Observer<MutableList<SystemCategory>> {
+        mViewModel.children.observe(this, Observer {
             mSecAdapter.setNewData(it)
         })
 
@@ -71,12 +73,12 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
                 }
         }
 
-        mViewModel.firstSelectedPosition.observe(this, Observer<Int> {
+        mViewModel.firstSelectedPosition.observe(this, Observer {
             mFirstAdapter.updateSelectedPosition(it)
             mBinding.firstPosition = it
         })
 
-        mViewModel.secSelectedPosition.observe(this, Observer<Int> {
+        mViewModel.secSelectedPosition.observe(this, Observer {
             mSecAdapter.updateSelectedPosition(it)
             mBinding.secPosition = it
         })

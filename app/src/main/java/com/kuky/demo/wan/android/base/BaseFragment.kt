@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -22,7 +20,6 @@ import kotlinx.coroutines.cancel
 abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope by MainScope() {
 
     protected var mBinding: VB? = null
-    protected lateinit var mNavController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         retainInstance = true
@@ -31,8 +28,6 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
             mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
             actionsOnViewInflate()
         }
-
-        mNavController = NavHostFragment.findNavController(this)
 
         return if (mBinding != null) {
             mBinding!!.root.apply { (parent as? ViewGroup)?.removeView(this) }

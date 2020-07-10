@@ -15,15 +15,13 @@ class TodoListRepository(private val api: ApiService) {
 
     suspend fun fetchTodoList(page: Int, param: HashMap<String, Int>): MutableList<TodoInfo>? =
         withContext(Dispatchers.IO) {
-            api.fetchTodoList(
-                page, PreferencesHelper.fetchCookie(WanApplication.instance), param
-            ).data.datas
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.fetchTodoList(page, cookie, param).data.datas
         }
 
     suspend fun updateTodoState(id: Int, state: Int) =
         withContext(Dispatchers.IO) {
-            api.updateTodoState(
-                id, state, PreferencesHelper.fetchCookie(WanApplication.instance)
-            )
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.updateTodoState(id, state, cookie)
         }
 }

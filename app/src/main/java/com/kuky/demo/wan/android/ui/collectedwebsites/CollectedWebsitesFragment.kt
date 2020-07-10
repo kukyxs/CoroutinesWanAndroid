@@ -3,14 +3,15 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,36 +35,42 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
 
     private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 
-    private var mFavouriteJob: Job? = null
-
-    private val mAdapter by lazy { CollectedWebsitesAdapter() }
+    private val mAdapter by lifecycleScope.inject<CollectedWebsitesAdapter>()
 
     private val editSelector by lazy { arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website)) }
 
-    override fun actionsOnViewInflate() = fetchWebSitesData()
+    private var mFavouriteJob: Job? = null
+
+    override fun actionsOnViewInflate() {
+        fetchWebSitesData()
+
+        mAppViewModel.reloadCollectWebsite.observe(this, Observer {
+            if (it) fetchWebSitesData()
+        })
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_websites
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 fetchWebSitesData()
             }
 
-            binding.adapter = mAdapter
+            adapter = mAdapter
 
-            binding.listener = OnItemClickListener { position, _ ->
+            listener = OnItemClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let {
                     WebsiteDetailFragment.viewDetail(
-                        mNavController,
+                        findNavController(),
                         R.id.action_collectionFragment_to_websiteDetailFragment,
                         it.link
                     )
                 }
             }
 
-            binding.longListener = OnItemLongClickListener { position, _ ->
+            longListener = OnItemLongClickListener { position, _ ->
                 mAdapter.getItemData(position)?.let { data ->
                     context?.selector(items = editSelector) { _, i ->
                         when (i) {
@@ -76,21 +84,15 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
                 }
             }
 
-            binding.errorReload = ErrorReload { fetchWebSitesData() }
+            errorReload = ErrorReload { fetchWebSitesData() }
 
-            binding.gesture = DoubleClickListener {
+            gesture = DoubleClickListener {
                 singleTap = {
                     CollectedWebsiteDialogFragment
                         .createCollectedDialog(false)
                         .showAllowStateLoss(childFragmentManager, "new_website")
                 }
             }
-
-            mAppViewModel.reloadCollectWebsite.observe(this, Observer {
-                if (it) fetchWebSitesData()
-            })
-
-            LogUtils.error(mAppViewModel)
         }
     }
 
@@ -117,20 +119,16 @@ class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>
         mFavouriteJob?.cancel()
         mFavouriteJob = launch {
             mViewModel.getWebsites().catch {
-                pageState(NetworkState.FAILED)
+                mBinding?.statusCode = RequestStatusCode.Error
             }.onStart {
-                pageState(NetworkState.RUNNING)
+                mBinding?.refreshing = true
+                mBinding?.statusCode = RequestStatusCode.Loading
             }.collectLatest {
-                pageState(NetworkState.SUCCESS)
-                mBinding?.emptyStatus = it.isNullOrEmpty()
                 mAdapter.update(it)
+                mBinding?.refreshing = false
+                mBinding?.statusCode = if (it.isNullOrEmpty())
+                    RequestStatusCode.Empty else RequestStatusCode.Succeed
             }
         }
-    }
-
-    private fun pageState(state: NetworkState) = mBinding?.run {
-        refreshing = state == NetworkState.RUNNING
-        loadingStatus = state == NetworkState.RUNNING
-        errorStatus = state == NetworkState.FAILED
     }
 }

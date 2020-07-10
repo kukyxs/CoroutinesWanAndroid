@@ -5,6 +5,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -21,6 +22,7 @@ import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.utils.dp2px
 import com.kuky.demo.wan.android.widget.ErrorReload
+import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -32,6 +34,7 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -40,29 +43,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * @description
  */
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
-    private var errorOnLabel = false
-    private var mKey = ""
-
-    @OptIn(ExperimentalPagingApi::class)
-    private val mResultAdapter by lazy {
-        SearchArticlePagingAdapter().apply {
-            addLoadStateListener { loadState ->
-                mBinding?.refreshing = loadState.refresh is LoadState.Loading
-                mBinding?.loadingStatus = loadState.refresh is LoadState.Loading
-                mBinding?.errorStatus = loadState.refresh is LoadState.Error
-            }
-
-            addDataRefreshListener {
-                mBinding?.emptyStatus = itemCount == 0
-            }
-        }
-    }
-
-    private val mHistoryAdapter by lazy {
-        HistoryAdapter().apply {
-            onKeyRemove = { mViewModel.updateHistory() }
-        }
-    }
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
@@ -70,65 +50,88 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
+    private val mResultAdapter by lifecycleScope.inject<SearchArticlePagingAdapter>()
+
+    private val mHistoryAdapter by lifecycleScope.inject<HistoryAdapter>()
+
     private var mKeyJob: Job? = null
     private var mSearchJob: Job? = null
+
+    private var errorOnLabel = false
+    private var mKey = ""
 
     override fun actionsOnViewInflate() = loadHotKeys()
 
     override fun getLayoutId(): Int = R.layout.fragment_search
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.let { binding ->
-            binding.refreshColor = R.color.colorAccent
-            binding.refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        mBinding?.run {
+            refreshColor = R.color.colorAccent
+            refreshListener = SwipeRefreshLayout.OnRefreshListener {
                 if (errorOnLabel) loadHotKeys() else mResultAdapter.refresh()
             }
 
-            binding.editAction = TextView.OnEditorActionListener { v, actionId, _ ->
+            editAction = TextView.OnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
                     searchArticles(v.text.toString())
                 }
                 true
             }
 
-            binding.errorReload = ErrorReload {
+            errorReload = ErrorReload {
                 if (errorOnLabel) loadHotKeys() else mResultAdapter.retry()
             }
 
-            mViewModel.resultMode.observe(this, Observer {
+            mViewModel.resultMode.observe(this@SearchFragment, Observer {
                 if (it) {
-                    binding.enable = true
-                    binding.needOverScroll = true
-                    binding.adapter = mResultAdapter.withLoadStateFooter(PagingLoadStateAdapter { mResultAdapter.retry() })
-                    binding.listener = OnItemClickListener { position, _ ->
+                    enable = true
+                    needOverScroll = true
+                    adapter = mResultAdapter.apply {
+                        addLoadStateListener { loadState ->
+                            mBinding?.refreshing = loadState.refresh is LoadState.Loading
+                            statusCode = when (loadState.refresh) {
+                                is LoadState.Loading -> RequestStatusCode.Loading
+                                is LoadState.Error -> RequestStatusCode.Error
+                                else -> RequestStatusCode.Succeed
+                            }
+                        }
+
+                        addDataRefreshListener {
+                            if (itemCount == 0) statusCode = RequestStatusCode.Empty
+                        }
+                    }.withLoadStateFooter(
+                        PagingLoadStateAdapter { mResultAdapter.retry() }
+                    )
+                    listener = OnItemClickListener { position, _ ->
                         mResultAdapter.getItemData(position)?.let { art ->
                             WebsiteDetailFragment.viewDetail(
-                                mNavController,
+                                findNavController(),
                                 R.id.action_searchFragment_to_websiteDetailFragment,
                                 art.link
                             )
                         }
                     }
 
-                    binding.longListener = OnItemLongClickListener { position, _ ->
+                    longListener = OnItemLongClickListener { position, _ ->
                         mResultAdapter.getItemData(position)?.let { article ->
                             showCollectionDialog(article, position)
                         }
                     }
                 } else {
-                    binding.enable = false
-                    binding.needOverScroll = false
-                    binding.adapter = mHistoryAdapter
-                    binding.listener = OnItemClickListener { position, _ ->
+                    enable = false
+                    needOverScroll = false
+                    adapter = mHistoryAdapter.apply { onKeyRemove = { mViewModel.updateHistory() } }
+                    listener = OnItemClickListener { position, _ ->
                         mHistoryAdapter.getItemData(position)?.let { key ->
-                            binding.searchContent.setText(key)
+                            searchContent.setText(key)
                             searchArticles(key)
                         }
                     }
                 }
             })
 
-            mViewModel.history.observe(this, Observer<MutableList<String>> {
+            mViewModel.history.observe(this@SearchFragment, Observer {
                 mHistoryAdapter.updateHistory(it)
             })
         }
@@ -168,13 +171,14 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mKeyJob = launch {
             mViewModel.getHotKeys().catch {
                 errorOnLabel = true
-                pageState(NetworkState.FAILED)
+                mBinding?.statusCode = RequestStatusCode.Error
             }.onStart {
-                pageState(NetworkState.RUNNING)
+                mBinding?.refreshing = true
+                mBinding?.statusCode = RequestStatusCode.Loading
             }.collectLatest {
                 addLabel(it)
-                pageState(NetworkState.SUCCESS)
-                mBinding?.emptyStatus = it.isEmpty()
+                mBinding?.refreshing = false
+                mBinding?.statusCode = if (it.isEmpty()) RequestStatusCode.Empty else RequestStatusCode.Succeed
                 mBinding?.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
                 mViewModel.updateHistory()
             }
@@ -196,15 +200,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mSearchJob?.cancel()
         mSearchJob = launch {
             mViewModel.getSearchResult(keyword)
-                .catch { mBinding?.errorStatus = true }
+                .catch { mBinding?.statusCode = RequestStatusCode.Error }
                 .collectLatest { mResultAdapter.submitData(it) }
         }
-    }
-
-    private fun pageState(state: NetworkState) = mBinding?.run {
-        refreshing = state == NetworkState.RUNNING
-        loadingStatus = state == NetworkState.RUNNING
-        errorStatus = state == NetworkState.FAILED
     }
 
     /**

@@ -16,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.scope.lifecycleScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -26,9 +27,9 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
 
     var onSelectedListener: ((Dialog?, ProjectCategoryData) -> Unit)? = null
 
-    private val mAdapter by lazy { ProjectCategoryAdapter() }
-
     private val mViewModel by viewModel<HotProjectViewModel>()
+
+    private val mAdapter by lifecycleScope.inject<ProjectCategoryAdapter>()
 
     override fun layoutId(): Int = R.layout.dialog_project_category
 
@@ -48,7 +49,7 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
                 .collectLatest { mAdapter.setCategories(it) }
         }
 
-        mViewModel.selectedCategoryPosition.observe(this, Observer<Int> {
+        mViewModel.selectedCategoryPosition.observe(this, Observer {
             mAdapter.updateSelectedPosition(it)
             mBinding.position = it
         })

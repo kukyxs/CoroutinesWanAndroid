@@ -22,9 +22,8 @@ class MainRepository(private val api: ApiService) {
 
     suspend fun getCoins() =
         withContext(Dispatchers.IO) {
-            api.fetchUserCoins(
-                PreferencesHelper.fetchCookie(WanApplication.instance)
-            ).data
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.fetchUserCoins(cookie).data
         }
 
     suspend fun getHomeBanners() =

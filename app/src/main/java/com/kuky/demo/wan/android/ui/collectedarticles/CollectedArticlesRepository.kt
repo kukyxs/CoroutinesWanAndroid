@@ -14,15 +14,13 @@ import kotlinx.coroutines.withContext
 class CollectedArticlesRepository(private val api: ApiService) {
     suspend fun getCollectedArticleList(page: Int): MutableList<UserCollectDetail>? =
         withContext(Dispatchers.IO) {
-            api.userCollectedArticles(
-                page, PreferencesHelper.fetchCookie(WanApplication.instance)
-            ).data.datas
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.userCollectedArticles(page, cookie).data.datas
         }
 
     suspend fun removeCollectedArticle(articleId: Int, originId: Int) =
         withContext(Dispatchers.IO) {
-            api.unCollectCollection(
-                articleId, originId, PreferencesHelper.fetchCookie(WanApplication.instance)
-            )
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.unCollectCollection(articleId, originId, cookie)
         }
 }

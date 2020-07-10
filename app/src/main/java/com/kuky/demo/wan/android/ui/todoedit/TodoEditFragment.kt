@@ -9,6 +9,7 @@ import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.hideSoftInput
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -38,9 +40,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
 
     private val mViewModel by viewModel<TodoEditViewModel>()
 
-    private val mCalendar: Calendar by lazy {
-        Calendar.getInstance()
-    }
+    private val mCalendar by inject<Calendar>()
 
     private var mTodo: TodoInfo? = null
 
@@ -58,17 +58,17 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             }
         }
 
-        mBinding?.let { binding ->
-            binding.holder = this@TodoEditFragment
-            binding.todo = mTodo
-            binding.title = if (mTodo == null) "新增待办" else "编辑待办"
-            binding.btnText = if (mTodo == null) "创建" else "修改"
-            binding.newDate = TimeUtils.formatDate(
+        mBinding?.run {
+            holder = this@TodoEditFragment
+            todo = mTodo
+            title = if (mTodo == null) "新增待办" else "编辑待办"
+            btnText = if (mTodo == null) "创建" else "修改"
+            newDate = TimeUtils.formatDate(
                 mCalendar.get(Calendar.YEAR),
                 mCalendar.get(Calendar.MONTH) + 1,
                 mCalendar.get(Calendar.DAY_OF_MONTH)
             )
-            binding.todoTypeStr = if (mTodo == null) "工作"
+            todoTypeStr = if (mTodo == null) "工作"
             else when (mTodo?.type) {
                 0 -> "只用这一个"
                 1 -> "工作"
@@ -76,14 +76,14 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 3 -> "生活"
                 else -> ""
             }
-            binding.todoPriorityStr = if (mTodo == null) "重要"
+            todoPriorityStr = if (mTodo == null) "重要"
             else when (mTodo?.priority) {
                 1 -> "重要"
                 2 -> "一般"
                 3 -> "普通"
                 else -> ""
             }
-            binding.todoPriorityColor = ContextCompat.getColor(
+            todoPriorityColor = ContextCompat.getColor(
                 requireContext(), if (mTodo == null) android.R.color.holo_red_dark
                 else when (mTodo?.priority) {
                     1 -> android.R.color.holo_red_dark
@@ -98,8 +98,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
     @SuppressLint("SetTextI18n")
     fun datePick(view: View) {
         DatePickerDialog(
-            requireContext(),
-            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            requireContext(), { _, year, month, dayOfMonth ->
                 TimeUtils.formatDate(year, month + 1, dayOfMonth).let {
                     (view as TextView).text = it
                     mViewModel.todoDate.value = it
@@ -171,7 +170,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 }.collectLatest {
                     mAppViewModel.needUpdateTodoList.postValue(true)
                     context?.toast(R.string.add_todo_succeed)
-                    mNavController.navigateUp()
+                    findNavController().navigateUp()
                 }
             } else {
                 mViewModel.updateTodo(mTodo?.id ?: 0, param).catch {
@@ -183,7 +182,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
                 }.collectLatest {
                     mAppViewModel.needUpdateTodoList.postValue(true)
                     context?.toast(R.string.update_todo_succeed)
-                    mNavController.navigateUp()
+                    findNavController().navigateUp()
                 }
             }
         }
@@ -203,7 +202,7 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
             }.collectLatest {
                 mAppViewModel.needUpdateTodoList.postValue(true)
                 context?.toast(R.string.delete_todo_succeed)
-                mNavController.navigateUp()
+                findNavController().navigateUp()
             }
         }
     }

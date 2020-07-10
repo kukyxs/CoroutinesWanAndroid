@@ -14,8 +14,7 @@ import kotlinx.coroutines.withContext
 class CollectionRepository(private val api: ApiService) {
     suspend fun collectArticle(id: Int) =
         withContext(Dispatchers.IO) {
-            api.collectArticleOrProject(
-                id, PreferencesHelper.fetchCookie(WanApplication.instance)
-            )
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.collectArticleOrProject(id, cookie)
         }
 }

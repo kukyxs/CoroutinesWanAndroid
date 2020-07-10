@@ -76,6 +76,8 @@
 -keep class com.kuky.demo.wan.android.entity.** {*;}
 -keep class com.kuky.demo.wan.android.data.db.** {*;}
 
+-keepnames class androidx.navigation.fragment.NavHostFragment
+
 # Retrofit
 -dontwarn retrofit2.**
 -keep class retrofit2.** { *; }

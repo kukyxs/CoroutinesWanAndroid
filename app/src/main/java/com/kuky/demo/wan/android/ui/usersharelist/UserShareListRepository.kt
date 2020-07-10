@@ -15,22 +15,19 @@ class UserShareListRepository(private val api: ApiService) {
 
     suspend fun fetchUserShareList(page: Int): MutableList<UserArticleDetail>? =
         withContext(Dispatchers.IO) {
-            api.userShareList(
-                page, PreferencesHelper.fetchCookie(WanApplication.instance)
-            ).data.shareArticles.datas
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.userShareList(page, cookie).data.shareArticles.datas
         }
 
     suspend fun deleteShare(id: Int) =
         withContext(Dispatchers.IO) {
-            api.deleteAShare(
-                id, PreferencesHelper.fetchCookie(WanApplication.instance)
-            )
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.deleteAShare(id, cookie)
         }
 
     suspend fun shareArticle(title: String, link: String) =
         withContext(Dispatchers.IO) {
-            api.putAShare(
-                title, link, PreferencesHelper.fetchCookie(WanApplication.instance)
-            )
+            val cookie = PreferencesHelper.fetchCookie(WanApplication.instance)
+            api.putAShare(title, link, cookie)
         }
 }

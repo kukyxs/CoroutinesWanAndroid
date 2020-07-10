@@ -4,8 +4,13 @@
 
 ### 内容更新记录
 
-#### 2020-07-07 更新日志
-使用 `Koin` 替换部分注入, 待应用到全局
+#### 2020-07-10 更新日志
+使用 `Koin` 进行注入
+`Koin` 对比 `Dagger2`, `Hilt` 可以参考以下文章
+[Koin vs Dagger, Say hello to Koin](https://blog.usejournal.com/android-koin-with-mvvm-and-retrofit-e040e4e15f9d?gi=3b086a923b76)
+[Let's discuss: Dagger vs Koin](https://www.reddit.com/r/androiddev/comments/ei83mh/lets_discuss_dagger_vs_koin/)
+[全方面分析 Hilt 和 Koin 性能](https://juejin.im/post/5f02114d5188252e8a081afb#heading-2)
+[Koin README](https://github.com/InsertKoinIO/koin)
 
 #### 2020-06-30 更新日志: 
 `paging2` 升级到 `paging3`; `livedata` 大部分替换成 `fow`; 开启暗黑模式; 优化代码结构
@@ -26,6 +31,8 @@
 
 ### 目前存在问题
 - `DrawerLayout` 的 `menu.xml` 无法通过 `DataBinding` 处理, 只能通过普通方式处理, 如果有解决方案请提 issue
+- 首页登录弹窗和注册弹窗如果通过 `Koin` 注入, 首次展示后再次展示样式发生变化, 待解决
+- 缺少 `Koin` 混淆配置
 
 ### 特此感谢（排名不分先后）
 - [玩 Android 洋神](https://www.wanandroid.com/)

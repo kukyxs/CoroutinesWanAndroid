@@ -28,7 +28,7 @@ class LoginDialogFragment : BaseDialogFragment<DialogLoginBinding>() {
     override fun layoutId(): Int = R.layout.dialog_login
 
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
-        mBinding.holder = this@LoginDialogFragment
+        mBinding.holder = this
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
