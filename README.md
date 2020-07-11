@@ -55,7 +55,7 @@
 如果该项目对你有帮助, 请在右上角帮我们 **star** 一下。如果有什么问题, 可以直接提 **issue**
 
 ### 体验下载
-[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.1/wan.apk)
+[在此点击下载体验包](https://github.com/kukyxs/CoroutinesWanAndroid/releases/download/2.0.2/wan.2.0.2.apk)
 
 ### 附上效果图：
 <div align="center">
