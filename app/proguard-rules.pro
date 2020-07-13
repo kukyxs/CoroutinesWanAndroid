@@ -73,6 +73,7 @@
 -dontnote com.google.android.material.**
 -dontwarn androidx.**
 
+-keep class com.kuky.demo.wan.android.base.**{*;}
 -keep class com.kuky.demo.wan.android.entity.** {*;}
 -keep class com.kuky.demo.wan.android.data.db.** {*;}
 
