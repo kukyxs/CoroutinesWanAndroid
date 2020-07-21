@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.base
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -16,14 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger
 private const val K_FRAGMENT_TAG = "base.k.permission.fragment.tag"
 private const val K_REQUEST_CODE = 0xFF
 
+@RequiresApi(Build.VERSION_CODES.M)
 fun FragmentActivity.requestPermissions(init: PermissionCallback.() -> Unit) {
-    val callback = PermissionCallback().apply(init)
+    val callback = PermissionCallback(activity = this).apply(init)
     onRuntimePermissionsRequest(callback)
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 fun Fragment.requestPermissions(init: PermissionCallback.() -> Unit) {
-    val callback = PermissionCallback().apply(init)
-    requireActivity().onRuntimePermissionsRequest(callback)
+    val callback = PermissionCallback(activity = requireActivity(), fragment = this).apply(init)
+    onRuntimePermissionsRequest(callback)
 }
 
 // 权限是否已授权
@@ -32,13 +35,14 @@ private fun FragmentActivity.permissionGranted(permission: String) =
             ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
 // 请求权限
-private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCallback) {
+@RequiresApi(Build.VERSION_CODES.M)
+private fun onRuntimePermissionsRequest(callback: PermissionCallback) {
     val permissions = callback.permissions
 
     if (permissions.isEmpty()) return
 
     val requestCode = PermissionMap.put(callback)
-    val needRequestPermissions = permissions.filterNot { permissionGranted(it) }
+    val needRequestPermissions = permissions.filterNot { callback.activity.permissionGranted(it) }
 
     if (needRequestPermissions.isEmpty()) {
         callback.onAllPermissionsGranted()
@@ -47,7 +51,9 @@ private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCal
         val shouldNotShowRationalPermissions = mutableListOf<String>() // 首次申请的权限
 
         permissions.forEach {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, it)) {
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(callback.activity, it)
+
+            if (showRationale) {
                 shouldShowRationalPermissions.add(it)
             } else {
                 shouldNotShowRationalPermissions.add(it)
@@ -57,7 +63,7 @@ private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCal
         if (shouldShowRationalPermissions.isNotEmpty()) {
             callback.onShowRationale(
                 PermissionRequest(
-                    getPermissionFragment(),
+                    getPermissionFragment(callback),
                     shouldShowRationalPermissions,
                     requestCode
                 )
@@ -65,7 +71,7 @@ private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCal
         }
 
         if (shouldNotShowRationalPermissions.isNotEmpty()) {
-            getPermissionFragment()
+            getPermissionFragment(callback)
                 .requestPermissionsByFragment(
                     shouldNotShowRationalPermissions.toTypedArray(),
                     requestCode
@@ -74,13 +80,14 @@ private fun FragmentActivity.onRuntimePermissionsRequest(callback: PermissionCal
     }
 }
 
-// 获取权限申请 fragment 实例，不存在则添加到当前 activity
-private fun FragmentActivity.getPermissionFragment(): KPermissionFragment =
-    supportFragmentManager.findFragmentByTag(K_FRAGMENT_TAG) as? KPermissionFragment
+private fun getPermissionFragment(callback: PermissionCallback): KPermissionFragment {
+    val fragmentManager = callback.fragment?.childFragmentManager ?: callback.activity.supportFragmentManager
+    return fragmentManager.findFragmentByTag(K_FRAGMENT_TAG) as? KPermissionFragment
         ?: KPermissionFragment().apply {
-            supportFragmentManager.beginTransaction()
+            fragmentManager.beginTransaction()
                 .add(this, K_FRAGMENT_TAG).commitNowAllowingStateLoss()
         }
+}
 
 /**
  * 权限申请 Fragment
@@ -150,14 +157,15 @@ data class PermissionRequest(
 }
 
 /**
- * 权限申请回调
+ * 权限申请回调, 请勿手动设置 activity, fragment 参数
  */
 data class PermissionCallback(
     var permissions: MutableList<String> = mutableListOf(),
     var onAllPermissionsGranted: () -> Unit = {},
     var onPermissionsDenied: (MutableList<String>) -> Unit = {},
     var onPermissionsNeverAsked: (MutableList<String>) -> Unit = {},
-    var onShowRationale: (PermissionRequest) -> Unit = { it.retryRequestPermissions() }
+    var onShowRationale: (PermissionRequest) -> Unit = { it.retryRequestPermissions() },
+    internal var activity: FragmentActivity, internal var fragment: Fragment? = null
 ) {
     fun putPermissions(vararg ps: String) {
         permissions = ps.toMutableList()

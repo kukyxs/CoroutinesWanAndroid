@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.annotation.RequiresApi
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.delayLaunch
@@ -44,6 +45,7 @@ class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
         return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestNecessaryPermissions(file: File?) {
         requestPermissions {
             putPermissions(
