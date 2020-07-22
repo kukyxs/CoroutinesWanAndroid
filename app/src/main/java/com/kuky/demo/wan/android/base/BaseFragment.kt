@@ -17,7 +17,7 @@ import kotlinx.coroutines.cancel
  * @author kuky.
  * @description
  */
-abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope by MainScope() {
+abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope by MainScope(), KLogger {
 
     protected var mBinding: VB? = null
 

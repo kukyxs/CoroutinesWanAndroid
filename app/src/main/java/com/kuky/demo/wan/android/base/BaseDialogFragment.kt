@@ -27,7 +27,7 @@ typealias OnDialogFragmentDismissListener = (DialogInterface) -> Unit
 typealias OnDialogFragmentCancelListener = (DialogInterface) -> Unit
 
 abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(),
-    CoroutineScope by MainScope() {
+    CoroutineScope by MainScope(), KLogger {
     var onDialogFragmentDismissListener: OnDialogFragmentDismissListener? = null
     var onDialogFragmentCancelListener: OnDialogFragmentCancelListener? = null
 

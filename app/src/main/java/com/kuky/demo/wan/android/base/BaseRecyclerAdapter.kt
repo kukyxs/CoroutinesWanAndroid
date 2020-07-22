@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @description recycler adapter 基类
  */
 abstract class BaseRecyclerAdapter<T>(var mData: MutableList<T>?) :
-    RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>() {
+    RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>(), KLogger {
 
     var itemListener: OnItemClickListener? = null
     var itemLongListener: OnItemLongClickListener? = null

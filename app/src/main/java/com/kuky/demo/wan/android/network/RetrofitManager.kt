@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.network
 
-import com.kuky.demo.wan.android.utils.LogUtils
+import com.kuky.demo.wan.android.base.jsonPrint
+import com.kuky.demo.wan.android.base.kLogger
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit
  * @description
  */
 object RetrofitManager {
+    private val logger = kLogger<RetrofitManager>()
     private var BASE_URL = "https://www.wanandroid.com"
 
     val apiService: ApiService = Retrofit.Builder()
@@ -26,14 +28,7 @@ object RetrofitManager {
         val httpLoggingInterceptor = HttpLoggingInterceptor(
             object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
-
-                    // 如果是 json 格式内容则打印 json
-                    if ((message.startsWith("{") && message.endsWith("}")) ||
-                        (message.startsWith("[") && message.endsWith("]"))
-                    )
-                        LogUtils.json(message)
-                    else
-                        LogUtils.verbose(message)
+                    logger.jsonPrint { message }
                 }
             })
 

@@ -23,7 +23,6 @@ import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
-import com.kuky.demo.wan.android.utils.LogUtils
 import com.kuky.demo.wan.android.widget.ErrorReload
 import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -163,7 +162,7 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
         mUserInfoJob?.cancel()
         mUserInfoJob = launch {
             mViewModel.getUserCoinInfo(userId)
-                .catch { LogUtils.debug("error occur") }
+                .catch { dPrint { "error occur" } }
                 .collectLatest {
                     mBinding?.shared = SpannableStringBuilder().apply {
                         setSpan(

@@ -8,7 +8,6 @@ import com.kuky.demo.wan.android.base.BaseDialogFragment
 import com.kuky.demo.wan.android.base.handleResult
 import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
-import com.kuky.demo.wan.android.utils.LogUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -52,8 +51,6 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         mBinding.fragment = this
         mBinding.collectedName.setText(mEditName)
         mBinding.collectedLink.setText(mEditLink)
-
-        LogUtils.error(mAppViewModel)
     }
 
     fun cancel(view: View) {

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
  * @description paging adapter 基类, 如果需要多布局, 请使用 MergeAdapter
  */
 abstract class BasePagingDataAdapter<T : Any, VB : ViewDataBinding>(val callback: DiffUtil.ItemCallback<T>) :
-    PagingDataAdapter<T, BaseViewHolder<VB>>(callback) {
+    PagingDataAdapter<T, BaseViewHolder<VB>>(callback), KLogger {
 
     var itemListener: OnItemClickListener? = null
     var itemLongClickListener: OnItemLongClickListener? = null
