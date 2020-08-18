@@ -29,14 +29,28 @@ fun CoroutineScope.safeLaunch(init: CoroutineCallback.() -> Unit): Job {
     }
 }
 
-fun CoroutineScope.delayLaunch(timeMills: Long, init: CoroutineCallback.() -> Unit): Job {
+fun CoroutineScope.delayLaunch(timeMills: Long, init: CoroutineScope.() -> Unit): Job {
     check(timeMills >= 0) { "timeMills must be positive" }
-    val callback = CoroutineCallback().apply(init)
-    return launch(CoroutineExceptionHandler { _, throwable ->
-        callback.onError(throwable)
-    } + (callback.initDispatcher ?: GlobalScope.coroutineContext)) {
+    return launch {
         delay(timeMills)
-        callback.block()
+        init()
+    }
+}
+
+fun CoroutineScope.repeatLaunch(
+    interval: Long, init: CoroutineScope.(Int) -> Unit,
+    repeatCount: Int = Int.MAX_VALUE, delayTime: Long = 0L
+): Job {
+    check(interval > 0) { "timeDelta must be positive" }
+    check(repeatCount > 0) { "repeat count must be positive" }
+
+    return launch {
+        if (delayTime > 0) delay(delayTime)
+
+        repeat(repeatCount) {
+            init(it)
+            delay(interval)
+        }
     }
 }
 

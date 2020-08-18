@@ -1,6 +1,5 @@
 package com.kuky.demo.wan.android.ui
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
@@ -10,6 +9,7 @@ import com.kuky.demo.wan.android.base.BaseActivity
 import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.ActivitySplashBinding
 import com.kuky.demo.wan.android.ui.app.MainActivity
+import org.jetbrains.anko.startActivity
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
@@ -27,10 +27,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
     override fun initActivity(savedInstanceState: Bundle?) {
         delayLaunch(2000) {
-            block = {
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-                finish()
-            }
+            startActivity<MainActivity>()
+            finish()
         }
     }
 

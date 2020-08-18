@@ -1,9 +1,9 @@
-package com.kuky.demo.wan.android.widget;
+package com.kuky.demo.wan.android.widget
 
 /**
  * @author kuky.
  * @description
  */
-public interface ErrorReload {
-    void reload();
+fun interface ErrorReload {
+    fun reload()
 }

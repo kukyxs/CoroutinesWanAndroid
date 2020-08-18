@@ -95,10 +95,8 @@ class WxDialogFragment : BaseDialogFragment<DialogWxBinding>() {
 
             if (result) {
                 delayLaunch(1000) {
-                    block = {
-                        context?.starApp("com.tencent.mm") { context?.toast("未安装微信") }
-                        dialog?.dismiss()
-                    }
+                    context?.starApp("com.tencent.mm") { context?.toast("未安装微信") }
+                    dialog?.dismiss()
                 }
                 context?.toast("保存图片成功，即将打开微信")
             } else {

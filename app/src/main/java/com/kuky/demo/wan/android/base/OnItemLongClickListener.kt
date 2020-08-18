@@ -1,12 +1,11 @@
-package com.kuky.demo.wan.android.base;
+package com.kuky.demo.wan.android.base
 
-
-import android.view.View;
+import android.view.View
 
 /**
  * @author kuky.
  * @description RecyclerList的长按事件
  */
-public interface OnItemLongClickListener {
-    void onItemLongClick(int position, View view);
+fun interface OnItemLongClickListener {
+    fun onItemLongClick(position: Int, view: View?)
 }
