@@ -23,5 +23,5 @@ object ActivityStackManager {
         if (activities.isEmpty()) null else activities[activities.size - 1]
 
     fun finishAll() =
-        activities.filter { it.isFinishing }.forEach { it.finish() }
+        activities.filterNot { it.isFinishing }.forEach { it.finish() }
 }
