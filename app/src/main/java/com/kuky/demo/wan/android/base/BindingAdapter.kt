@@ -105,7 +105,7 @@ fun bindViewGesture(view: View, doubleClickListener: DoubleClickListener) {
 fun bindPagingItemClickV2(recyclerView: RecyclerView, listener: OnItemClickListener?, longListener: OnItemLongClickListener?) {
     val adapter = recyclerView.adapter ?: return
 
-    val tarAdapter = when (adapter) {
+    val tarAdapter: BasePagingDataAdapter<*, *>? = when (adapter) {
         is BasePagingDataAdapter<*, *> -> adapter
         is ConcatAdapter -> findBasePagingAdapterInConcatAdapter(adapter)
         else -> null

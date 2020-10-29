@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.usersharelist
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -51,7 +50,6 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_user_share_list
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
             refreshColor = R.color.colorAccent
@@ -65,12 +63,11 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }

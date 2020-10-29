@@ -1,6 +1,5 @@
 package com.kuky.demo.wan.android.ui.todoedit
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
@@ -95,7 +94,6 @@ class TodoEditFragment : BaseFragment<FragmentTodoEditBinding>() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     fun datePick(view: View) {
         DatePickerDialog(
             requireContext(), { _, year, month, dayOfMonth ->

@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogProjectCategoryBinding
 import com.kuky.demo.wan.android.entity.ProjectCategoryData
 import com.kuky.demo.wan.android.utils.screenWidth
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,7 +32,6 @@ class ProjectCategoryDialog : BaseDialogFragment<DialogProjectCategoryBinding>()
 
     override fun layoutId(): Int = R.layout.dialog_project_category
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
         mBinding.adapter = mAdapter
         mBinding.divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)

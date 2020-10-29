@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -94,7 +93,6 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_todo_list
 
-    @OptIn(ExperimentalPagingApi::class)
     @Suppress("LABEL_NAME_CLASH")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
@@ -111,12 +109,11 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mTodoAdapter.retry() }
@@ -189,7 +186,6 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchTodoList(isRefresh: Boolean = false) {
         val param = mChoiceAdapter.getApiParams()
 

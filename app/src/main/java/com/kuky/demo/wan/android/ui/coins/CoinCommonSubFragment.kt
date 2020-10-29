@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.coins
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -13,7 +12,6 @@ import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.widget.RequestStatusCode
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -34,7 +32,6 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
     private val mType by lazy { arguments?.getInt("type", 0) ?: 0 }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         launch {
             if (mType == 0) {
@@ -51,7 +48,6 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_common_coin_sub
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
             refreshColor = R.color.colorAccent
@@ -62,12 +58,11 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }
 

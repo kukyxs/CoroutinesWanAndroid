@@ -3,7 +3,6 @@ package com.kuky.demo.wan.android.ui.collectedarticles
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -46,7 +45,6 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
 
     override fun getLayoutId(): Int = R.layout.fragment_collected_articles
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
             refreshColor = R.color.colorAccent
@@ -61,12 +59,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -91,7 +88,6 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getCollectedArticles() {
         mArticleJob?.cancel()
         mArticleJob = launch {

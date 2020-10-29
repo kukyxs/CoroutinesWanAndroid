@@ -60,7 +60,6 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     private var mId = 0
     private var mTitle = ""
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun actionsOnViewInflate() {
         fetchCategories()
 
@@ -102,12 +101,11 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -182,7 +180,6 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
     }
 
     // 获取分类下列表
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchProjects(id: Int, title: String) {
         mBinding?.projectType?.text = title.renderHtml()
 

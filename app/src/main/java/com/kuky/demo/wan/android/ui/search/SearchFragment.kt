@@ -93,12 +93,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                             statusCode = when (loadState.refresh) {
                                 is LoadState.Loading -> RequestStatusCode.Loading
                                 is LoadState.Error -> RequestStatusCode.Error
-                                else -> RequestStatusCode.Succeed
+                                else -> {
+                                    if (itemCount == 0) RequestStatusCode.Empty
+                                    else RequestStatusCode.Succeed
+                                }
                             }
-                        }
-
-                        addDataRefreshListener {
-                            if (itemCount == 0) statusCode = RequestStatusCode.Empty
                         }
                     }.withLoadStateFooter(
                         PagingLoadStateAdapter { mResultAdapter.retry() }

@@ -11,7 +11,6 @@ import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -94,7 +93,6 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_wx_chapter_list
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
             wxChapter = name
@@ -110,12 +108,11 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -180,7 +177,6 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchWxChapterList(keyword: String = "") {
         if (mSearchKeyword == keyword) return
 

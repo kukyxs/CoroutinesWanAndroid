@@ -12,7 +12,6 @@ import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
 import com.kuky.demo.wan.android.utils.screenWidth
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,7 +36,6 @@ class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBi
 
     override fun layoutId() = R.layout.dialog_knowledge_system
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun initDialog(view: View, savedInstanceState: Bundle?) {
         mBinding.firstAdapter = mFirstAdapter
         mBinding.secAdapter = mSecAdapter

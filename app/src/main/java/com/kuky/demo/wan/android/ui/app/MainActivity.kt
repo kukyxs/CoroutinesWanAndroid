@@ -6,7 +6,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
 import com.kuky.demo.wan.android.data.PreferencesHelper
@@ -67,7 +66,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             }.show()
         }
 
-        mAppViewModel.showLoadingProgress.observe(this, Observer {
+        mAppViewModel.showLoadingProgress.observe(this, {
             if (it) mLoadingDialog.showAllowStateLoss(supportFragmentManager, "loading")
             else mLoadingDialog.dismiss()
         })

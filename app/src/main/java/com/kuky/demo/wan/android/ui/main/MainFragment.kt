@@ -143,7 +143,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getCoins() {
         mCoinsJob?.cancel()
         mCoinsJob = launch {

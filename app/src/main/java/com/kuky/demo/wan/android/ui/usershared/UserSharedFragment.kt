@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -67,7 +66,6 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_shared_user
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
             arguments?.getString("name")?.let {
@@ -86,12 +84,11 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -147,7 +144,6 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchSharedArticles() {
         mArticleJob?.cancel()
         mArticleJob = launch {
@@ -157,7 +153,6 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchUserInfo() {
         mUserInfoJob?.cancel()
         mUserInfoJob = launch {

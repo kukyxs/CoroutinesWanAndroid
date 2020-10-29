@@ -97,7 +97,6 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun editWebsiteInfo(websiteId: Int, websiteTitle: String, websiteLink: String) {
         if (websiteTitle.isBlank() || websiteLink.isBlank()) {
             context?.toast(R.string.empty_input_content)

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -78,7 +77,6 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_user_articles
 
-    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
@@ -101,12 +99,11 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -167,7 +164,6 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchSharedArticles() {
         launch {
             mViewModel.getSharedArticles()

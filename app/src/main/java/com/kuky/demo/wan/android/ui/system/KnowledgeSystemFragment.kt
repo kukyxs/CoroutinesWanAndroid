@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
@@ -87,7 +86,6 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_knowledge_system
 
-    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
         mBinding?.run {
@@ -103,12 +101,11 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
                     statusCode = when (loadState.refresh) {
                         is LoadState.Loading -> RequestStatusCode.Loading
                         is LoadState.Error -> RequestStatusCode.Error
-                        else -> RequestStatusCode.Succeed
+                        else -> {
+                            if (itemCount == 0) RequestStatusCode.Empty
+                            else RequestStatusCode.Succeed
+                        }
                     }
-                }
-
-                addDataRefreshListener {
-                    if (itemCount == 0) statusCode = RequestStatusCode.Empty
                 }
             }.withLoadStateFooter(
                 PagingLoadStateAdapter { mAdapter.retry() }
@@ -163,7 +160,6 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun fetchSystemTypes() {
         mTypeJob?.cancel()
         mTypeJob = launch {

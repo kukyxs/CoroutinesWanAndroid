@@ -2,7 +2,6 @@
 
 buildscript {
     ext.kotlin_version = '1.4.0'
-    ext.koin_version = '2.1.6'
 
     repositories {
         google()
@@ -26,4 +25,12 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs += [
+                '-Xuse-ir'
+        ]
+    }
 }
