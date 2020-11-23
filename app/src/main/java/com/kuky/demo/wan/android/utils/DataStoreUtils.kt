@@ -8,9 +8,8 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
 /**
  * @author kuky.
@@ -22,12 +21,15 @@ fun Context.defaultDataStore(): DataStore<Preferences> =
 /**
  * only support Int, Long, Boolean, Float, Double, String
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 inline fun <reified T : Any> Context.fetchDataStoreData(
     keyName: String, noinline default: (() -> T?)? = null
-): Flow<T?> = defaultDataStore().data.catch {
-    emit(emptyPreferences())
-}.map { pref ->
-    pref[preferencesKey<T>(keyName)] ?: default?.invoke()
+): Flow<T?> = channelFlow {
+    defaultDataStore().data.catch {
+        emit(emptyPreferences())
+    }.map { pref ->
+        pref[preferencesKey<T>(keyName)] ?: default?.invoke()
+    }.collectLatest { send(it) }
 }
 
 suspend inline fun <reified T : Any> Context.saveToDataStore(keyName: String, value: T) =
@@ -38,12 +40,15 @@ suspend inline fun <reified T : Any> Context.saveToDataStore(keyName: String, va
 /**
  * T only support Int, Long, Boolean, Float, Double, String
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 inline fun <reified T : Any> Context.fetchTransDataFromDataStore(
     keyName: String, noinline trans: (String) -> T?, noinline default: (() -> T?)? = null
-): Flow<T?> = defaultDataStore().data.catch {
-    emit(emptyPreferences())
-}.map { pref ->
-    trans.invoke(pref[preferencesKey(keyName)] ?: "") ?: default?.invoke()
+): Flow<T?> = channelFlow {
+    defaultDataStore().data.catch {
+        emit(emptyPreferences())
+    }.map { pref ->
+        trans.invoke(pref[preferencesKey(keyName)] ?: "") ?: default?.invoke()
+    }.collectLatest { send(it) }
 }
 
 suspend inline fun <reified T : Any> Context.saveTransToDataStore(
