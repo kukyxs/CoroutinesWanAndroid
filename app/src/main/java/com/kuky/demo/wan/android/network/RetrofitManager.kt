@@ -25,12 +25,9 @@ object RetrofitManager {
 
 
     private fun genericOkClient(): OkHttpClient {
-        val httpLoggingInterceptor = HttpLoggingInterceptor(
-            object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    logger.jsonPrint { message }
-                }
-            })
+        val httpLoggingInterceptor = HttpLoggingInterceptor { message ->
+            logger.jsonPrint(false) { message }
+        }
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 

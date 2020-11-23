@@ -7,14 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.RecyclerHistoryBinding
 
 /**
  * @author kuky.
  * @description
  */
-typealias OnKeyRemove = () -> Unit
+typealias OnKeyRemove = (String) -> Unit
 
 class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<String>(list) {
     var onKeyRemove: OnKeyRemove? = null
@@ -24,11 +23,10 @@ class HistoryAdapter(list: MutableList<String>? = null) : BaseRecyclerAdapter<St
     override fun setVariable(data: String, position: Int, holder: BaseViewHolder<ViewDataBinding>) {
         (holder.binding as RecyclerHistoryBinding).let {
             it.history = data
-            it.listener = View.OnClickListener { _ ->
-                SearchHistoryUtils.removeKeyword(it.root.context, data)
+            it.listener = View.OnClickListener {
+                onKeyRemove?.invoke(data)
                 val last = mData?.size ?: 0
                 mData?.remove(data)
-                onKeyRemove?.invoke()
                 notifyItemRangeChanged(0, last)
             }
         }

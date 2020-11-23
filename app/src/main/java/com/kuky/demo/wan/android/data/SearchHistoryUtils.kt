@@ -2,13 +2,53 @@ package com.kuky.demo.wan.android.data
 
 import android.content.Context
 import android.text.TextUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.kuky.demo.wan.android.utils.fetchTransDataFromDataStore
 import com.kuky.demo.wan.android.utils.getString
 import com.kuky.demo.wan.android.utils.saveString
+import com.kuky.demo.wan.android.utils.saveTransToDataStore
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * @author kuky.
  * @description
  */
+private const val STORE_KEY_HISTORY = "wan.search.history"
+
+fun Context.fetchHistories() =
+    fetchTransDataFromDataStore<MutableList<String>>(STORE_KEY_HISTORY, {
+        Gson().fromJson(it, object : TypeToken<MutableList<String>>() {}.type)
+    })
+
+suspend fun Context.saveHistory(history: String) {
+    fetchHistories().collectLatest {
+        if (!it.isNullOrEmpty() && it.contains(history)) {
+            it.remove(history)
+        }
+
+        val newHistory = (it ?: mutableListOf()).apply {
+            add(0, history)
+        }
+
+        saveTransToDataStore(STORE_KEY_HISTORY, newHistory)
+    }
+}
+
+suspend fun Context.removeHistory(history: String) {
+    fetchHistories().collectLatest {
+        if (it.isNullOrEmpty() || !it.contains(history)) {
+            return@collectLatest
+        }
+
+        saveTransToDataStore(STORE_KEY_HISTORY, it.apply { remove(history) })
+    }
+}
+
+///////////////////////////////////////////////////////////////////
+// Replaced by DataStore /////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+@Deprecated("replaced by dataStore", level = DeprecationLevel.HIDDEN)
 object SearchHistoryUtils {
     private const val SHARE_KEY_HISTORY = "wan.search.history"
 
@@ -69,7 +109,7 @@ object SearchHistoryUtils {
     /**
      * 获取全部搜索记录
      */
-    fun fetchHistoryKeys(context: Context): ArrayList<String>? {
+    fun fetchHistoryKeys(context: Context): ArrayList<String> {
         val content = context.getString(SHARE_KEY_HISTORY)
 
         return when {

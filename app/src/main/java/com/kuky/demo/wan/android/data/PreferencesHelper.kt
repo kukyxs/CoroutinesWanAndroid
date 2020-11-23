@@ -14,9 +14,15 @@ object PreferencesHelper {
     private const val USER_KEY_COOKIE = "wan.user.cookie"
     private const val CACHE_KEY_BANNER = "wan.cache.banner"
 
-    fun saveFirstState(context: Context, isFirst: Boolean) = context.saveBoolean(STATE_KEY_FIRST_INT, isFirst)
+    suspend fun saveFirstInState(context: Context, isFirst: Boolean) =
+        context.saveToDataStore(STATE_KEY_FIRST_INT, isFirst)
 
-    fun isFirstIn(context: Context) = context.getBoolean(STATE_KEY_FIRST_INT, true)
+    fun isFirstLaunchIn(context: Context) = context.fetchDataStoreData(STATE_KEY_FIRST_INT) { true }
+
+    suspend fun saveUsername(context: Context, username: String) =
+        context.saveToDataStore(USER_KEY_NAME, username)
+
+    fun fetchUsername(context: Context) = context.fetchDataStoreData(USER_KEY_NAME) { "" }
 
     fun saveUserId(context: Context, id: Int) = context.saveInteger(USER_KEY_ID, id)
 

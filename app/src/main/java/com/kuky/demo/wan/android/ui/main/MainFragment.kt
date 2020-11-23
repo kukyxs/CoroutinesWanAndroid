@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
@@ -120,7 +119,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 }
             }
 
-            mViewModel.hasLogin.observe(this@MainFragment, Observer {
+            mViewModel.hasLogin.observe(this@MainFragment, {
                 userProfileDrawer.menu.let { menus ->
                     menus.findItem(R.id.user_collections).isVisible = it
                     menus.findItem(R.id.login_out).isVisible = it
@@ -198,7 +197,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                             context?.getAppVersionName()
                         ), resources.getString(R.string.operate_title)
                     ) {
-                        yesButton { PreferencesHelper.saveFirstState(requireContext(), false) }
+                        yesButton {
+                            launch { PreferencesHelper.saveFirstInState(requireContext(), false) }
+                        }
                     }.show()
 
                 R.id.login_out -> requireContext()
