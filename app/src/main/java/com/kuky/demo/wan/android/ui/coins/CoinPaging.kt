@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
@@ -36,6 +37,8 @@ class CoinRecordPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, CoinRecordDetail>) = state.anchorPosition
 }
 
 class CoinRecordPagingAdapter :
@@ -77,6 +80,8 @@ class CoinRankPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, CoinRankDetail>) = state.anchorPosition
 }
 
 class CoinRankPagingAdapter :

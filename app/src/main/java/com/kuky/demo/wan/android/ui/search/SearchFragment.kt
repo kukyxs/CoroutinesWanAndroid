@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -11,8 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
-import com.kuky.demo.wan.android.data.removeHistory
-import com.kuky.demo.wan.android.data.saveHistory
+import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
@@ -25,7 +25,10 @@ import com.kuky.demo.wan.android.widget.ErrorReload
 import com.kuky.demo.wan.android.widget.RequestStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -51,7 +54,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val mHistoryAdapter by lifecycleScope.inject<HistoryAdapter>()
 
-    private var mHistoryJob: Job? = null
     private var mKeyJob: Job? = null
     private var mSearchJob: Job? = null
 
@@ -81,7 +83,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 if (errorOnLabel) loadHotKeys() else mResultAdapter.retry()
             }
 
-            mViewModel.resultMode.observe(this@SearchFragment, {
+            mViewModel.resultMode.observe(this@SearchFragment, Observer {
                 if (it) {
                     enable = true
                     needOverScroll = true
@@ -118,11 +120,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 } else {
                     enable = false
                     needOverScroll = false
-                    adapter = mHistoryAdapter.apply {
-                        onKeyRemove = {
-                            launch { context?.removeHistory(it) }
-                        }
-                    }
+                    adapter = mHistoryAdapter.apply { onKeyRemove = { mViewModel.updateHistory() } }
                     listener = OnItemClickListener { position, _ ->
                         mHistoryAdapter.getItemData(position)?.let { key ->
                             searchContent.setText(key)
@@ -131,16 +129,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                     }
                 }
             })
-        }
-    }
 
-    private fun loadHistory() {
-        mHistoryJob?.cancel()
-        mHistoryJob = launch {
-            mViewModel.fetchHistoryKeywords().collectLatest {
-                mHistoryAdapter.updateHistory(it ?: mutableListOf())
-                mBinding?.hasHistory = !it.isNullOrEmpty()
-            }
+            mViewModel.history.observe(this@SearchFragment, Observer {
+                mHistoryAdapter.updateHistory(it)
+            })
         }
     }
 
@@ -186,7 +178,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 addLabel(it)
                 mBinding?.refreshing = false
                 mBinding?.statusCode = if (it.isEmpty()) RequestStatusCode.Empty else RequestStatusCode.Succeed
-                loadHistory()
+                mBinding?.hasHistory = SearchHistoryUtils.hasHistory(requireContext())
+                mViewModel.updateHistory()
             }
         }
     }
@@ -201,11 +194,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         mKey = keyword
         mViewModel.resultMode.postValue(true)
         mBinding?.searchContent?.hideSoftInput()
-
-        /**
-         * 不支持两个 flow 在同个 launch 执行, 如果放一起只执行第一个
-         */
-        launch { context?.saveHistory(keyword.trim()) }
+        SearchHistoryUtils.saveHistory(requireActivity(), keyword.trim())
 
         mSearchJob?.cancel()
         mSearchJob = launch {

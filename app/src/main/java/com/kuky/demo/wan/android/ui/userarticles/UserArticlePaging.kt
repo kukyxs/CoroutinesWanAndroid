@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.userarticles
 
 import android.graphics.Paint
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
@@ -34,6 +35,8 @@ class UserArticlePagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, UserArticleDetail>) = state.anchorPosition
 }
 
 class UserArticlePagingAdapter : BasePagingDataAdapter<UserArticleDetail, RecyclerUserArticleBinding>(DIFF_CALLBACK) {

@@ -12,8 +12,6 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.utils.getAppVersionName
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
 import org.koin.androidx.scope.lifecycleScope
@@ -56,22 +54,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun initActivity(savedInstanceState: Bundle?) {
         mConnectivityManager.registerNetworkCallback(mNetworkRequest, mNetStateCallback)
 
-        launch {
-            PreferencesHelper.isFirstLaunchIn(this@MainActivity).collectLatest {
-                if (it == true) {
-                    alert(
-                        String.format(
-                            resources.getString(R.string.operate_helper),
-                            getAppVersionName()
-                        ), resources.getString(R.string.operate_title)
-                    ) {
-                        isCancelable = false
-                        yesButton {/* PreferencesHelper.saveFirstState(this@MainActivity, false)*/
-                            launch { PreferencesHelper.saveFirstInState(this@MainActivity, false) }
-                        }
-                    }.show()
-                }
-            }
+        if (PreferencesHelper.isFirstIn(this)) {
+            alert(
+                String.format(
+                    resources.getString(R.string.operate_helper),
+                    getAppVersionName()
+                ), resources.getString(R.string.operate_title)
+            ) {
+                isCancelable = false
+                yesButton { PreferencesHelper.saveFirstState(this@MainActivity, false) }
+            }.show()
         }
 
         mAppViewModel.showLoadingProgress.observe(this, {

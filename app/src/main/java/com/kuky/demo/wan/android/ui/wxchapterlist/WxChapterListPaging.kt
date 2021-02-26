@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.wxchapterlist
 
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
@@ -32,6 +33,8 @@ class WxChapterListPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, WxChapterListDatas>) = state.anchorPosition
 }
 
 class WxChapterPagingAdapter : BasePagingDataAdapter<WxChapterListDatas, RecyclerWxChapterListBinding>(DIFF_CALLBACK) {

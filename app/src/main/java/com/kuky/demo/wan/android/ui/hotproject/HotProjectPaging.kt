@@ -2,6 +2,7 @@ package com.kuky.demo.wan.android.ui.hotproject
 
 import androidx.databinding.ViewDataBinding
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
@@ -36,6 +37,8 @@ class HotProjectPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, ProjectDetailData>) = state.anchorPosition
 }
 
 class HomeProjectPagingAdapter :

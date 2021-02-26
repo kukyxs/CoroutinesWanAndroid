@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.usersharelist
 
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.kuky.demo.wan.android.entity.UserArticleDetail
 
 /**
@@ -27,4 +28,6 @@ class UserSharePagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, UserArticleDetail>) = state.anchorPosition
 }

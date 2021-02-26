@@ -21,6 +21,7 @@ import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
 import com.kuky.demo.wan.android.databinding.UserProfileHeaderBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
+import com.kuky.demo.wan.android.ui.friend.FriendFragment
 import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.hotproject.HotProjectFragment
 import com.kuky.demo.wan.android.ui.system.KnowledgeSystemFragment
@@ -59,7 +60,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 HotProjectFragment(),
                 KnowledgeSystemFragment(),
                 UserArticleFragment(),
-                WxChapterFragment()
+                WxChapterFragment(),
+                FriendFragment()
             )
         )
     }
@@ -198,7 +200,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                         ), resources.getString(R.string.operate_title)
                     ) {
                         yesButton {
-                            launch { PreferencesHelper.saveFirstInState(requireContext(), false) }
+                            launch { PreferencesHelper.saveFirstState(requireContext(), false) }
                         }
                     }.show()
 

@@ -33,7 +33,7 @@ interface ApiService {
 
     // 常用网站
     @GET("/friend/json")
-    suspend fun commonlyUsedWebsite(): BaseResultData<WebsiteData>
+    suspend fun commonlyUsedWebsite(): BaseResultData<MutableList<FriendWebsite>>
 
     // 热词搜索
     @GET("/hotkey/json")

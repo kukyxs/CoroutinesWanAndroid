@@ -3,6 +3,7 @@ package com.kuky.demo.wan.android.ui.todolist
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BasePagingDataAdapter
@@ -39,6 +40,8 @@ class TodoPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, TodoInfo>) = state.anchorPosition
 }
 
 class TodoListPagingAdapter : BasePagingDataAdapter<TodoInfo, RecyclerTodoItemBinding>(DIFF_CALLBACK) {

@@ -20,6 +20,8 @@ import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesViewModel
 import com.kuky.demo.wan.android.ui.collection.CollectionFragment
 import com.kuky.demo.wan.android.ui.collection.CollectionRepository
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
+import com.kuky.demo.wan.android.ui.friend.FriendRepository
+import com.kuky.demo.wan.android.ui.friend.FriendViewModel
 import com.kuky.demo.wan.android.ui.home.HomeArticleFragment
 import com.kuky.demo.wan.android.ui.home.HomeArticlePagingAdapter
 import com.kuky.demo.wan.android.ui.home.HomeArticleRepository
@@ -102,6 +104,8 @@ val viewModelModule = module {
     viewModel { WxChapterViewModel(get()) }
 
     viewModel { WxChapterListViewModel(get()) }
+
+    viewModel { FriendViewModel(get()) }
 }
 
 val repositoryModule = module {
@@ -136,6 +140,8 @@ val repositoryModule = module {
     single { WxChapterRepository(get()) }
 
     single { WxChapterListRepository(get()) }
+
+    single { FriendRepository(get()) }
 }
 
 val fragmentModule = module {

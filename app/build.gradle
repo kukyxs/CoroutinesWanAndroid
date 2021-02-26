@@ -1,16 +1,18 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins{
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.kuky.demo.wan.android"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 4
         versionName "2.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,27 +34,27 @@ android {
 
     buildFeatures {
         dataBinding = true
-//        compose true
+        compose true
     }
 
-//    composeOptions {
-//        kotlinCompilerVersion "1.3.61-dev-withExperimentalGoogleExtensions-20200129"
-//        kotlinCompilerExtensionVersion "0.1.0-dev04"
-//    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
-    compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+    composeOptions {
+        kotlinCompilerExtensionVersion kotlin_version
+        kotlinCompilerExtensionVersion compose_version
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation "junit:junit:4.13.1"
+    testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test:runner:1.3.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
 
@@ -63,45 +65,51 @@ dependencies {
     implementation "org.koin:koin-androidx-ext:2.1.6"
 
     implementation "androidx.appcompat:appcompat:1.2.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-
-//    implementation 'androidx.ui:ui-framework:0.1.0-dev04'
-//    implementation 'androidx.ui:ui-tooling:0.1.0-dev04'
-//    implementation 'androidx.ui:ui-layout:0.1.0-dev04'
-//    implementation 'androidx.ui:ui-material:0.1.0-dev04'
+    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
 
     implementation "androidx.core:core-ktx:1.3.2"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.1"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.1"
+    implementation 'androidx.activity:activity-compose:1.3.0-alpha03'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02'
 
-    implementation "androidx.room:room-runtime:2.3.0-alpha03"
-    implementation "androidx.room:room-ktx:2.3.0-alpha03"
-    kapt "androidx.room:room-compiler:2.3.0-alpha03"
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    implementation "androidx.compose.foundation:foundation-layout:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material:material-icons-core:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.ui:ui-util:$compose_version"
+    implementation "androidx.compose.runtime:runtime:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
-    implementation "com.google.android:flexbox:1.1.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
+
+    implementation "androidx.room:room-runtime:2.3.0-beta02"
+    implementation "androidx.room:room-ktx:2.3.0-beta02"
+    kapt "androidx.room:room-compiler:2.3.0-beta02"
+
+    implementation "com.google.android:flexbox:2.0.1"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.viewpager2:viewpager2:1.1.0-alpha01"
-    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha09'
-    implementation "androidx.recyclerview:recyclerview:1.2.0-alpha06"
-    implementation "com.google.android.material:material:1.3.0-alpha03"
+    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-beta01'
+    implementation "androidx.recyclerview:recyclerview:1.2.0-beta02"
+    implementation "com.google.android.material:material:1.4.0-alpha01"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
     implementation "org.jetbrains.anko:anko-commons:0.10.8"
 
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2"
 
-    implementation "com.github.bumptech.glide:glide:4.11.0"
-    kapt "com.github.bumptech.glide:compiler:4.11.0"
+    implementation "com.github.bumptech.glide:glide:4.12.0"
+    kapt "com.github.bumptech.glide:compiler:4.12.0"
 
     implementation "com.youth.banner:banner:1.4.10"
     implementation "com.github.clans:fab:1.6.4"
-
-    implementation "androidx.datastore:datastore-core:1.0.0-alpha04"
-    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha04"
 }

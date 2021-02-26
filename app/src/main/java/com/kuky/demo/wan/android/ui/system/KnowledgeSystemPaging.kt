@@ -1,6 +1,7 @@
 package com.kuky.demo.wan.android.ui.system
 
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.kuky.demo.wan.android.entity.WxChapterListDatas
 
 /**
@@ -23,4 +24,6 @@ class KnowledgeSystemPagingSource(
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, WxChapterListDatas>) = state.anchorPosition
 }
