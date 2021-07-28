@@ -16,8 +16,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.DoubleClickListener
+import com.kuky.demo.wan.android.base.handleResult
+import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentSharedUserBinding
+import com.kuky.demo.wan.android.helper.dPrint
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -35,16 +41,20 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 import java.util.*
 
 /**
  * @author kuky.
  * @description
  */
-class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
+class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>(), AndroidScopeComponent {
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
@@ -52,7 +62,7 @@ class UserSharedFragment : BaseFragment<FragmentSharedUserBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<UserSharedPagingAdapter>()
+    private val mAdapter by inject<UserSharedPagingAdapter>()
 
     private val userId by lazy { arguments?.getInt("user") ?: 0 }
 

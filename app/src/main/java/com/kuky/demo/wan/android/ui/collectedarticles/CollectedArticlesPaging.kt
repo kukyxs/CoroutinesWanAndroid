@@ -23,7 +23,7 @@ class CollectedArticlesPagingSource(
         val page = params.key ?: 0
 
         return try {
-            val collectedArticles = repository.getCollectedArticleList(page) ?: mutableListOf()
+            val collectedArticles = repository.getCollectedArticleList(page)
 
             LoadResult.Page(
                 data = collectedArticles,

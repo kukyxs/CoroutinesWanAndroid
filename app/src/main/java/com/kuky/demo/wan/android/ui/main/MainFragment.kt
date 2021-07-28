@@ -43,15 +43,20 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.core.scope.Scope
 import java.util.*
 
 /**
  * @author kuky.
  * @description 主页面 fragment 持有者
  */
-class MainFragment : BaseFragment<FragmentMainBinding>() {
+class MainFragment : BaseFragment<FragmentMainBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
 
     private val mAdapter by lazy {
         BaseFragmentPagerAdapter(
@@ -70,9 +75,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private val mViewModel by sharedViewModel<MainViewModel>()
 
-    private val mAboutUsDialog by lifecycleScope.inject<AboutUsDialogFragment>()
+    private val mAboutUsDialog by inject<AboutUsDialogFragment>()
 
-    private val mWxDialog by lifecycleScope.inject<WxDialogFragment>()
+    private val mWxDialog by inject<WxDialogFragment>()
 
     private val mHeaderBinding by lazy {
         DataBindingUtil.inflate<UserProfileHeaderBinding>(
@@ -83,7 +88,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     private var mCoinsJob: Job? = null
 
     override fun actionsOnViewInflate() {
-        mBinding?.run {
+        mBinding.run {
             adapter = mAdapter
             limit = mAdapter.count
             transformer = GalleryTransformer()
@@ -101,7 +106,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_main
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.run {
+        mBinding.run {
             holder = this@MainFragment
             viewModel = mViewModel
             listener = OnBannerListener { position ->

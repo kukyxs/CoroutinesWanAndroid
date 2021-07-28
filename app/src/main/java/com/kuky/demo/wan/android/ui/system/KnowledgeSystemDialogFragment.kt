@@ -7,30 +7,35 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.databinding.DialogKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData
+import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.utils.screenWidth
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description
  */
-class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBinding>() {
+class KnowledgeSystemDialogFragment : BaseDialogFragment<DialogKnowledgeSystemBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
 
     var mOnClick: ((KnowledgeSystemDialogFragment, String?, String?, Int) -> Unit)? = null
 
     private val mViewModel by viewModel<KnowledgeSystemViewModel>()
 
-    private val mFirstAdapter by lifecycleScope.inject<KnowledgeSystemTypeAdapter>()
+    private val mFirstAdapter by inject<KnowledgeSystemTypeAdapter>()
 
-    private val mSecAdapter by lifecycleScope.inject<KnowledgeSystemSecTypeAdapter>()
+    private val mSecAdapter by inject<KnowledgeSystemSecTypeAdapter>()
 
     private var mFirstData: SystemData? = null
 

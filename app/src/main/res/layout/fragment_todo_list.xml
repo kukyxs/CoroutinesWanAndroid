@@ -44,11 +44,11 @@
 
         <variable
             name="todoItemClick"
-            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemClickListener" />
 
         <variable
             name="todoItemLongClick"
-            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemLongClickListener" />
 
         <variable
             name="choiceAdapter"
@@ -60,7 +60,7 @@
 
         <variable
             name="choiceItemClick"
-            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemClickListener" />
 
         <variable
             name="statusCode"

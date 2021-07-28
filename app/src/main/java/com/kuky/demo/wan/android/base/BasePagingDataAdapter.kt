@@ -6,6 +6,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import com.kuky.demo.wan.android.helper.KLogger
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 
 /**
  * @author kuky.

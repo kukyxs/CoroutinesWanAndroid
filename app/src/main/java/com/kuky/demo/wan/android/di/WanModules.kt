@@ -53,6 +53,7 @@ import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListRepository
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListViewModel
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterPagingAdapter
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -71,11 +72,11 @@ val dataSourceModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { AppViewModel() }
+    viewModel { AppViewModel(androidApplication()) }
 
-    viewModel { CoinViewModel(get()) }
+    viewModel { CoinViewModel(get(), androidApplication()) }
 
-    viewModel { CollectedArticlesViewModel(get()) }
+    viewModel { CollectedArticlesViewModel(get(), androidApplication()) }
 
     viewModel { CollectionViewModel(get()) }
 
@@ -109,9 +110,9 @@ val viewModelModule = module {
 }
 
 val repositoryModule = module {
-    single { CoinRepository(get()) }
+    single { CoinRepository(androidContext(), get()) }
 
-    single { CollectedArticlesRepository(get()) }
+    single { CollectedArticlesRepository(androidContext(), get()) }
 
     single { CollectionRepository(get()) }
 

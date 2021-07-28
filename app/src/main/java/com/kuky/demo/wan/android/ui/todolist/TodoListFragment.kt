@@ -19,6 +19,8 @@ import com.kuky.demo.wan.android.databinding.FragmentTodoListBinding
 import com.kuky.demo.wan.android.entity.Choice
 import com.kuky.demo.wan.android.entity.TodoChoiceGroup
 import com.kuky.demo.wan.android.entity.TodoInfo
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.todoedit.TodoEditFragment
@@ -36,10 +38,13 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
@@ -54,13 +59,14 @@ import org.koin.core.parameter.parametersOf
  * ```
  * 查询参数通过 [TodoChoiceAdapter] #getApiParam 获取即可
  */
-class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
+class TodoListFragment : BaseFragment<FragmentTodoListBinding>(), AndroidScopeComponent {
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewMode by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<TodoListViewModel>()
 
-    private val mChoiceAdapter by lifecycleScope.inject<TodoChoiceAdapter> {
+    private val mChoiceAdapter by inject<TodoChoiceAdapter> {
         parametersOf(
             Gson().fromJson(
                 context?.loadTextFromAssets("todo_choices.json"),
@@ -69,7 +75,7 @@ class TodoListFragment : BaseFragment<FragmentTodoListBinding>() {
         )
     }
 
-    private val mTodoAdapter by lifecycleScope.inject<TodoListPagingAdapter>()
+    private val mTodoAdapter by inject<TodoListPagingAdapter>()
 
     private val mChoiceLayoutManager by lazy {
         FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)

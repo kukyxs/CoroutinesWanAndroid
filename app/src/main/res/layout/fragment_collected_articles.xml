@@ -24,11 +24,11 @@
 
         <variable
             name="listener"
-            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemClickListener" />
 
         <variable
             name="longListener"
-            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemLongClickListener" />
 
         <variable
             name="adapter"

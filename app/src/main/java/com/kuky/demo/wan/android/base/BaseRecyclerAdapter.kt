@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
+import com.kuky.demo.wan.android.helper.KLogger
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 
 
 /**

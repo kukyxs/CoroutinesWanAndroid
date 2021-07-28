@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.kuky.demo.wan.android.helper.KLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -24,7 +25,6 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityStackManager.addActivity(this)
         if (needTransparentStatus()) transparentStatusBar()
         mBinding.lifecycleOwner = this
         initActivity(savedInstanceState)
@@ -41,7 +41,6 @@ abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity(), Corouti
 
     override fun onDestroy() {
         super.onDestroy()
-        ActivityStackManager.removeActivity(this)
         cancel()
         mBinding.unbind()
     }

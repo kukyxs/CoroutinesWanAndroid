@@ -11,18 +11,21 @@ import com.kuky.demo.wan.android.databinding.FragmentCollectionBinding
 import com.kuky.demo.wan.android.ui.collectedarticles.CollectedArticlesFragment
 import com.kuky.demo.wan.android.ui.collectedwebsites.CollectedWebsitesFragment
 import org.koin.android.ext.android.inject
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.core.parameter.parametersOf
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description 个人收藏页面
  */
-class CollectionFragment : BaseFragment<FragmentCollectionBinding>() {
+class CollectionFragment : BaseFragment<FragmentCollectionBinding>(), AndroidScopeComponent {
+    override val scope: Scope by fragmentScope()
 
-    private val mCollectedArticleFragment by lifecycleScope.inject<CollectedArticlesFragment>()
+    private val mCollectedArticleFragment by inject<CollectedArticlesFragment>()
 
-    private val mCollectedWebsitesFragment by lifecycleScope.inject<CollectedWebsitesFragment>()
+    private val mCollectedWebsitesFragment by inject<CollectedWebsitesFragment>()
 
     private val mPagerAdapter by inject<ViewPager2FragmentAdapter> {
         parametersOf(this, mutableListOf(mCollectedArticleFragment, mCollectedWebsitesFragment))

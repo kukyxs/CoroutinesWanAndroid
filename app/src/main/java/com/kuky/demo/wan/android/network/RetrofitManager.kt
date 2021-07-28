@@ -1,7 +1,7 @@
 package com.kuky.demo.wan.android.network
 
-import com.kuky.demo.wan.android.base.jsonPrint
-import com.kuky.demo.wan.android.base.kLogger
+import com.kuky.demo.wan.android.helper.jsonPrint
+import com.kuky.demo.wan.android.helper.kLogger
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

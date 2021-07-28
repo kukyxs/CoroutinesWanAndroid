@@ -6,9 +6,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.DoubleClickListener
+import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentUserShareListBinding
 import com.kuky.demo.wan.android.entity.UserArticleDetail
+import com.kuky.demo.wan.android.listener.OnDialogFragmentDismissListener
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.usershared.UserSharedPagingAdapter
@@ -26,23 +31,28 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description
  */
-class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
+class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<UserShareListViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<UserSharedPagingAdapter>()
+    private val mAdapter by inject<UserSharedPagingAdapter>()
 
-    private val mShareDialog by lifecycleScope.inject<ShareArticleDialogFragment>()
+    private val mShareDialog by inject<ShareArticleDialogFragment>()
 
     private var mShareJob: Job? = null
 
@@ -102,7 +112,7 @@ class UserShareListFragment : BaseFragment<FragmentUserShareListBinding>() {
             shareGesture = DoubleClickListener {
                 singleTap = {
                     mShareDialog.apply {
-                        onDialogFragmentDismissListener = { fetchSharedArticles() }
+                        onDialogFragmentDismissListener = OnDialogFragmentDismissListener { fetchSharedArticles() }
                     }.showAllowStateLoss(childFragmentManager, "share_art")
                 }
             }

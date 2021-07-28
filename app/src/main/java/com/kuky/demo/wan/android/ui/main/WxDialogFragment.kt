@@ -12,9 +12,9 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.base.requestPermissions
 import com.kuky.demo.wan.android.databinding.DialogWxBinding
+import com.kuky.demo.wan.android.extension.delayLaunch
 import com.kuky.demo.wan.android.utils.ImageSaveUtils
 import com.kuky.demo.wan.android.utils.starApp
 import org.jetbrains.anko.alert

@@ -10,6 +10,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentKnowledgeSystemBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -30,15 +32,20 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description 首页体系模块界面
  */
-class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
+class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
@@ -48,9 +55,9 @@ class KnowledgeSystemFragment : BaseFragment<FragmentKnowledgeSystemBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<WxChapterPagingAdapter>()
+    private val mAdapter by inject<WxChapterPagingAdapter>()
 
-    private val mCategoryDialog by lifecycleScope.inject<KnowledgeSystemDialogFragment>()
+    private val mCategoryDialog by inject<KnowledgeSystemDialogFragment>()
 
     // 体系id
     private var mCid: Int = 0

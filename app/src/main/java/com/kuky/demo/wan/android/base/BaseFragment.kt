@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import com.kuky.demo.wan.android.helper.KLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -19,24 +20,21 @@ import kotlinx.coroutines.cancel
  */
 abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope by MainScope(), KLogger {
 
-    protected var mBinding: VB? = null
+    private var _binding: VB? = null
+    protected val mBinding: VB get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        retainInstance = true
-
-        if (mBinding == null) {
-            mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+        if (_binding == null) {
+            _binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
             actionsOnViewInflate()
         }
 
-        return if (mBinding != null) {
-            mBinding!!.root.apply { (parent as? ViewGroup)?.removeView(this) }
-        } else super.onCreateView(inflater, container, savedInstanceState)
+        return _binding?.root?.apply { (parent as? ViewGroup)?.removeView(this) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mBinding?.lifecycleOwner = this
+        _binding?.lifecycleOwner = this
         initFragment(view, savedInstanceState)
     }
 
@@ -52,7 +50,7 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment(), CoroutineScope b
     override fun onDestroy() {
         super.onDestroy()
         cancel()
-        mBinding?.unbind()
+        _binding?.unbind()
     }
 
     /**

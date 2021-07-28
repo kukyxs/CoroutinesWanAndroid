@@ -6,8 +6,8 @@ import android.view.KeyEvent
 import android.view.View
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
-import com.kuky.demo.wan.android.base.delayLaunch
 import com.kuky.demo.wan.android.databinding.ActivitySplashBinding
+import com.kuky.demo.wan.android.extension.delayLaunch
 import com.kuky.demo.wan.android.ui.app.MainActivity
 import org.jetbrains.anko.startActivity
 

@@ -6,8 +6,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.*
+import com.kuky.demo.wan.android.base.BaseFragment
+import com.kuky.demo.wan.android.base.DoubleClickListener
+import com.kuky.demo.wan.android.base.handleResult
+import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCollectedWebsitesBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.websitedetail.WebsiteDetailFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
@@ -21,21 +26,26 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description
  */
-class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>() {
+class CollectedWebsitesFragment : BaseFragment<FragmentCollectedWebsitesBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mViewModel by viewModel<CollectedWebsitesViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<CollectedWebsitesAdapter>()
+    private val mAdapter by inject<CollectedWebsitesAdapter>()
 
     private val editSelector by lazy { arrayListOf(resources.getString(R.string.del_website), resources.getString(R.string.edit_website)) }
 

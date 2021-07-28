@@ -11,6 +11,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentHotProjectBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -30,15 +32,21 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description 首页项目模块界面
  */
-class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
+class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by fragmentScope()
+
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
     private val mLoginViewModel by sharedViewModel<MainViewModel>()
@@ -47,9 +55,9 @@ class HotProjectFragment : BaseFragment<FragmentHotProjectBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<HomeProjectPagingAdapter>()
+    private val mAdapter by inject<HomeProjectPagingAdapter>()
 
-    private val mCategoryDialog by lifecycleScope.inject<ProjectCategoryDialog>()
+    private val mCategoryDialog by inject<ProjectCategoryDialog>()
 
     private var mCategoryJob: Job? = null
     private var mSearchJob: Job? = null

@@ -8,9 +8,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.DoubleClickListener
-import com.kuky.demo.wan.android.base.OnItemClickListener
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.ui.wxchapterlist.WxChapterListFragment
 import com.kuky.demo.wan.android.widget.ErrorReload
@@ -21,18 +21,22 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description 首页公众号模块界面
  */
-class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>() {
+class WxChapterFragment : BaseFragment<FragmentWxChapterBinding>(), AndroidScopeComponent {
+    override val scope: Scope by fragmentScope()
 
     private val mViewModel by viewModel<WxChapterViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<WxChapterAdapter>()
+    private val mAdapter by inject<WxChapterAdapter>()
 
     private var mChapterJob: Job? = null
 

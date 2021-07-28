@@ -56,5 +56,3 @@ class RequestStatusView @JvmOverloads constructor(
         setTextColor(Color.parseColor("#FFCCCCCC"))
     }
 }
-
-enum class RequestStatusCode { Empty, Error, Loading, Succeed }

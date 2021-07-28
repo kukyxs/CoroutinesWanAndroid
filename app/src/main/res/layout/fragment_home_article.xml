@@ -16,11 +16,11 @@
 
         <variable
             name="itemClick"
-            type="com.kuky.demo.wan.android.base.OnItemClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemClickListener" />
 
         <variable
             name="itemLongClick"
-            type="com.kuky.demo.wan.android.base.OnItemLongClickListener" />
+            type="com.kuky.demo.wan.android.listener.OnItemLongClickListener" />
 
         <variable
             name="refreshColor"

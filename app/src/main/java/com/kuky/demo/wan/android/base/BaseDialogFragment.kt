@@ -14,6 +14,9 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.kuky.demo.wan.android.R
+import com.kuky.demo.wan.android.helper.KLogger
+import com.kuky.demo.wan.android.listener.OnDialogFragmentCancelListener
+import com.kuky.demo.wan.android.listener.OnDialogFragmentDismissListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -22,13 +25,11 @@ import kotlinx.coroutines.cancel
  * @author kuky.
  * @description
  */
-typealias OnDialogFragmentDismissListener = (DialogInterface) -> Unit
-
-typealias OnDialogFragmentCancelListener = (DialogInterface) -> Unit
-
 abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(),
     CoroutineScope by MainScope(), KLogger {
+
     var onDialogFragmentDismissListener: OnDialogFragmentDismissListener? = null
+
     var onDialogFragmentCancelListener: OnDialogFragmentCancelListener? = null
 
     protected lateinit var mBinding: VB
@@ -94,12 +95,12 @@ abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment(),
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        onDialogFragmentCancelListener?.invoke(dialog)
+        onDialogFragmentCancelListener?.OnDialogFragmentCancel(dialog)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        onDialogFragmentDismissListener?.invoke(dialog)
+        onDialogFragmentDismissListener?.onDialogFragmentDismiss(dialog)
     }
 
     // self define dialog fragment enter and exit animation

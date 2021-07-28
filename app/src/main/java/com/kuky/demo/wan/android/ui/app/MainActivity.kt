@@ -6,22 +6,30 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseActivity
+import com.kuky.demo.wan.android.base.UiState
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.ActivityMainBinding
 import com.kuky.demo.wan.android.ui.main.MainFragment
 import com.kuky.demo.wan.android.utils.getAppVersionName
+import kotlinx.coroutines.flow.collect
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
-class MainActivity : BaseActivity<ActivityMainBinding>() {
+class MainActivity : BaseActivity<ActivityMainBinding>(), AndroidScopeComponent {
+
+    override val scope: Scope by activityScope()
 
     private val mAppViewModel by viewModel<AppViewModel>()
 
-    private val mLoadingDialog by lifecycleScope.inject<LoadingDialog>()
+    private val mLoadingDialog by inject<LoadingDialog>()
 
     private val mConnectivityManager by lazy {
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -66,10 +74,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             }.show()
         }
 
-        mAppViewModel.showLoadingProgress.observe(this, {
-            if (it) mLoadingDialog.showAllowStateLoss(supportFragmentManager, "loading")
-            else mLoadingDialog.dismiss()
-        })
+        lifecycleScope.launchWhenCreated {
+            mAppViewModel.wholeState.collect {
+                when (it) {
+                    UiState.Loading -> if (mLoadingDialog.isHidden) {
+                        mLoadingDialog.showAllowStateLoss(supportFragmentManager, "loading")
+                    }
+
+                    else -> if (mLoadingDialog.isAdded) {
+                        mLoadingDialog.dismissAllowingStateLoss()
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

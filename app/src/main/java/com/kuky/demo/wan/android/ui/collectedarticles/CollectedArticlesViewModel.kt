@@ -1,10 +1,14 @@
 package com.kuky.demo.wan.android.ui.collectedarticles
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.cachedIn
+import com.kuky.demo.wan.android.base.BaseViewModel
+import com.kuky.demo.wan.android.base.UiState
 import com.kuky.demo.wan.android.ui.app.constPagerConfig
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 
 /**
@@ -12,15 +16,19 @@ import kotlinx.coroutines.flow.flow
  * @description
  */
 class CollectedArticlesViewModel(
-    private val repository: CollectedArticlesRepository
-) : ViewModel() {
+    private val repository: CollectedArticlesRepository,
+    application: Application
+) : BaseViewModel(application) {
 
-    fun getCollectedArticles() = Pager(constPagerConfig) {
+    private val _removeState = MutableStateFlow<UiState>(UiState.Succeed(false))
+    val removeState: StateFlow<UiState> = _removeState
+
+    suspend fun getCollectedArticles() = Pager(constPagerConfig) {
         CollectedArticlesPagingSource(repository)
-    }.flow.cachedIn(viewModelScope)
+    }.flow.cachedIn(viewModelScope).doRequest()
 
-    fun removeCollectedArticle(articleId: Int, originId: Int) = flow {
+    suspend fun removeCollectedArticle(articleId: Int, originId: Int) = flow {
         emit(repository.removeCollectedArticle(articleId, originId))
-    }
+    }.doRequest(_removeState)
 }
 

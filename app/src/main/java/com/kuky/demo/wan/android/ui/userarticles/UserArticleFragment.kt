@@ -10,6 +10,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentUserArticlesBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -29,15 +31,19 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description
  */
-class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
+class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>(), KoinScopeComponent {
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
@@ -47,7 +53,7 @@ class UserArticleFragment : BaseFragment<FragmentUserArticlesBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<UserArticlePagingAdapter>()
+    private val mAdapter by inject<UserArticlePagingAdapter>()
 
     private var isFirstObserver = true
 

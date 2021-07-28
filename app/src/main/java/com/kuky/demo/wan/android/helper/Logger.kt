@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.base
+package com.kuky.demo.wan.android.helper
 
 import android.util.Log
 import com.kuky.demo.wan.android.BuildConfig

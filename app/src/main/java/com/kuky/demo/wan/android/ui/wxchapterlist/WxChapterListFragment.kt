@@ -16,6 +16,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.databinding.FragmentWxChapterListBinding
+import com.kuky.demo.wan.android.listener.OnItemClickListener
+import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import com.kuky.demo.wan.android.ui.collection.CollectionViewModel
@@ -33,19 +35,24 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.yesButton
-import org.koin.androidx.scope.lifecycleScope
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
 /**
  * @author kuky.
  * @description 公众号作者对应的文章列表页
  */
-class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
+class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>(), AndroidScopeComponent {
     companion object {
         fun navigate(controller: NavController, @IdRes id: Int, articleId: Int, name: String) =
             controller.navigate(id, bundleOf("articleId" to articleId, "name" to name))
     }
+
+    override val scope: Scope by fragmentScope()
 
     private val mAppViewModel by sharedViewModel<AppViewModel>()
 
@@ -53,7 +60,7 @@ class WxChapterListFragment : BaseFragment<FragmentWxChapterListBinding>() {
 
     private val mCollectionViewModel by viewModel<CollectionViewModel>()
 
-    private val mAdapter by lifecycleScope.inject<WxChapterPagingAdapter>()
+    private val mAdapter by inject<WxChapterPagingAdapter>()
 
     private var mSearchKeyword: String? = null
     private val name by lazy { arguments?.getString("name") ?: "" }

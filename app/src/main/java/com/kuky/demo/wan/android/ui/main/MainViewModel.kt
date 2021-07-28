@@ -7,10 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.kuky.demo.wan.android.WanApplication
 import com.kuky.demo.wan.android.base.BaseResultData
-import com.kuky.demo.wan.android.base.safeLaunch
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.entity.BannerData
 import com.kuky.demo.wan.android.entity.WanUserData
+import com.kuky.demo.wan.android.extension.safeLaunch
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 

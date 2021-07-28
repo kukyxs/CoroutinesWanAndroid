@@ -27,7 +27,7 @@ class CoinRecordPagingSource(
         val page = params.key ?: 1
 
         return try {
-            val records = repository.getCoinRecord(page) ?: mutableListOf()
+            val records = repository.getCoinRecord(page)
             LoadResult.Page(
                 data = records,
                 prevKey = if (page == 1) null else page - 1,

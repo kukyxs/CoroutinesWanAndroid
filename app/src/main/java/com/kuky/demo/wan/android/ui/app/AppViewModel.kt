@@ -1,15 +1,21 @@
 package com.kuky.demo.wan.android.ui.app
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.kuky.demo.wan.android.base.SingleLiveEvent
+import com.kuky.demo.wan.android.base.BaseViewModel
+import com.kuky.demo.wan.android.base.UiState
+import com.kuky.demo.wan.android.helper.SingleLiveEvent
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * @author kuky.
  * @description
  */
-class AppViewModel : ViewModel() {
-    val showLoadingProgress = SingleLiveEvent<Boolean>()
+class AppViewModel(application: Application) : BaseViewModel(application) {
+
+    private val _wholeState = MutableStateFlow<UiState>(UiState.Succeed())
+    val wholeState: StateFlow<UiState> = _wholeState
 
     val reloadHomeData = MutableLiveData<Boolean>()
 
@@ -17,7 +23,11 @@ class AppViewModel : ViewModel() {
 
     val needUpdateTodoList = SingleLiveEvent<Boolean>()
 
-    fun showLoading() = showLoadingProgress.postValue(true)
+    fun showLoading() {
+        _wholeState.value = UiState.Loading
+    }
 
-    fun dismissLoading() = showLoadingProgress.postValue(false)
+    fun dismissLoading() {
+        _wholeState.value = UiState.Succeed()
+    }
 }
