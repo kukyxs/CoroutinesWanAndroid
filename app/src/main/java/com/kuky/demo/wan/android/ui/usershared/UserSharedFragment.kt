@@ -18,9 +18,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.DoubleClickListener
-import com.kuky.demo.wan.android.base.handleResult
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentSharedUserBinding
+import com.kuky.demo.wan.android.extension.handleResult
 import com.kuky.demo.wan.android.helper.dPrint
 import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.listener.OnItemLongClickListener

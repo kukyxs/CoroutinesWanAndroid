@@ -12,6 +12,7 @@ import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.*
 import com.kuky.demo.wan.android.data.db.HomeArticleDetail
 import com.kuky.demo.wan.android.databinding.FragmentHomeArticleBinding
+import com.kuky.demo.wan.android.extension.handleResult
 import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel

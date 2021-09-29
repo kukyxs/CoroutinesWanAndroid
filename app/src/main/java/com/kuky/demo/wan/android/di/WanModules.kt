@@ -74,13 +74,13 @@ val dataSourceModule = module {
 val viewModelModule = module {
     viewModel { AppViewModel(androidApplication()) }
 
-    viewModel { CoinViewModel(get(), androidApplication()) }
+    viewModel { CoinViewModel(androidApplication(), get()) }
 
-    viewModel { CollectedArticlesViewModel(get(), androidApplication()) }
+    viewModel { CollectedArticlesViewModel(androidApplication(), get()) }
 
     viewModel { CollectionViewModel(get()) }
 
-    viewModel { CollectedWebsitesViewModel(get()) }
+    viewModel { CollectedWebsitesViewModel(androidApplication(), get()) }
 
     viewModel { HomeArticleViewModel(get()) }
 
@@ -114,9 +114,9 @@ val repositoryModule = module {
 
     single { CollectedArticlesRepository(androidContext(), get()) }
 
-    single { CollectionRepository(get()) }
+    single { CollectionRepository(androidContext(), get()) }
 
-    single { CollectedWebsitesRepository(get()) }
+    single { CollectedWebsitesRepository(androidContext(), get()) }
 
     single { HomeArticleRepository(get(), get()) }
 

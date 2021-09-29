@@ -5,6 +5,8 @@ package com.kuky.demo.wan.android.base
  * @description
  */
 sealed class UiState {
+    object Create : UiState()
+
     object Loading : UiState()
 
     data class Succeed(val isEmpty: Boolean = false) : UiState()

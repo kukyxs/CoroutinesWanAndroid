@@ -6,8 +6,8 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.core.view.isVisible
 import com.kuky.demo.wan.android.R
-import com.kuky.demo.wan.android.base.drawableValue
-import com.kuky.demo.wan.android.base.stringValue
+import com.kuky.demo.wan.android.extension.drawableValue
+import com.kuky.demo.wan.android.extension.stringValue
 
 /**
  * @author kuky.

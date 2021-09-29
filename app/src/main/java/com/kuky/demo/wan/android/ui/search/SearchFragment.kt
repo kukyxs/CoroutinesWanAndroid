@@ -16,6 +16,8 @@ import com.kuky.demo.wan.android.data.SearchHistoryUtils
 import com.kuky.demo.wan.android.databinding.FragmentSearchBinding
 import com.kuky.demo.wan.android.entity.ArticleDetail
 import com.kuky.demo.wan.android.entity.HotKeyData
+import com.kuky.demo.wan.android.extension.handleResult
+import com.kuky.demo.wan.android.extension.renderHtml
 import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel

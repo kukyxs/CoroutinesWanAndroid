@@ -3,16 +3,14 @@ package com.kuky.demo.wan.android.ui.collectedwebsites
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseDialogFragment
-import com.kuky.demo.wan.android.base.handleResult
+import com.kuky.demo.wan.android.extension.handleResult
 import com.kuky.demo.wan.android.databinding.DialogCollectedWebsiteBinding
 import com.kuky.demo.wan.android.ui.app.AppViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -51,6 +49,11 @@ class CollectedWebsiteDialogFragment : BaseDialogFragment<DialogCollectedWebsite
         mBinding.fragment = this
         mBinding.collectedName.setText(mEditName)
         mBinding.collectedLink.setText(mEditLink)
+        lifecycleScope.launchWhenCreated {
+            mViewModel.addState.collect {
+
+            }
+        }
     }
 
     fun cancel(view: View) {

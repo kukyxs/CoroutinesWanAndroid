@@ -30,7 +30,7 @@ class MainViewModel(
         banners.value = repository.getCachedBanners()
     }
 
-    fun getBanners() {
+    fun getBannerList() {
         viewModelScope.safeLaunch {
             block = {
                 banners.value = repository.getHomeBanners().apply {

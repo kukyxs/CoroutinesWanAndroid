@@ -27,7 +27,7 @@ open class BaseViewModel(
     // ui 状态管理，如果有多余的需要管理请另外定义
     // 如果多个 fragment share viewModel，可分别定义对应的 uiState
     // doRequest 传入对应的 uiState 即可
-    private val _uiState = MutableStateFlow<UiState>(UiState.Succeed())
+    private val _uiState = MutableStateFlow<UiState>(UiState.Create)
     val uiState: StateFlow<UiState> = _uiState
 
     suspend fun <T> Flow<T>.doRequest(

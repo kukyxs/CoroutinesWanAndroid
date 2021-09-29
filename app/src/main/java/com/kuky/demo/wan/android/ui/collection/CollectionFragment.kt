@@ -34,7 +34,7 @@ class CollectionFragment : BaseFragment<FragmentCollectionBinding>(), AndroidSco
     override fun getLayoutId(): Int = R.layout.fragment_collection
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.run {
+        mBinding.run {
             // Todo("if isSaveEnabled == true, will throw IllegalException else child fragment will destroyed and recreated when nav back")
             // when display with navigation, set `viewPager2.isSaveEnabled = false` to resolve
             // IllegalException("Expected the adapter to be 'fresh' while restoring state.")

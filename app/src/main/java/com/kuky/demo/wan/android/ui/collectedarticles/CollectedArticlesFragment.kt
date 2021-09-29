@@ -8,10 +8,11 @@ import androidx.paging.LoadState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.PageStateByUiState
 import com.kuky.demo.wan.android.base.UiState
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCollectedArticlesBinding
+import com.kuky.demo.wan.android.extension.pageStateByUiState
+import com.kuky.demo.wan.android.helper.ePrint
 import com.kuky.demo.wan.android.listener.OnItemClickListener
 import com.kuky.demo.wan.android.listener.OnItemLongClickListener
 import com.kuky.demo.wan.android.ui.app.AppViewModel
@@ -52,7 +53,7 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
         getCollectedArticles()
 
         lifecycleScope.launchWhenCreated {
-            mViewModel.uiState.collect { mBinding.statusCode = it.PageStateByUiState() }
+            mViewModel.uiState.collect { mBinding.statusCode = it.pageStateByUiState() }
         }
 
         lifecycleScope.launchWhenCreated {
@@ -64,9 +65,11 @@ class CollectedArticlesFragment : BaseFragment<FragmentCollectedArticlesBinding>
 
                     is UiState.Succeed -> {
                         mAppViewModel.reloadHomeData.postValue(true)
-                        requireContext().toast(R.string.remove_favourite_succeed)
+                        mAppViewModel.dismissLoading()
                         getCollectedArticles()
                     }
+
+                    else -> ePrint { "state created" }
                 }
             }
         }

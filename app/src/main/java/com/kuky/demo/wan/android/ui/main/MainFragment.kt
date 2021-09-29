@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
 import com.kuky.demo.wan.android.base.BaseFragmentPagerAdapter
-import com.kuky.demo.wan.android.base.handleResult
+import com.kuky.demo.wan.android.extension.handleResult
 import com.kuky.demo.wan.android.base.onChange
 import com.kuky.demo.wan.android.data.PreferencesHelper
 import com.kuky.demo.wan.android.databinding.FragmentMainBinding
@@ -98,7 +98,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(), AndroidScopeComponent 
             userProfileDrawer.addHeaderView(mHeaderBinding.root)
         }
 
-        mViewModel.getBanners()
+        mViewModel.getBannerList()
 
         if (mViewModel.hasLogin.value == true) getCoins()
     }

@@ -16,11 +16,11 @@ import kotlinx.coroutines.flow.flow
  * @description
  */
 class CollectedArticlesViewModel(
-    private val repository: CollectedArticlesRepository,
-    application: Application
+    application: Application,
+    private val repository: CollectedArticlesRepository
 ) : BaseViewModel(application) {
 
-    private val _removeState = MutableStateFlow<UiState>(UiState.Succeed(false))
+    private val _removeState = MutableStateFlow<UiState>(UiState.Create)
     val removeState: StateFlow<UiState> = _removeState
 
     suspend fun getCollectedArticles() = Pager(constPagerConfig) {

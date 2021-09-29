@@ -12,8 +12,8 @@ import com.kuky.demo.wan.android.ui.app.constPagerConfig
  * @description
  */
 class CoinViewModel(
-    private val repository: CoinRepository,
-    application: Application
+    application: Application,
+    private val repository: CoinRepository
 ) : BaseViewModel(application) {
 
     suspend fun getCoinRankList() = Pager(constPagerConfig) {

@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseRecyclerAdapter
 import com.kuky.demo.wan.android.base.BaseViewHolder
-import com.kuky.demo.wan.android.base.renderHtml
+import com.kuky.demo.wan.android.extension.renderHtml
 import com.kuky.demo.wan.android.databinding.RecyclerKnowledgeSystemBinding
 import com.kuky.demo.wan.android.entity.SystemCategory
 import com.kuky.demo.wan.android.entity.SystemData

@@ -1,4 +1,4 @@
-package com.kuky.demo.wan.android.base
+package com.kuky.demo.wan.android.extension
 
 import android.content.Context
 import android.os.Build
@@ -8,6 +8,8 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.kuky.demo.wan.android.WanApplication
+import com.kuky.demo.wan.android.base.BaseResultData
+import com.kuky.demo.wan.android.base.UiState
 import com.kuky.demo.wan.android.widget.RequestStatusCode
 import org.jetbrains.anko.toast
 
@@ -20,7 +22,7 @@ fun Context.stringValue(@StringRes stringRes: Int) = resources.getString(stringR
 fun Context.drawableValue(@DrawableRes drawableRes: Int) = ContextCompat.getDrawable(this, drawableRes)
 
 // 根据 viewModel 返回的 uiState 转换成对应的加载状态 RequestStatusCode
-fun UiState.PageStateByUiState() = when (this) {
+fun UiState.pageStateByUiState() = when (this) {
     is UiState.Error -> RequestStatusCode.Error
     is UiState.Loading -> RequestStatusCode.Loading
     is UiState.Succeed -> if (isEmpty) RequestStatusCode.Empty else RequestStatusCode.Succeed

@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuky.demo.wan.android.R
 import com.kuky.demo.wan.android.base.BaseFragment
-import com.kuky.demo.wan.android.base.PageStateByUiState
 import com.kuky.demo.wan.android.base.scrollToTop
 import com.kuky.demo.wan.android.databinding.FragmentCommonCoinSubBinding
+import com.kuky.demo.wan.android.extension.pageStateByUiState
 import com.kuky.demo.wan.android.ui.app.PagingLoadStateAdapter
 import kotlinx.coroutines.flow.collect
 import org.koin.android.ext.android.inject
@@ -38,7 +38,7 @@ class CoinCommonSubFragment : BaseFragment<FragmentCommonCoinSubBinding>(), Andr
 
     override fun actionsOnViewInflate() {
         lifecycleScope.launchWhenStarted {
-            mViewModel.uiState.collect { mBinding.statusCode = it.PageStateByUiState() }
+            mViewModel.uiState.collect { mBinding.statusCode = it.pageStateByUiState() }
         }
 
         lifecycleScope.launchWhenStarted {

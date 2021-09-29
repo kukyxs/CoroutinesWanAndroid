@@ -28,7 +28,7 @@ class CoinFragment : BaseFragment<FragmentCoinsBinding>() {
     override fun getLayoutId(): Int = R.layout.fragment_coins
 
     override fun initFragment(view: View, savedInstanceState: Bundle?) {
-        mBinding?.run {
+        mBinding.run {
             coinVp.adapter = mPagerAdapter
             coinVp.offscreenPageLimit = 2
             coinIndicator.setupWithViewPager2(coinVp, intArrayOf(R.string.coin_record, R.string.coin_rank))
