@@ -26,6 +26,7 @@ fun UiState.pageStateByUiState() = when (this) {
     is UiState.Error -> RequestStatusCode.Error
     is UiState.Loading -> RequestStatusCode.Loading
     is UiState.Succeed -> if (isEmpty) RequestStatusCode.Empty else RequestStatusCode.Succeed
+    is UiState.Create -> RequestStatusCode.Succeed
 }
 
 suspend fun <T> BaseResultData<T>.handleResult(
